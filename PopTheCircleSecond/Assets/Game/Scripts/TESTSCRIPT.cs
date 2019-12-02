@@ -16,7 +16,7 @@ public class TESTSCRIPT : MonoBehaviour
 
     private void Start()
     {
-        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 120.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 160.0f, false);
 
         // BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 60.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(2, 0.0f, 120.0f, false);

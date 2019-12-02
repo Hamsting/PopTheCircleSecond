@@ -23,20 +23,20 @@ namespace PopTheCircle.Game
         [InspectorReadOnly]
         public int score = 0;
 
-        // TEST
-        public UnityEngine.UI.Text tex;
-
         
 
         private void Start()
         {
+            /*
             if (GlobalData.Instance != null)
             {
                 NoteDataJSONConverter.Instance.JSONToNoteData(GlobalData.Instance.noteDataJson);
                 MusicManager.Instance.Music = GlobalData.Instance.musicClip;
                 MusicManager.Instance.PlayMusic();
             }
-
+            */
+            MusicManager.Instance.Music = MusicManager.Instance.MusicAudioSource.clip;
+            MusicManager.Instance.PlayMusic();
             MusicManager.Instance.MusicPosition = -StartDelayTime;
             BeatManager.Instance.GotoStartDelayTime(-StartDelayTime);
         }
@@ -55,9 +55,6 @@ namespace PopTheCircle.Game
                 Debug.LogWarning("Fixed times");
                 BeatManager.Instance.GameTime = MusicManager.Instance.MusicPosition;
             }
-
-            // TEST
-            tex.text = currentCombo + " Combo!";
         }
     }
 }

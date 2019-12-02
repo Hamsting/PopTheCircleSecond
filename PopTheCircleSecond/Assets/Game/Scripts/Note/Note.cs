@@ -11,6 +11,10 @@ namespace PopTheCircle.Game
     public class Note
     {
         /// <summary>
+        /// 해당 노트의 타입 Enum이다.
+        /// </summary>
+        public NoteType noteType = NoteType.Normal;
+        /// <summary>
         /// 노트가 출현할 박자(Bar) 번호이다.
         /// </summary>
         public int bar = 0;
@@ -42,7 +46,7 @@ namespace PopTheCircle.Game
         /// 게임 내의 노트 오브젝트이다. 해당 값은 인게임에서 대입한다.
         /// </summary>
         public GameObject noteObject;
-
+               
         
 
         public void SetNoteMissed()
@@ -55,5 +59,15 @@ namespace PopTheCircle.Game
                     noteRen.StartCoroutine("OnNoteMissed");
             }
         }
+    }
+
+    public enum NoteType
+    {
+        Normal = 0,
+        Pop = 1,
+        Long = 2,
+        Space = 3,
+        Mine = 4,
+        Effect = 5,
     }
 }

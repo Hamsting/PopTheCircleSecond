@@ -41,3 +41,12 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: Note
+    uniqueID: 3233219517
+    locked: 0
+  - name: FieldUI
+    uniqueID: 194652397
+    locked: 0
+  - name: UI
+    uniqueID: 873956531
+    locked: 0

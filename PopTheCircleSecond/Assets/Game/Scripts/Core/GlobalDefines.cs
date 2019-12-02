@@ -10,9 +10,9 @@ namespace PopTheCircle.Game
     public static class GlobalDefines
     {
         // 박자노트의 비트 계산 관련 상수
-        public const int BeatPerBar = 96;
-        public const float DefaultBarCount = 32.0f;
-        public const float RailLength = 10.0f;
+        public const int BeatPerBar = 192;
+        public const float DefaultBarCount = 48.0f;
+        public const float RailLength = 30.0f;
         public const int TickBeatRate = BeatPerBar / 4;
         public const float TargetBPMForHalfTickBeatRate = 240.0f;
 

@@ -10,14 +10,9 @@ namespace PopTheCircle.Game
     /// </summary>
     public class NoteManager : Singleton<NoteManager>
     {
-        public GameObject normalNotePrefab;
-        public GameObject longNotePrefab;
-        public GameObject dragNotePrefab;
-        public GameObject infinityNotePrefab;
-        public GameObject doubleNotePrefab;
+        public GameObject[] notePrefabs;
+        public Transform[] rails;
 
-        public Transform leftRail;
-        public Transform rightRail;
         [InspectorReadOnly]
         public List<Note> spawnedNotes;
         [InspectorReadOnly]
@@ -113,40 +108,16 @@ namespace PopTheCircle.Game
         {
             GameObject obj = null;
 
-            Type noteType = _note.GetType();
-            if (noteType == typeof(NormalNote))
-            {
-                obj = ObjectPoolManager.Instance.Get(normalNotePrefab.name);
-            }
-            else if (noteType == typeof(LongNote))
-            {
-                obj = ObjectPoolManager.Instance.Get(longNotePrefab.name);
-            }
-            else if (noteType == typeof(DragNote))
-            {
-                obj = ObjectPoolManager.Instance.Get(dragNotePrefab.name);
-            }
-            else if (noteType == typeof(InfinityNote))
-            {
-                obj = ObjectPoolManager.Instance.Get(infinityNotePrefab.name);
-            }
-            else if (noteType == typeof(DoubleNote))
-            {
-                obj = ObjectPoolManager.Instance.Get(doubleNotePrefab.name);
-            }
+            NoteType noteType = _note.noteType;
+            obj = ObjectPoolManager.Instance.Get(notePrefabs[(int)noteType].name);
             
             NoteRenderer noteRen = obj.GetComponent<NoteRenderer>();
             noteRen.note = _note;
             noteRen.InitializeNote();
+            noteRen.SetNoteScale(noteScale);
 
             _note.noteObject = obj;
-            if (noteType == typeof(InfinityNote))
-                obj.transform.parent = rightRail.parent;
-            else
-            {
-                obj.transform.parent = (_note.railNumber == 0) ? leftRail : rightRail;
-                obj.transform.localScale = new Vector3(noteScale, noteScale, noteScale);
-            }
+            obj.transform.parent = rails[_note.railNumber];
             obj.SetActive(true);
             spawnedNotes.Add(_note);
         }

@@ -47,14 +47,14 @@ namespace PopTheCircle.Game
         protected virtual void UpdatePosition()
         {
             double positionDiff = note.position - BeatManager.Instance.Position;
-            notePos.x = (float)positionDiff * BeatManager.Instance.GameSpeed;
+            notePos.x = 0.0f;
+            notePos.y = (float)positionDiff * BeatManager.Instance.GameSpeed;
             notePos.z = (float)(positionDiff / GlobalDefines.RailLength) * 0.01f;
 
             float timeDiff = note.time - BeatManager.Instance.GameTime;
-            if (timeDiff <= 0.0f)
-                notePos.x = 0.0f;
 
             this.transform.localPosition = notePos;
+            this.transform.localRotation = Quaternion.identity;
         }
 
         protected virtual IEnumerator OnNoteMissed()
@@ -74,6 +74,11 @@ namespace PopTheCircle.Game
             this.StopCoroutine("OnNoteMissed");
             
             ObjectPoolManager.Instance.Free(this.gameObject);
+        }
+
+        public virtual void SetNoteScale(float _scale)
+        {
+            this.transform.localScale = new Vector3(1.0f, _scale, 1.0f);
         }
     }
 }

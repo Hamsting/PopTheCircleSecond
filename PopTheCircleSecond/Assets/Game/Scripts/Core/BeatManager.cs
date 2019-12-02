@@ -537,7 +537,7 @@ namespace PopTheCircle.Game
         {
             gameTime = Mathf.Clamp(_time, 0.0f, MusicManager.Instance.MusicLength);
 
-            bpmInfoLastIndex = -1;
+            bpmInfoLastIndex = 0;
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 if (bpmInfos[i].time <= _time)
