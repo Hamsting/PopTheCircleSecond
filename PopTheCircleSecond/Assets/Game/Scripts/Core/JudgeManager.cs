@@ -11,27 +11,18 @@ namespace PopTheCircle.Game
     /// </summary>
     public class JudgeManager : Singleton<JudgeManager>
     {
-        public UIJudgeImage uiJudgeImage;
-
         public UnityEvent judgeEvent;
 
         [SerializeField, InspectorReadOnly]
         private int tickLastBar = 0;
         [SerializeField, InspectorReadOnly]
         private float tickLastBeat = 0;
-        private int[] touchCountAtLines;
 
 
 
         protected override void Awake()
         {
             base.Awake();
-
-            touchCountAtLines = new int[2];
-            for (int i = 0; i < touchCountAtLines.Length; ++i)
-            {
-                touchCountAtLines[i] = 0;
-            }
         }
 
         public void UpdateJudgeForNotes()
@@ -57,35 +48,12 @@ namespace PopTheCircle.Game
                         if (longNote.pressed)
                         {
                             NoteManager.Instance.DespawnNote(note, false);
-                            UpdateComboAndJudgeImage(note.railNumber, 1);
+                            UpdateJudgeAndCombo(note.railNumber, 1);
                         }
                         else
                         {
                             NoteManager.Instance.DespawnNote(note, true);
-                            UpdateComboAndJudgeImage(note.railNumber, 0);
-                        }
-                        --i;
-                    }
-                }
-                else if (note.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote infinityNote = (InfinityNote)note;
-                    if (!infinityNote.canPress && BeatManager.Instance.GameTime >= infinityNote.time)
-                        infinityNote.canPress = true;
-
-                    if (BeatManager.Instance.GameTime >= infinityNote.endTime)
-                    {
-                        if (infinityNote.currentHitCount >= infinityNote.maxHitCount)
-                        {
-                            NoteManager.Instance.DespawnNote(note, false);
-                            UpdateComboAndJudgeImage(0, 1);
-                            UpdateJudgeImage(1, 1);
-                        }
-                        else
-                        {
-                            NoteManager.Instance.DespawnNote(note, true);
-                            UpdateComboAndJudgeImage(0, 0);
-                            UpdateJudgeImage(1, 0);
+                            UpdateJudgeAndCombo(note.railNumber, 0);
                         }
                         --i;
                     }
@@ -93,20 +61,12 @@ namespace PopTheCircle.Game
                 else if (BeatManager.Instance.GameTime >= note.time + GlobalDefines.JudgePerfectTime)
                 {
                     NoteManager.Instance.DespawnNote(note, true);
-                    UpdateComboAndJudgeImage(note.railNumber, 0);
+                    UpdateJudgeAndCombo(note.railNumber, 0);
                     --i;
                 }
             }
         }
-
-        private void LateUpdate()
-        {
-            for (int j = 0; j < touchCountAtLines.Length; ++j)
-            {
-                touchCountAtLines[j] = 0;
-            }
-        }
-
+        
         private void UpdateTickBeat()
         {
             if (BeatManager.Instance.Bar >= tickLastBar && BeatManager.Instance.Beat >= tickLastBeat)
@@ -120,7 +80,7 @@ namespace PopTheCircle.Game
                         if (curBarBeat >= longNote.tickStartBarBeat &&
                             curBarBeat <= longNote.tickEndBarBeat)
                         {
-                            UpdateComboAndJudgeImage(longNote.railNumber, (longNote.pressed) ? 1 : 0);
+                            UpdateJudgeAndCombo(longNote.railNumber, (longNote.pressed) ? 1 : 0);
                         }
                     }
                 }
@@ -149,31 +109,10 @@ namespace PopTheCircle.Game
 
         public void JudgeNoteAtLine(int _railNumber, int _inputState)
         {
-            if (_inputState == InputManager.InputPress || _inputState == InputManager.InputStay)
-            {
-                ++touchCountAtLines[_railNumber];
-            }
-
             Note target = null;
             float targetTimeDiff = 999.0f;
             foreach (Note note in NoteManager.Instance.spawnedNotes)
             {
-                if (note.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote targetInfinity = (InfinityNote)note;
-                    if (_inputState != InputManager.InputPress ||
-                        !targetInfinity.canPress)
-                        continue;
-
-                    ++targetInfinity.currentHitCount;
-                    if (targetInfinity.currentHitCount <= targetInfinity.maxHitCount)
-                        UpdateComboAndJudgeImage(_railNumber, 1);
-                    else
-                        UpdateJudgeImage(_railNumber, 1);
-
-                    continue;
-                }
-
                 if (note.railNumber != _railNumber)
                     continue;
 
@@ -209,27 +148,6 @@ namespace PopTheCircle.Game
                     longNote.lastPressedBarBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
                 }
             }
-            else if (_inputState == InputManager.InputDrag)
-            {
-                if (target != null && target.GetType() == typeof(DragNote))
-                {
-                    if (targetTimeDiff <= GlobalDefines.JudgePerfectTime)
-                    {
-                        NoteManager.Instance.DespawnNote(target, false);
-                        UpdateComboAndJudgeImage(_railNumber, 1);
-                    }
-                    else if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
-                    {
-                        NoteManager.Instance.DespawnNote(target, false);
-                        UpdateComboAndJudgeImage(_railNumber, 2);
-                    }
-                    else
-                    {
-                        NoteManager.Instance.DespawnNote(target, true);
-                        UpdateComboAndJudgeImage(_railNumber, 0);
-                    }
-                }
-            }
             else if (_inputState == InputManager.InputPress)
             {
                 if (target != null && target.GetType() != typeof(DragNote))
@@ -247,34 +165,27 @@ namespace PopTheCircle.Game
                     }
                     else
                     {
-                        if (target.GetType() == typeof(DoubleNote) && touchCountAtLines[_railNumber] < 2)
+                        if (targetTimeDiff <= GlobalDefines.JudgePerfectTime)
                         {
-
+                            NoteManager.Instance.DespawnNote(target, false);
+                            UpdateJudgeAndCombo(_railNumber, 1);
+                        }
+                        else if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
+                        {
+                            NoteManager.Instance.DespawnNote(target, false);
+                            UpdateJudgeAndCombo(_railNumber, 2);
                         }
                         else
                         {
-                            if (targetTimeDiff <= GlobalDefines.JudgePerfectTime)
-                            {
-                                NoteManager.Instance.DespawnNote(target, false);
-                                UpdateComboAndJudgeImage(_railNumber, 1);
-                            }
-                            else if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
-                            {
-                                NoteManager.Instance.DespawnNote(target, false);
-                                UpdateComboAndJudgeImage(_railNumber, 2);
-                            }
-                            else
-                            {
-                                NoteManager.Instance.DespawnNote(target, true);
-                                UpdateComboAndJudgeImage(_railNumber, 0);
-                            }
+                            NoteManager.Instance.DespawnNote(target, true);
+                            UpdateJudgeAndCombo(_railNumber, 0);
                         }
                     }
                 }
             }
         }
 
-        public void UpdateComboAndJudgeImage(int _railNumber, int _judge)
+        public void UpdateJudgeAndCombo(int _railNumber, int _judge)
         {
             if (_judge == 0)
             {
@@ -286,21 +197,12 @@ namespace PopTheCircle.Game
             else
             {
                 ++GameManager.Instance.currentCombo;
-                if (GameManager.Instance.currentCombo >= 100)
-                    ++GameManager.Instance.crazyCombo;
-                else if (GameManager.Instance.currentCombo >= 50)
-                    ++GameManager.Instance.amazingCombo;
 
                 if (judgeEvent != null)
                     judgeEvent.Invoke();
             }
 
-            uiJudgeImage.AppearJudgeImage(_railNumber, _judge);
-        }
-
-        public void UpdateJudgeImage(int _railNumber, int _judge)
-        {
-            uiJudgeImage.AppearJudgeImage(_railNumber, _judge);
+            GameUI.Instance.uIJudgeImageAndCombo.Appear(_railNumber, _judge);
         }
     }
 }

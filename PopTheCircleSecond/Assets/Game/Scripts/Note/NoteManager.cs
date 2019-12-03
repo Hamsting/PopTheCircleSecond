@@ -55,16 +55,7 @@ namespace PopTheCircle.Game
             for (int i = 0; i < remainNotes.Count; ++i)
             {
                 Note note = remainNotes[i];
-                if (note.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote infinityNote = (InfinityNote)note;
-                    if (infinityNote.time <= BeatManager.Instance.GameTime + InfinityNoteRenderer.BeginAnimDuration)
-                    {
-                        SpawnNote(note);
-                        remainNotes.RemoveAt(i--);
-                    }
-                }
-                else if (BeatManager.ToBarBeat(note.bar, note.beat) <= BeatManager.Instance.RailEndBarBeat)
+                if (BeatManager.ToBarBeat(note.bar, note.beat) <= BeatManager.Instance.RailEndBarBeat)
                 {
                     SpawnNote(note);
                     remainNotes.RemoveAt(i--);
@@ -88,13 +79,6 @@ namespace PopTheCircle.Game
                 float tickBarBeat = (float)GlobalDefines.TickBeatRate / (float)GlobalDefines.BeatPerBar;
                 longNote.tickStartBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteBarBeat + tickBarBeat);
                 longNote.tickEndBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteEndBarBeat - tickBarBeat);
-            }
-            else if (noteType == typeof(InfinityNote))
-            {
-                InfinityNote infinityNote = (InfinityNote)_note;
-                infinityNote.endTime = BeatManager.Instance.BarBeatToTime(infinityNote.endBar, infinityNote.endBeat);
-                infinityNote.canPress = false;
-                infinityNote.currentHitCount = 0;
             }
 
             _note.time = BeatManager.Instance.BarBeatToTime(_note.bar, _note.beat);
@@ -131,10 +115,7 @@ namespace PopTheCircle.Game
                 NoteRenderer noteRen = _note.noteObject.GetComponent<NoteRenderer>();
                 if (noteRen != null)
                 {
-                    if (_note.GetType() == typeof(InfinityNote))
-                        ((InfinityNoteRenderer)noteRen).SetNoteClear();
-                    else
-                        noteRen.DestroyNote();
+                    noteRen.DestroyNote();
                 }
             }
 

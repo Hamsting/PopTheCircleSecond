@@ -23,7 +23,7 @@ namespace PopTheCircle.Game
         /// </summary>
         public float beat = 0.0f;
         /// <summary>
-        /// 노트가 출현할 라인 번호이다. 왼쪽 : 0, 오른쪽 : 1
+        /// 노트가 출현할 라인 번호이다.
         /// </summary>
         public int railNumber = 0;
 

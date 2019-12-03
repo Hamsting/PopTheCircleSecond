@@ -15,10 +15,6 @@ namespace PopTheCircle.Game
         [InspectorReadOnly]
         public int currentCombo = 0;
         [InspectorReadOnly]
-        public int amazingCombo = 0;
-        [InspectorReadOnly]
-        public int crazyCombo = 0;
-        [InspectorReadOnly]
         public int maxCombo = 0;
         [InspectorReadOnly]
         public int score = 0;

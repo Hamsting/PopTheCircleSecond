@@ -37,29 +37,10 @@ public class TESTAUTOPLAY : MonoBehaviour
         {
             Note n = notes[i];
             float timeDiff = n.time - bm.GameTime;
-            if (timeDiff > 0.0f)
+            if (timeDiff > 0.017f)
                 continue;
 
-            if (n.GetType() == typeof(InfinityNote))
-            {
-                InfinityNote fn = (InfinityNote)n;
-                float barBeat = BeatManager.ToBarBeat(fn.bar, fn.beat);
-                float durationBarBeat = BeatManager.ToBarBeat(fn.endBar, fn.endBeat) - barBeat;
-                float oneHitTerm = 0.25f;
-                if ((fn.endTime - fn.time) / (float)fn.maxHitCount < 0.125f)
-                    oneHitTerm = durationBarBeat / (float)fn.maxHitCount;
-                float nextHitBarBeat = bm.CorrectBarBeat(barBeat + oneHitTerm * fn.currentHitCount);
-
-                if (nextHitBarBeat <= BeatManager.ToBarBeat(bm.Bar, bm.Beat))
-                {
-                    ++fn.currentHitCount;
-                    if (fn.currentHitCount <= fn.maxHitCount)
-                        jm.UpdateComboAndJudgeImage(fn.currentHitCount % 2, 1);
-                    else
-                        jm.UpdateJudgeImage(fn.currentHitCount % 2, 1);
-                }
-            }
-            else if (n.GetType() == typeof(LongNote))
+            if (n.GetType() == typeof(LongNote))
             {
                 LongNote ln = (LongNote)n;
                 ln.firstPressed = true;
@@ -68,7 +49,7 @@ public class TESTAUTOPLAY : MonoBehaviour
             }
             else
             {
-                jm.UpdateComboAndJudgeImage(n.railNumber, 1);
+                jm.UpdateJudgeAndCombo(n.railNumber, 1);
                 nm.DespawnNote(n, false);
                 --i;
             }

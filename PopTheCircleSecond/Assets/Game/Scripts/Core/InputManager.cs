@@ -11,8 +11,7 @@ namespace PopTheCircle.Game
     {
         public const int InputPress     = 1;
         public const int InputStay      = 2;
-        public const int InputDrag      = 3;
-        public const int InputRelease   = 4;
+        public const int InputRelease   = 3;
 
         [InspectorReadOnly]
         public List<TouchInfo> infos;
@@ -30,6 +29,7 @@ namespace PopTheCircle.Game
             // 터치 기기의 경우. (Android, iOS 등)
             if (Input.touchSupported)
             {
+                /*
                 while (infos.Count != Input.touchCount)
                 {
                     if (infos.Count > Input.touchCount)
@@ -58,52 +58,19 @@ namespace PopTheCircle.Game
 
                     info.UpdateTouchDelta();
                 }
+                */
             }
             // 그 외의 경우. (에디터, 윈도우 등)
             else
             {
-                if (Input.GetMouseButton(0))
-                {
-                    TouchInfo info = null;
-                    if (Input.GetMouseButtonDown(0))
-                    {
-                        info = new TouchInfo();
-                        infos.Add(info);
-                        info.state = InputPress;
-                        info.startPosition = Input.mousePosition;
-                        info.dragPosition = Input.mousePosition;
-                    }
-                    else
-                    {
-                        info = infos[0];
-                        info.state = InputStay;
-                    }
-
-                    info.lastPosition = info.position;
-                    info.position = Input.mousePosition;
-                    info.UpdateTouchDelta();
-                }
-                else if (Input.GetMouseButtonUp(0))
-                {
-                    TouchInfo info = infos[0];
-                    info.lastPosition = info.position;
-                    info.position = Input.mousePosition;
-                    info.state = InputRelease;
-                    info.UpdateTouchDelta();
-                }
-                else if (infos.Count > 0)
-                    infos.RemoveAt(0);
-            }
-
-
-            foreach (TouchInfo ti in infos)
-            {
-                int railNumber = ti.GetRailNumber();
-
-                if (ti.CheckDrag() != -1)
-                    JudgeManager.Instance.JudgeNoteAtLine(railNumber, InputDrag);
-                else
-                    JudgeManager.Instance.JudgeNoteAtLine(railNumber, ti.state);
+                if (Input.GetKeyDown(KeyCode.S))
+                    JudgeManager.Instance.JudgeNoteAtLine(0, InputPress);
+                if (Input.GetKeyDown(KeyCode.F))
+                    JudgeManager.Instance.JudgeNoteAtLine(1, InputPress);
+                if (Input.GetKeyDown(KeyCode.J))
+                    JudgeManager.Instance.JudgeNoteAtLine(2, InputPress);
+                if (Input.GetKeyDown(KeyCode.L))
+                    JudgeManager.Instance.JudgeNoteAtLine(3, InputPress);
             }
         }
     }

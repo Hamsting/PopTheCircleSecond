@@ -1,5 +1,6 @@
 ﻿// #define LongNoteTest
-#define NormalNoteTest
+// #define NormalNoteTest
+#define NormalNotePatternedTest
 // #define DragNoteTest
 // #define InfinityNoteTest
 // #define DoubleNoteTest
@@ -17,10 +18,16 @@ public class TESTSCRIPT : MonoBehaviour
     private void Start()
     {
         BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 160.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(8, 0.0f, 80.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(12, 0.0f, 160.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(20, 0.0f, 40.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(22, 0.0f, 160.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(30, 0.0f, 160.0f, true);
+        BeatManager.Instance.AddNewBPMInfo(32, 0.0f, 160.0f, false);
 
-        // BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 60.0f, false);
-        // BeatManager.Instance.AddNewBPMInfo(2, 0.0f, 120.0f, false);
-        // BeatManager.Instance.AddNewBPMInfo(6, 0.0f, 240.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 60.0f, true);
+        // BeatManager.Instance.AddNewBPMInfo(2, 0.0f, 120.0f, true);
+        // BeatManager.Instance.AddNewBPMInfo(6, 0.0f, 240.0f, true);
         // BeatManager.Instance.AddNewBPMInfo(14, 0.0f, 60.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(16, 0.0f, -120.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(17, 0.0f, 120.0f, false);
@@ -43,6 +50,60 @@ public class TESTSCRIPT : MonoBehaviour
                 beat = beat,
                 railNumber = i % 2
             });
+        }
+#endif
+
+#if (NormalNotePatternedTest)
+        float beat4  = 0.05f;
+        float beat8  = 0.30f;
+        float beat16 = 0.85f;
+        float beat24 = 0.93f;
+        float beat32 = 1.00f;
+        int lastRail = -1;
+        int bar = 0;
+        float beat = 0.0f;
+
+        for (int i = 0; i < 960; ++i)
+        {
+            int railRand = Random.Range(0, 4);
+            if (railRand == lastRail)
+                railRand = (railRand + 1) % 4;
+            lastRail = railRand;
+            
+            if (!BeatManager.Instance.IsPossibleBarBeat(bar, beat))
+            {
+                float barBeat = BeatManager.ToBarBeat(bar, beat);
+                barBeat = BeatManager.Instance.CorrectBarBeat(barBeat);
+                bar = (int)barBeat;
+                beat = (barBeat - (float)bar) * (float)GlobalDefines.BeatPerBar;
+            }
+
+            NoteManager.Instance.AddNote(new NormalNote()
+            {
+                bar = bar,
+                beat = beat,
+                railNumber = railRand
+            });
+            
+            float beatrate = 4.0f;
+            float rand = Random.Range(0.0f, 100.0f) * 0.01f;
+            if (rand <= beat4)
+                beatrate = 1.0f;
+            else if (rand <= beat8)
+                beatrate = 2.0f;
+            else if (rand <= beat16)
+                beatrate = 4.0f;
+            else if (rand <= beat24)
+                beatrate = 6.0f;
+            else
+                beatrate = 8.0f;
+            
+            beat += (float)GlobalDefines.BeatPerBar / beatrate;
+            if (beat >= (float)GlobalDefines.BeatPerBar)
+            {
+                beat -= (float)GlobalDefines.BeatPerBar;
+                bar += 1;
+            }
         }
 #endif
 
