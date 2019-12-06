@@ -56,7 +56,7 @@ namespace PopTheCircle.Game
             {
                 NoteRenderer noteRen = noteObject.GetComponent<NoteRenderer>();
                 if (noteRen != null)
-                    noteRen.StartCoroutine("OnNoteMissed");
+                    noteRen.DestroyNote();
             }
         }
     }

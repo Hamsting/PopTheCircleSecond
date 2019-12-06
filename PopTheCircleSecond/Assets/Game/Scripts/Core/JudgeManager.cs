@@ -69,9 +69,9 @@ namespace PopTheCircle.Game
         
         private void UpdateTickBeat()
         {
-            if (BeatManager.Instance.Bar >= tickLastBar && BeatManager.Instance.Beat >= tickLastBeat)
+            float curBarBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
+            if (curBarBeat >= BeatManager.ToBarBeat(tickLastBar, tickLastBeat))
             {
-                float curBarBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
                 foreach (Note note in NoteManager.Instance.spawnedNotes)
                 {
                     if (note.GetType() == typeof(LongNote))
@@ -115,8 +115,15 @@ namespace PopTheCircle.Game
             {
                 if (note.railNumber != _railNumber)
                     continue;
-
+                
                 float timeDiff = note.time - BeatManager.Instance.GameTime;
+
+                if (note.GetType() == typeof(LongNote) && timeDiff <= -GlobalDefines.JudgePerfectTime && _inputState == InputManager.InputPress)
+                {
+                    LongNote longNote = (LongNote)note;
+                    longNote.firstPressed = true;
+                }
+
                 if (timeDiff < -GlobalDefines.JudgePerfectTime || timeDiff > GlobalDefines.JudgeEarlyFailTime)
                     continue;
 
@@ -150,11 +157,10 @@ namespace PopTheCircle.Game
             }
             else if (_inputState == InputManager.InputPress)
             {
-                if (target != null && target.GetType() != typeof(DragNote))
+                if (target != null)
                 {
                     if (target.GetType() == typeof(LongNote))
                     {
-                        Debug.Log(targetTimeDiff);
                         if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
                         {
                             LongNote targetLong = (LongNote)target;
@@ -197,6 +203,7 @@ namespace PopTheCircle.Game
             else
             {
                 ++GameManager.Instance.currentCombo;
+                MusicManager.Instance.PlayShot(_judge);
 
                 if (judgeEvent != null)
                     judgeEvent.Invoke();

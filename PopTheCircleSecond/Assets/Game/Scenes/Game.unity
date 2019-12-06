@@ -1656,7 +1656,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 802004124ae930641beb91d434c6afbe, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameSpeed: 7.5
+  gameSpeed: 1
   noteScale: 1
 --- !u!114 &1727558961
 MonoBehaviour:
@@ -1670,7 +1670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 728cf999446b5624f97eaf128ee2fc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutoPlayEnabled: 0
+  isAutoPlayEnabled: 1
 --- !u!1 &1810484766
 GameObject:
   m_ObjectHideFlags: 0
@@ -1837,7 +1837,7 @@ MonoBehaviour:
   bpm: 60
   standardBPM: 60
   beatPerSecond: 192
-  gameSpeed: 2
+  gameSpeed: 1
   bpmInfos: []
   bpmInfoLastIndex: -1
   barToRailLength: 0.625
@@ -1949,7 +1949,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: a69143c9c065b7b4f81fddd7e8233d42, type: 3}
   m_PlayOnAwake: 0
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -2045,7 +2045,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b76bba13006fc6d4cb126111c5b0fb08, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  shotClip: {fileID: 0}
+  shotClips:
+  - {fileID: 8300000, guid: 827219f9381cff94284bdaec30ec77c0, type: 3}
+  - {fileID: 8300000, guid: 43f9632a069bfa641b0f98a9c6ffdb20, type: 3}
   isMusicLoaded: 0
 --- !u!1 &1833959125
 GameObject:

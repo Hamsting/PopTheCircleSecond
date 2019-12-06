@@ -5,7 +5,7 @@ using UnityEngine;
 namespace PopTheCircle.Game
 {
     [System.Serializable]
-    public class DoubleNote : Note
+    public class PopNote : Note
     {
 
     }

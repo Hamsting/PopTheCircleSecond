@@ -56,13 +56,7 @@ namespace PopTheCircle.Game
             this.transform.localPosition = notePos;
             this.transform.localRotation = Quaternion.identity;
         }
-
-        protected virtual IEnumerator OnNoteMissed()
-        {
-            DestroyNote();
-            yield break;
-        }
-
+        
         public virtual void DestroyNote()
         {
             if (note != null)
@@ -70,8 +64,6 @@ namespace PopTheCircle.Game
                 NoteManager.Instance.spawnedNotes.Remove(note);
                 note = null;
             }
-
-            this.StopCoroutine("OnNoteMissed");
             
             ObjectPoolManager.Instance.Free(this.gameObject);
         }

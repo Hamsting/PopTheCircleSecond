@@ -13,7 +13,7 @@ namespace PopTheCircle.Game
         private bool isPlaying = false;
         private bool playedShotThisFrame = false;
 
-        public AudioClip shotClip;
+        public AudioClip[] shotClips;
         [InspectorReadOnly]
         public bool isMusicLoaded = false;
 
@@ -102,7 +102,6 @@ namespace PopTheCircle.Game
             AudioSource[] audioSources = this.GetComponents<AudioSource>();
             musicAudioSource = audioSources[0];
             shotAudioSource = audioSources[1];
-            shotAudioSource.clip = shotClip;
 
             musicPosition = 0.0f;
             isPlaying = false;
@@ -174,12 +173,17 @@ namespace PopTheCircle.Game
             }
         }
 
-        public void PlayShot()
+        public void PlayShot(int _judge)
         {
             if (playedShotThisFrame)
                 return;
 
             shotAudioSource.Stop();
+            if (_judge == 1)
+                shotAudioSource.clip = shotClips[0];
+            else if (_judge == 2)
+                shotAudioSource.clip = shotClips[1];
+
             shotAudioSource.time = 0.0f;
             shotAudioSource.Play();
             playedShotThisFrame = true;

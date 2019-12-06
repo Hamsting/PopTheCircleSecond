@@ -32,8 +32,7 @@ namespace PopTheCircle.Game
                 noteScale = value;
                 foreach (NoteRenderer nr in GameObject.FindObjectsOfType<NoteRenderer>())
                 {
-                    if (nr.GetType() != typeof(InfinityNoteRenderer))
-                        nr.transform.localScale = new Vector3(noteScale, noteScale, noteScale);
+                    nr.SetNoteScale(noteScale);
                 }
             }
         }

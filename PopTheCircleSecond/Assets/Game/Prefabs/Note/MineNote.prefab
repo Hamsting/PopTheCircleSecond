@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8751707169289625168}
   - component: {fileID: 8751707169289625169}
-  - component: {fileID: 114459201034670694}
+  - component: {fileID: 6281382868267146415}
   m_Layer: 0
   m_Name: MineNote
   m_TagString: Untagged
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &114459201034670694
+--- !u!114 &6281382868267146415
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 8751707169289625171}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0dc0f517e3ce6d4a825d25c646f1b3e, type: 3}
+  m_Script: {fileID: 11500000, guid: 104beff167750034f99d794aa230441d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   note:

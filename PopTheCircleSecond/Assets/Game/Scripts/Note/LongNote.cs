@@ -11,7 +11,7 @@ namespace PopTheCircle.Game
         /// <summary>
         /// 노트의 너비 고정 수치
         /// </summary>
-        public const float bodyWidth = 0.5f;
+        public const float bodyWidth = 1.0f;
 
         /// <summary>
         /// 노트가 사라지는 박자 번호이다.
@@ -22,6 +22,11 @@ namespace PopTheCircle.Game
         /// 노트가 사라지는 박자의 세부 번호이다.
         /// </summary>
         public float endBeat = 0.0f;
+
+        /// <summary>
+        /// 롱노트가 이어진 라인 번호이다.
+        /// </summary>
+        public int connectedRail = 0;
 
         /// <summary>
         /// 노트가 사라지는 시간 값이다. 해당 값은 인게임에서 대입한다.

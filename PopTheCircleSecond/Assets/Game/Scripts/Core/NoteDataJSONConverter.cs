@@ -65,33 +65,12 @@ namespace PopTheCircle.Game
                 case "NormalNote":
                     n = new NormalNote();
                     break;
-                case "DoubleNote":
-                    n = new DoubleNote();
-                    break;
-                case "DragNote":
-                    {
-                        n = new DragNote()
-                        {
-                            direction = GetIntData(_json, "direction")
-                        };
-                    }
-                    break;
                 case "LongNote":
                     {
                         n = new LongNote()
                         {
                             endBar = GetIntData(_json, "endBar"),
                             endBeat = GetFloatData(_json, "endBeat")
-                        };
-                    }
-                    break;
-                case "InfinityNote":
-                    {
-                        n = new InfinityNote()
-                        {
-                            endBar = GetIntData(_json, "endBar"),
-                            endBeat = GetFloatData(_json, "endBeat"),
-                            maxHitCount = GetIntData(_json, "maxHitCount")
                         };
                     }
                     break;

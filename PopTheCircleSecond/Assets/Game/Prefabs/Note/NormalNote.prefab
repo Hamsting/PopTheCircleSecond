@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3653387249483801425}
   - component: {fileID: 3653387249483801426}
-  - component: {fileID: 114970734921300846}
+  - component: {fileID: 2159291566802200766}
   m_Layer: 0
   m_Name: NormalNote
   m_TagString: Untagged
@@ -80,7 +80,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!114 &114970734921300846
+--- !u!114 &2159291566802200766
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -89,7 +89,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 3653387249483801424}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b0dc0f517e3ce6d4a825d25c646f1b3e, type: 3}
+  m_Script: {fileID: 11500000, guid: 83afdf4f186cde546b1b365c025d0e01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   note:

@@ -1,6 +1,6 @@
-﻿// #define LongNoteTest
+﻿#define LongNoteTest
 // #define NormalNoteTest
-#define NormalNotePatternedTest
+// #define NormalNotePatternedTest
 // #define DragNoteTest
 // #define InfinityNoteTest
 // #define DoubleNoteTest
@@ -17,17 +17,17 @@ public class TESTSCRIPT : MonoBehaviour
 
     private void Start()
     {
-        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 160.0f, false);
-        BeatManager.Instance.AddNewBPMInfo(8, 0.0f, 80.0f, false);
-        BeatManager.Instance.AddNewBPMInfo(12, 0.0f, 160.0f, false);
-        BeatManager.Instance.AddNewBPMInfo(20, 0.0f, 40.0f, false);
-        BeatManager.Instance.AddNewBPMInfo(22, 0.0f, 160.0f, false);
-        BeatManager.Instance.AddNewBPMInfo(30, 0.0f, 160.0f, true);
-        BeatManager.Instance.AddNewBPMInfo(32, 0.0f, 160.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 239.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(8, 0.0f, 80.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(12, 0.0f, 160.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(20, 0.0f, 40.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(22, 0.0f, 160.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(30, 0.0f, 160.0f, true);
+        // BeatManager.Instance.AddNewBPMInfo(32, 0.0f, 160.0f, false);
 
-        // BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 60.0f, true);
-        // BeatManager.Instance.AddNewBPMInfo(2, 0.0f, 120.0f, true);
-        // BeatManager.Instance.AddNewBPMInfo(6, 0.0f, 240.0f, true);
+        // BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 60.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(2, 0.0f, 120.0f, false);
+        // BeatManager.Instance.AddNewBPMInfo(6, 0.0f, 240.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(14, 0.0f, 60.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(16, 0.0f, -120.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(17, 0.0f, 120.0f, false);
@@ -114,56 +114,86 @@ public class TESTSCRIPT : MonoBehaviour
             /*
             NoteManager.Instance.AddNote(new LongNote()
             {
+                noteType = NoteType.Long,
                 bar = (int)(i * 0.25f),
                 beat = GlobalDefines.BeatPerBar / 8 * (i % 4) * 2,
 
                 endBar = (int)(i * 0.25f + 0.0f),
                 endBeat = GlobalDefines.BeatPerBar / 8 * ((i % 4) * 2 + 1),
 
-                railNumber = (i / 4) % 2
+                railNumber = (i / 4) % 2,
+                connectedRail = (i / 4) % 2
             });
             */
 
             // 일반 롱노트
-            
+            /*
             NoteManager.Instance.AddNote(new LongNote()
             {
+                noteType = NoteType.Long,
                 bar = (int)(i * 2f),
                 beat = 0,
 
                 endBar = (int)(i * 2f + 1f),
                 endBeat = GlobalDefines.BeatPerBar / 4 * 3,
 
-                railNumber = i % 2
+                railNumber = i % 2,
+                connectedRail = i % 2
             });
-            
+            */
         }
 
         // 매우 긴 롱노트
-        /*
+
         NoteManager.Instance.AddNote(new LongNote()
         {
+            noteType = NoteType.Long,
             bar = 0,
             beat = 48,
 
             endBar = 120,
             endBeat = 48,
 
-            railNumber = 0
+            railNumber = 0,
+            connectedRail = 0
         });
-        */
-        /*
         NoteManager.Instance.AddNote(new LongNote()
         {
-            bar = 1,
+            noteType = NoteType.Long,
+            bar = 2,
             beat = 48,
 
-            endBar = 3,
+            endBar = 120,
             endBeat = 48,
 
-            railNumber = 1
+            railNumber = 1,
+            connectedRail = 1
         });
-        */
+        NoteManager.Instance.AddNote(new LongNote()
+        {
+            noteType = NoteType.Long,
+            bar = 4,
+            beat = 48,
+
+            endBar = 120,
+            endBeat = 48,
+
+            railNumber = 2,
+            connectedRail = 2
+        });
+        NoteManager.Instance.AddNote(new LongNote()
+        {
+            noteType = NoteType.Long,
+            bar = 6,
+            beat = 48,
+
+            endBar = 120,
+            endBeat = 48,
+
+            railNumber = 3,
+            connectedRail = 3
+        });
+
 #endif
 
 #if (InfinityNoteTest)

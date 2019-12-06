@@ -4,12 +4,9 @@ using UnityEngine;
 
 namespace PopTheCircle.Game
 {
-    /// <summary>
-    /// 일반 노트를 렌더링한다.
-    /// </summary>
-    public class NormalNoteRenderer : NoteRenderer
+    public class EffectNoteRenderer : NoteRenderer
     {
-        private NormalNote normalNote;
+        private EffectNote effectNote;
         private SpriteRenderer noteSpriteRenderer;
 
 
@@ -31,7 +28,7 @@ namespace PopTheCircle.Game
             if (note == null)
                 return;
 
-            normalNote = (NormalNote)note;
+            effectNote = (EffectNote)note;
         }
 
         protected override void Update()

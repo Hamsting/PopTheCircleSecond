@@ -11,8 +11,8 @@ namespace PopTheCircle.Game
         public Transform startTransform;
         [Header("몸")]
         public Transform bodyTransform;
-        [Header("마무리")]
-        public Transform endTransform;
+        [Header("커넥터")]
+        public Transform conTransform;
 
         /// <summary>
         /// 롱 노트의 시작 노트 스프라이트 렌더러
@@ -46,7 +46,7 @@ namespace PopTheCircle.Game
         {
             startSpriteRenderer = startTransform.GetComponent<SpriteRenderer>();
             bodySpriteRenderer = bodyTransform.GetComponent<SpriteRenderer>();
-            endSpriteRenderer = endTransform.GetComponent<SpriteRenderer>();
+            endSpriteRenderer = conTransform.GetComponent<SpriteRenderer>();
             base.Awake();
         }
 
@@ -61,6 +61,8 @@ namespace PopTheCircle.Game
             endPosition = BeatManager.Instance.BarBeatToPosition(longNote.endBar, longNote.endBeat);
             noteEndTime = BeatManager.Instance.BarBeatToTime(longNote.endBar, longNote.endBeat);
             
+            conTransform.gameObject.SetActive(longNote.railNumber != longNote.connectedRail);
+
             bodyScale = bodyTransform.localScale;
         }
 
@@ -72,16 +74,20 @@ namespace PopTheCircle.Game
         protected override void UpdatePosition()
         {
             base.UpdatePosition();
-
+            
+            float timeDiff = note.time - BeatManager.Instance.GameTime;
             double headToEndLength = longNote.endPosition - longNote.position;
-            if (note.time - BeatManager.Instance.GameTime <= 0.0f)
+            if (timeDiff <= 0.0f)
+            {
+                notePos.y = 0.0f;
+                this.transform.localPosition = notePos;
                 headToEndLength = longNote.endPosition - BeatManager.Instance.Position;
+            }
 
-            bodyScale.x = 
-                (float)headToEndLength 
-                / LongNote.bodyWidth 
-                * BeatManager.Instance.GameSpeed 
-                / NoteManager.Instance.NoteScale;
+            bodyScale.y =
+                (float)headToEndLength
+                / LongNote.bodyWidth
+                * BeatManager.Instance.GameSpeed;
             if (bodyScale.x < 0.0f)
                 bodyScale.x = 0.0f;
             bodyTransform.localScale = bodyScale;
@@ -89,42 +95,12 @@ namespace PopTheCircle.Game
             endNotePos.x = (float)headToEndLength * BeatManager.Instance.GameSpeed / NoteManager.Instance.NoteScale;
             if (endNotePos.x < 0.0f)
                 endNotePos.x = 0.0f;
-            endTransform.localPosition = endNotePos;
+            conTransform.localPosition = endNotePos;
         }
-        
-        protected override IEnumerator OnNoteMissed()
+
+        public override void SetNoteScale(float _scale)
         {
-            float timer = 0.0f;
-            float duration = 0.60f;
-            float moveLength = 1.35f;
-            Color missedColor = new Color();
-
-            while (timer <= duration)
-            {
-                timer += Time.deltaTime;
-                float per = timer / duration;
-                missedColor = new Color(1.0f, 1.0f, 1.0f, 0.6f - (0.6f * per));
-
-                if (startSpriteRenderer != null)
-                    startSpriteRenderer.color = missedColor;
-                if (bodySpriteRenderer != null)
-                    bodySpriteRenderer.color = missedColor;
-                if (endSpriteRenderer != null)
-                    endSpriteRenderer.color = missedColor;
-
-                notePos.x = -moveLength * per;
-                this.transform.localPosition = notePos;
-
-                yield return null;
-            }
-
-            if (startSpriteRenderer != null)
-                startSpriteRenderer.color = Color.white;
-            if (bodySpriteRenderer != null)
-                bodySpriteRenderer.color = Color.white;
-            if (endSpriteRenderer != null)
-                endSpriteRenderer.color = Color.white;
-            DestroyNote();
+            startTransform.localScale = new Vector3(1.0f, _scale, 1.0f);
         }
     }
 }
