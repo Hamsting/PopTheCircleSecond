@@ -8,8 +8,12 @@ namespace PopTheCircle.OldNoteDataConverter
     public class NoteDataJSONConverter : MonoBehaviour
     {
         public const int NoteDataFileVersion = 1;
+        private const float minimumBarBeatUnit = 1.0f / (192.0f / 32.0f);
 
         public NoteManager nm;
+
+        private float startTimeBarBeat = 0.0f;
+        private float oneBarTimeLength = 1.0f;
 
 
 
@@ -27,10 +31,14 @@ namespace PopTheCircle.OldNoteDataConverter
             headerJson.AddField("standardBPM", nm.BPM.ToString());
             noteDataJson.AddField("Header", headerJson);
 
+            oneBarTimeLength = 60.0f / (float)nm.BPM;
+            startTimeBarBeat = (float)nm.StartTime * 0.001f / oneBarTimeLength;
+            Debug.Log(startTimeBarBeat);
 
             JSONObject notesJson = new JSONObject();
-            foreach (NoteData n in nm.noteDatas)
+            for (int i = 0; i < nm.noteDatas.Count; ++i)
             {
+                NoteData n = nm.noteDatas[i];
                 notesJson.Add(GetNoteJSON(n));
             }
             noteDataJson.AddField("Notes", notesJson);
@@ -71,10 +79,23 @@ namespace PopTheCircle.OldNoteDataConverter
         private JSONObject GetNoteJSON(NoteData _n)
         {
             string noteTypeName = _n.NoteDataType.ToString();
+            
+            float originBarBeat = (_n.Time / oneBarTimeLength) - startTimeBarBeat;
+            // float restedBarBeatUnit = originBarBeat % minimumBarBeatUnit;
+            // float nearestBarBeat = (float)((int)(originBarBeat / minimumBarBeatUnit)) * minimumBarBeatUnit;
+            // if (restedBarBeatUnit >= minimumBarBeatUnit * 0.5f)
+            //     nearestBarBeat += minimumBarBeatUnit;
+            float nearestBarBeat = originBarBeat;
 
-            float oneBarTimeLength = 60.0f / (float)nm.BPM;
-            int bar = (int)(_n.Time / oneBarTimeLength);
-            float beat = ((_n.Time % oneBarTimeLength) / oneBarTimeLength) * 192.0f;
+            Debug.Log("[" + noteTypeName + "] " + _n.Time + " -> " + originBarBeat);
+
+            int bar = (int)nearestBarBeat;
+            int beat = Mathf.RoundToInt((nearestBarBeat - (float)bar) * 192.0f);
+            if (beat >= 192)
+            {
+                beat = 0;
+                bar += 1;
+            }
 
             JSONObject noteJson = new JSONObject();
             noteJson.AddField("noteType", noteTypeName);
@@ -90,11 +111,51 @@ namespace PopTheCircle.OldNoteDataConverter
                     break;
                 case "LongNote":
                     {
-                        int endBar = (int)(_n.LongEndTime / oneBarTimeLength);
-                        float endBeat = ((_n.LongEndTime % oneBarTimeLength) / oneBarTimeLength) * 192.0f;
+                        float originEndBarBeat = (_n.LongEndTime / oneBarTimeLength) - startTimeBarBeat;
+                        // float restedEndBarBeatUnit = originEndBarBeat % minimumBarBeatUnit;
+                        // float nearestEndBarBeat = (float)((int)(originEndBarBeat / minimumBarBeatUnit)) * minimumBarBeatUnit;
+                        // if (restedEndBarBeatUnit >= minimumBarBeatUnit * 0.5f)
+                        //     nearestEndBarBeat += minimumBarBeatUnit;
+                        float nearestEndBarBeat = originEndBarBeat;
+
+                        int endBar = (int)nearestEndBarBeat;
+                        int endBeat = Mathf.RoundToInt((nearestEndBarBeat - (float)endBar) * 192.0f);
+                        if (endBeat >= 192)
+                        {
+                            endBeat = 0;
+                            endBar += 1;
+                        }
 
                         noteJson.AddField("endBar", endBar);
                         noteJson.AddField("endBeat", endBeat);
+                    }
+                    break;
+                case "SpaceNote":
+                    {
+                        int endBar = 0;
+                        int endBeat = 0;
+
+                        if (_n.length != 0)
+                        {
+                            float originEndBarBeat = (_n.LongEndTime / oneBarTimeLength) - startTimeBarBeat;
+                            // float restedEndBarBeatUnit = originEndBarBeat % minimumBarBeatUnit;
+                            // float nearestEndBarBeat = (float)((int)(originEndBarBeat / minimumBarBeatUnit)) * minimumBarBeatUnit;
+                            // if (restedEndBarBeatUnit >= minimumBarBeatUnit * 0.5f)
+                            //     nearestEndBarBeat += minimumBarBeatUnit;
+                            float nearestEndBarBeat = originEndBarBeat;
+
+                            endBar = (int)nearestEndBarBeat;
+                            endBeat = Mathf.RoundToInt((nearestEndBarBeat - (float)endBar) * 192.0f);
+                            if (endBeat >= 192)
+                            {
+                                endBeat = 0;
+                                endBar += 1;
+                            }
+                        }
+
+                        noteJson.AddField("endBar", endBar);
+                        noteJson.AddField("endBeat", endBeat);
+                        noteJson.SetField("railNumber", 4);
                     }
                     break;
             }

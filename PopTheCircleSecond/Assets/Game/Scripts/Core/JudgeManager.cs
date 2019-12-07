@@ -33,7 +33,8 @@ namespace PopTheCircle.Game
             {
                 Note note = NoteManager.Instance.spawnedNotes[i];
 
-                if (note.GetType() == typeof(LongNote))
+                if (note.noteType == NoteType.Long || 
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
                 {
                     LongNote longNote = (LongNote)note;
                     float longReleaseBarBeat = BeatManager.Instance.CorrectBarBeat(
@@ -74,7 +75,8 @@ namespace PopTheCircle.Game
             {
                 foreach (Note note in NoteManager.Instance.spawnedNotes)
                 {
-                    if (note.GetType() == typeof(LongNote))
+                    if (note.noteType == NoteType.Long ||
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
                     {
                         LongNote longNote = (LongNote)note;
                         if (curBarBeat >= longNote.tickStartBarBeat &&
@@ -118,7 +120,9 @@ namespace PopTheCircle.Game
                 
                 float timeDiff = note.time - BeatManager.Instance.GameTime;
 
-                if (note.GetType() == typeof(LongNote) && timeDiff <= -GlobalDefines.JudgePerfectTime && _inputState == InputManager.InputPress)
+                if ((note.noteType == NoteType.Long ||
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType)) 
+                    && timeDiff <= -GlobalDefines.JudgePerfectTime && _inputState == InputManager.InputPress)
                 {
                     LongNote longNote = (LongNote)note;
                     longNote.firstPressed = true;
@@ -140,7 +144,8 @@ namespace PopTheCircle.Game
                 {
                     if (note.railNumber != _railNumber)
                         continue;
-                    if (note.GetType() != typeof(LongNote))
+                    if (!(note.noteType == NoteType.Long ||
+                        (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType)))
                         continue;
 
                     LongNote longNote = (LongNote)note;
@@ -159,7 +164,8 @@ namespace PopTheCircle.Game
             {
                 if (target != null)
                 {
-                    if (target.GetType() == typeof(LongNote))
+                    if (target.noteType == NoteType.Long ||
+                        (target.noteType == NoteType.Space && ((SpaceNote)target).IsLongType))
                     {
                         if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
                         {

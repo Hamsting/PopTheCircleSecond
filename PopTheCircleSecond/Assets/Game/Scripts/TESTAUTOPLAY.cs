@@ -40,7 +40,8 @@ public class TESTAUTOPLAY : MonoBehaviour
             if (timeDiff > 0.017f)
                 continue;
 
-            if (n.GetType() == typeof(LongNote))
+            if (n.noteType == NoteType.Long ||
+                (n.noteType == NoteType.Space && ((SpaceNote)n).IsLongType))
             {
                 LongNote ln = (LongNote)n;
                 ln.firstPressed = true;

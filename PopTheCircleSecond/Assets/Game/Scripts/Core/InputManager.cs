@@ -82,6 +82,11 @@ namespace PopTheCircle.Game
                     JudgeManager.Instance.JudgeNoteAtLine(3, InputPress);
                 else if (Input.GetKey(KeyCode.L))
                     JudgeManager.Instance.JudgeNoteAtLine(3, InputStay);
+                
+                if (Input.GetKeyDown(KeyCode.Space))
+                    JudgeManager.Instance.JudgeNoteAtLine(4, InputPress);
+                else if (Input.GetKey(KeyCode.Space))
+                    JudgeManager.Instance.JudgeNoteAtLine(4, InputStay);
 
             }
         }

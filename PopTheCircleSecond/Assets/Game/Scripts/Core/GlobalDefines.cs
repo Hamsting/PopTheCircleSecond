@@ -18,9 +18,9 @@ namespace PopTheCircle.Game
 
 
         // 판정 관련 상수
-        public const float JudgePerfectTime     = 0.116f;
-        public const float JudgeNiceTime        = 0.233f;
-        public const float JudgeEarlyFailTime   = 0.349f;
+        public const float JudgePerfectTime     = 0.049f;
+        public const float JudgeNiceTime        = 0.128f;
+        public const float JudgeEarlyFailTime   = 0.192f;
 
         public const int LongNoteReleaseTerm = BeatPerBar / 2;
 
@@ -34,5 +34,8 @@ namespace PopTheCircle.Game
         // public const float JudgeNiceTime     = 0.433f;
         // public const float JudgeEarlyFailTime= 0.583f;
         // public const float JudgeEarlyFailTime= 0.583f;
-    }   
+        // public const float JudgePerfectTime     = 0.116f;
+        // public const float JudgeNiceTime        = 0.233f;
+        // public const float JudgeEarlyFailTime   = 0.349f;
+    }
 }       

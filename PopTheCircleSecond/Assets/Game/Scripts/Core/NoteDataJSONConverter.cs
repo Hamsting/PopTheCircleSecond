@@ -14,7 +14,6 @@ namespace PopTheCircle.Game
                 return;
             }
 
-            JSONObject noteDataJson = new JSONObject();
             int noteDataVersion = GetIntData(_noteDataJson, "version");
             
             
@@ -45,7 +44,8 @@ namespace PopTheCircle.Game
             foreach (JSONObject noteJson in noteJsonList)
             {
                 Note n = GetNoteFromJSON(noteJson);
-                NoteManager.Instance.AddNote(n);
+                if (n != null)
+                    NoteManager.Instance.AddNote(n);
             }
 
 
@@ -61,18 +61,39 @@ namespace PopTheCircle.Game
             string noteTypeName = GetStringData(_json, "noteType");
             switch (noteTypeName)
             {
-                default:
                 case "NormalNote":
-                    n = new NormalNote();
+                    n = new NormalNote()
+                    {
+                        noteType = NoteType.Normal,
+                    };
+                    break;
+                case "PopNote":
+                    n = new PopNote()
+                    {
+                        noteType = NoteType.Pop,
+                    };
                     break;
                 case "LongNote":
                     {
                         n = new LongNote()
                         {
+                            noteType = NoteType.Long,
                             endBar = GetIntData(_json, "endBar"),
                             endBeat = GetFloatData(_json, "endBeat")
                         };
                     }
+                    break;
+                case "SpaceNote":
+                    {
+                        n = new SpaceNote()
+                        {
+                            noteType = NoteType.Space,
+                            endBar = GetIntData(_json, "endBar"),
+                            endBeat = GetFloatData(_json, "endBeat")
+                        };
+                    }
+                    break;
+                default:
                     break;
             }
             if (n == null)

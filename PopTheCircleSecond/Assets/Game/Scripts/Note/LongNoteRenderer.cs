@@ -61,7 +61,8 @@ namespace PopTheCircle.Game
             endPosition = BeatManager.Instance.BarBeatToPosition(longNote.endBar, longNote.endBeat);
             noteEndTime = BeatManager.Instance.BarBeatToTime(longNote.endBar, longNote.endBeat);
             
-            conTransform.gameObject.SetActive(longNote.railNumber != longNote.connectedRail);
+            // conTransform.gameObject.SetActive(longNote.railNumber != longNote.connectedRail);
+            conTransform.gameObject.SetActive(false);
 
             bodyScale = bodyTransform.localScale;
         }
@@ -86,16 +87,16 @@ namespace PopTheCircle.Game
 
             bodyScale.y =
                 (float)headToEndLength
-                / LongNote.bodyWidth
+                / LongNote.bodyHeight
                 * BeatManager.Instance.GameSpeed;
             if (bodyScale.x < 0.0f)
                 bodyScale.x = 0.0f;
             bodyTransform.localScale = bodyScale;
             
-            endNotePos.x = (float)headToEndLength * BeatManager.Instance.GameSpeed / NoteManager.Instance.NoteScale;
-            if (endNotePos.x < 0.0f)
-                endNotePos.x = 0.0f;
-            conTransform.localPosition = endNotePos;
+            // endNotePos.x = (float)headToEndLength * BeatManager.Instance.GameSpeed / NoteManager.Instance.NoteScale;
+            // if (endNotePos.x < 0.0f)
+            //     endNotePos.x = 0.0f;
+            // conTransform.localPosition = endNotePos;
         }
 
         public override void SetNoteScale(float _scale)

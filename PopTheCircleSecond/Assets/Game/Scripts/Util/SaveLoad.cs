@@ -55,7 +55,7 @@ namespace PopTheCircle.Game
         {
             if (!string.IsNullOrEmpty(_path))
             {
-                string jsonStr = File.ReadAllText(_path, Encoding.Unicode);
+                string jsonStr = File.ReadAllText(_path, Encoding.UTF8);
                 return new JSONObject(jsonStr);
             }
             else

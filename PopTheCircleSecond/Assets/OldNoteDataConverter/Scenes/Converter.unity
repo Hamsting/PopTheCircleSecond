@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.37311953, g: 0.38074014, b: 0.3587274, a: 1}
+  m_IndirectSpecularColor: {r: 0.37311992, g: 0.38074034, b: 0.35872713, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -221,8 +221,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea0f78e9799c3af428894b2646ea6b1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  directoryPath: D:\UnityProject\PopNoteMaker\Build\A_PopNotes\Freedom Dive\
-  fileName: Normal.ntd
+  directoryPath: D:\Unity Project\Pop the Circle\PopTheCircle_1025_in\Assets\Resources\GameData\Freedom
+    Dive\
+  fileName: Special.ntd
   con: {fileID: 981288227}
   noteDatas: []
 --- !u!4 &981288229

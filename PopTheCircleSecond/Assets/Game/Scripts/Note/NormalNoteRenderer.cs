@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,11 +28,18 @@ namespace PopTheCircle.Game
 
         public override void InitializeNote()
         {
-            base.InitializeNote();
-            if (note == null)
-                return;
+            try
+            {
+                base.InitializeNote();
+                if (note == null)
+                    return;
 
-            normalNote = (NormalNote)note;
+                normalNote = (NormalNote)note;
+            }
+            catch (Exception _e)
+            {
+                Debug.LogError(_e);
+            }
         }
 
         protected override void Update()

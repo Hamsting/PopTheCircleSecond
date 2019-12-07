@@ -1639,7 +1639,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727558957}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43eb9fb6799128e4890f730fe0bd5ba2, type: 3}
   m_Name: 
@@ -1670,7 +1670,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 728cf999446b5624f97eaf128ee2fc52, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isAutoPlayEnabled: 1
+  isAutoPlayEnabled: 0
 --- !u!1 &1810484766
 GameObject:
   m_ObjectHideFlags: 0

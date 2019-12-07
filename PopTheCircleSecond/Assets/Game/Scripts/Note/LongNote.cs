@@ -11,7 +11,7 @@ namespace PopTheCircle.Game
         /// <summary>
         /// 노트의 너비 고정 수치
         /// </summary>
-        public const float bodyWidth = 1.0f;
+        public const float bodyHeight = 1.0f;
 
         /// <summary>
         /// 노트가 사라지는 박자 번호이다.

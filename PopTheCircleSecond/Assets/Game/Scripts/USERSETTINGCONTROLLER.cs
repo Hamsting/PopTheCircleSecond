@@ -8,7 +8,7 @@ namespace PopTheCircle.Game
     {
         [Range(0.5f, 10.0f)]
         public float gameSpeed = 3.0f;
-        [Range(1.0f, 5.0f)]
+        [Range(0.1f, 4.0f)]
         public float noteScale = 2.5f;
 
 

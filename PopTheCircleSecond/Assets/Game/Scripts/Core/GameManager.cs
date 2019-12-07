@@ -23,16 +23,15 @@ namespace PopTheCircle.Game
 
         private void Start()
         {
-            /*
             if (GlobalData.Instance != null)
             {
                 NoteDataJSONConverter.Instance.JSONToNoteData(GlobalData.Instance.noteDataJson);
                 MusicManager.Instance.Music = GlobalData.Instance.musicClip;
                 MusicManager.Instance.PlayMusic();
             }
-            */
-            MusicManager.Instance.Music = MusicManager.Instance.MusicAudioSource.clip;
-            MusicManager.Instance.PlayMusic();
+
+            // MusicManager.Instance.Music = MusicManager.Instance.MusicAudioSource.clip;
+            // MusicManager.Instance.PlayMusic();
             MusicManager.Instance.MusicPosition = -StartDelayTime;
             BeatManager.Instance.GotoStartDelayTime(-StartDelayTime);
         }

@@ -12,13 +12,13 @@ namespace PopTheCircle.OldNoteDataConverter
 			get
 			{
 				if (isPop)
-					return NoteType.Pop;
+					return NoteType.PopNote;
 				else if (isSpace)
-					return NoteType.Space;
+					return NoteType.SpaceNote;
 				else if (length > 0)
-					return NoteType.Long;
+					return NoteType.LongNote;
 				else
-					return NoteType.Normal;
+					return NoteType.NormalNote;
 			}
 		}
 		public float Time
@@ -50,13 +50,13 @@ namespace PopTheCircle.OldNoteDataConverter
 			switch (NoteDataType)
 			{
 				default:
-				case NoteType.Normal:
+				case NoteType.NormalNote:
 					return "NormalNote | " + (line + 1) + " | " + Time;
-				case NoteType.Pop:
+				case NoteType.PopNote:
 					return "PopNote | " + (line + 1) + " | " + Time;
-				case NoteType.Long:
+				case NoteType.LongNote:
 					return "LongNote | " + (line + 1) + " | " + Time + " | " + LongEndTime + " | " + (endLine + 1);
-				case NoteType.Space:
+				case NoteType.SpaceNote:
 					return "SpaceNote | " + Time + " | " + LongEndTime;
 			}
 		}
@@ -64,9 +64,9 @@ namespace PopTheCircle.OldNoteDataConverter
 
 	public enum NoteType
 	{
-		Normal,
-		Pop,
-		Long,
-		Space,
+		NormalNote,
+		PopNote,
+		LongNote,
+		SpaceNote,
 	}
 }

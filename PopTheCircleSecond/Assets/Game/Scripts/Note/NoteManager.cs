@@ -66,8 +66,8 @@ namespace PopTheCircle.Game
 
         public void AddNote(Note _note)
         {
-            Type noteType = _note.GetType();
-            if (noteType == typeof(LongNote))
+            NoteType noteType = _note.noteType;
+            if (noteType == NoteType.Long || noteType == NoteType.Space)
             {
                 LongNote longNote = (LongNote)_note;
                 longNote.endTime = BeatManager.Instance.BarBeatToTime(longNote.endBar, longNote.endBeat);

@@ -212,3 +212,5 @@ MonoBehaviour:
     position: 0
     isMissed: 0
     noteObject: {fileID: 0}
+  startTransform: {fileID: 6492514663460375274}
+  bodyTransform: {fileID: 3395185300715010301}
