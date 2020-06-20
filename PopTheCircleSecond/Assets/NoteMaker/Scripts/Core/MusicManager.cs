@@ -8,12 +8,14 @@ namespace PopTheCircle.NoteEditor
     {
         private AudioSource musicAudioSource;
         private AudioSource shotAudioSource;
+        private AudioSource seAudioSource;
         private float musicStartTime = 0.0f;
         private float musicPosition = 0.0f;
         private bool isPlaying = false;
         private bool playedShotThisFrame = false;
 
         public AudioClip shotClip;
+        public AudioClip[] seClips;
         [InspectorReadOnly]
         public bool isMusicLoaded = false;
 
@@ -94,6 +96,7 @@ namespace PopTheCircle.NoteEditor
             AudioSource[] audioSources = this.GetComponents<AudioSource>();
             musicAudioSource = audioSources[0];
             shotAudioSource = audioSources[1];
+            seAudioSource = audioSources[2];
             shotAudioSource.clip = shotClip;
 
             musicPosition = 0.0f;
@@ -169,6 +172,28 @@ namespace PopTheCircle.NoteEditor
             shotAudioSource.time = 0.0f;
             shotAudioSource.Play();
             playedShotThisFrame = true;
+        }
+
+        public void PlaySE(EffectNoteSEType _seType)
+        {
+            if (_seType == EffectNoteSEType.None)
+                return;
+
+            string seName = "Effect_" + _seType.ToString();
+            foreach (var seClip in seClips)
+            {
+                if (seClip.name.Equals(seName))
+                {
+                    /*
+                    seAudioSource.Stop();
+                    seAudioSource.clip = seClip;
+                    seAudioSource.time = 0.0f;
+                    seAudioSource.Play();
+                    */
+                    seAudioSource.PlayOneShot(seClip);
+                    break;
+                }
+            }
         }
     }
 }

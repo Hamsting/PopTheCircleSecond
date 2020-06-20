@@ -10,13 +10,38 @@ namespace PopTheCircle.Game
         public float gameSpeed = 3.0f;
         [Range(0.1f, 4.0f)]
         public float noteScale = 2.5f;
+        
+        private float lastGameSpeed = 3.0f;
+        private float lastNoteScale = 2.5f;
 
 
 
-        private void Update()
+        private void Awake()
+        {
+            UserSettings.gameSpeed = gameSpeed;    
+            UserSettings.noteScale = noteScale;
+            lastGameSpeed = gameSpeed;
+            lastNoteScale = noteScale;
+        }
+
+        private void Start()
         {
             BeatManager.Instance.GameSpeed = gameSpeed;
             NoteManager.Instance.NoteScale = noteScale;
+        }
+
+        private void Update()
+        {
+            if (gameSpeed != lastGameSpeed)
+            {
+                BeatManager.Instance.GameSpeed = gameSpeed;
+                lastGameSpeed = gameSpeed;
+            }
+            if (noteScale != lastNoteScale)
+            {
+                NoteManager.Instance.NoteScale = noteScale;
+                lastNoteScale = noteScale;
+            }
         }
     }
 }

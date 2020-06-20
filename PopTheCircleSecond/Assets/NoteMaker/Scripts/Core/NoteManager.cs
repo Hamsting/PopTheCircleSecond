@@ -12,6 +12,10 @@ namespace PopTheCircle.NoteEditor
         [InspectorReadOnly]
         public List<Note> effectNotes;
 
+        public List<NoteRenderer> SpawnedRenderers
+        {
+            get { return spawnedRenderers; }
+        }
         private List<NoteRenderer> spawnedRenderers;
 
 
@@ -47,13 +51,6 @@ namespace PopTheCircle.NoteEditor
                         if (endBarBeat < vStart || endBarBeat > vEnd)
                             continue;
                     }
-                    else if (n.GetType() == typeof(InfinityNote))
-                    {
-                        InfinityNote infinityNote = (InfinityNote)n;
-                        float endBarBeat = BeatManager.ToBarBeat(infinityNote.endBar, infinityNote.endBeat);
-                        if (endBarBeat < vStart || endBarBeat > vEnd)
-                            continue;
-                    }
                     else
                         continue;
                 }
@@ -66,6 +63,9 @@ namespace PopTheCircle.NoteEditor
                     continue;
                 }
                 noteObj.transform.parent = NoteRailManager.Instance.railRoot;
+                noteObj.transform.localPosition = Vector3.zero;
+                noteObj.transform.localRotation = Quaternion.identity;
+                noteObj.transform.localScale = Vector3.one;
 
                 NoteRenderer noteRen = noteObj.GetComponent<NoteRenderer>();
                 noteRen.note = n;
@@ -86,6 +86,9 @@ namespace PopTheCircle.NoteEditor
                     continue;
                 }
                 noteObj.transform.parent = NoteRailManager.Instance.railRoot;
+                noteObj.transform.localPosition = Vector3.zero;
+                noteObj.transform.localRotation = Quaternion.identity;
+                noteObj.transform.localScale = Vector3.one;
 
                 NoteRenderer noteRen = noteObj.GetComponent<NoteRenderer>();
                 noteRen.note = n;
@@ -100,6 +103,9 @@ namespace PopTheCircle.NoteEditor
 
                 GameObject bpmObj = ObjectPoolManager.Instance.Get("BPMChangeNote", true);
                 bpmObj.transform.parent = NoteRailManager.Instance.railRoot;
+                bpmObj.transform.localPosition = Vector3.zero;
+                bpmObj.transform.localRotation = Quaternion.identity;
+                bpmObj.transform.localScale = Vector3.one;
 
                 BPMChangeNoteRenderer bpmRen = bpmObj.GetComponent<BPMChangeNoteRenderer>();
                 bpmRen.bpmInfo = bpm;
@@ -114,6 +120,9 @@ namespace PopTheCircle.NoteEditor
 
                 GameObject ctObj = ObjectPoolManager.Instance.Get("CTChangeNote", true);
                 ctObj.transform.parent = NoteRailManager.Instance.railRoot;
+                ctObj.transform.localPosition = Vector3.zero;
+                ctObj.transform.localRotation = Quaternion.identity;
+                ctObj.transform.localScale = Vector3.one;
 
                 CTChangeNoteRenderer ctRen = ctObj.GetComponent<CTChangeNoteRenderer>();
                 ctRen.ctInfo = ct;
@@ -124,7 +133,7 @@ namespace PopTheCircle.NoteEditor
 
         public void AddNote(Note _note, bool _updateSpawn = true)
         {
-            if (_note.GetType() == typeof(CameraNote) || _note.GetType() == typeof(EventNote))
+            if (_note.GetType() == typeof(CameraNote) || _note.GetType() == typeof(EventNote) || _note.GetType() == typeof(TickNote))
                 effectNotes.Add(_note);
             else
                 notes.Add(_note);
@@ -135,7 +144,7 @@ namespace PopTheCircle.NoteEditor
 
         public void RemoveNote(Note _note, bool _updateSpawn = true)
         {
-            if (_note.GetType() == typeof(CameraNote) || _note.GetType() == typeof(EventNote))
+            if (_note.GetType() == typeof(CameraNote) || _note.GetType() == typeof(EventNote) || _note.GetType() == typeof(TickNote))
                 effectNotes.Remove(_note);
             else
                 notes.Remove(_note);
@@ -152,7 +161,10 @@ namespace PopTheCircle.NoteEditor
                     continue;
 
                 if (_excludeLongType &&
-                    (n.GetType() == typeof(LongNote) || n.GetType() == typeof(InfinityNote)))
+                    (n.GetType() == typeof(LongNote) ||
+                    (n.GetType() == typeof(SpaceNote) && ((SpaceNote)n).IsLongType) ||
+                    (n.GetType() == typeof(EffectNote) && ((EffectNote)n).IsLongType))
+                    )
                     continue;
 
                 if (n.bar == _bar && Mathf.Abs(n.beat - _beat) <= 0.5f)
@@ -161,26 +173,22 @@ namespace PopTheCircle.NoteEditor
             return null;
         }
 
-        public Note FindLongTypeNote(int _bar, float _beat, int _railNumber)
+        public Note FindLongTypeNote(int _bar, float _beat, int _railNumber, bool _excludeEndBarBeat = false)
         {
             foreach (Note n in notes)
             {
-                if (n.GetType() == typeof(LongNote) && n.railNumber == _railNumber)
+                if (n.railNumber == _railNumber &&
+                    (n.GetType() == typeof(LongNote) ||
+                    (n.GetType() == typeof(SpaceNote) && ((SpaceNote)n).IsLongType) ||
+                    (n.GetType() == typeof(EffectNote) && ((EffectNote)n).IsLongType))
+                    )
                 {
                     LongNote ln = (LongNote)n;
                     float barBeat = BeatManager.ToBarBeat(_bar, _beat);
                     float startBarBeat = BeatManager.ToBarBeat(ln.bar, ln.beat);
                     float endBarBeat = BeatManager.ToBarBeat(ln.endBar, ln.endBeat);
-                    if (barBeat >= startBarBeat && barBeat <= endBarBeat)
-                        return n;
-                }
-                else if (n.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote fn = (InfinityNote)n;
-                    float barBeat = BeatManager.ToBarBeat(_bar, _beat);
-                    float startBarBeat = BeatManager.ToBarBeat(fn.bar, fn.beat);
-                    float endBarBeat = BeatManager.ToBarBeat(fn.endBar, fn.endBeat);
-                    if (barBeat >= startBarBeat && barBeat <= endBarBeat)
+                    if (( _excludeEndBarBeat && barBeat >= startBarBeat && barBeat <  endBarBeat) ||
+                        (!_excludeEndBarBeat && barBeat >= startBarBeat && barBeat <= endBarBeat))
                         return n;
                 }
                 else
@@ -225,17 +233,6 @@ namespace PopTheCircle.NoteEditor
                         ln.endBeat = (endCorrected - (int)endCorrected) * (float)GlobalDefines.BeatPerBar;
                     }
                 }
-                else if (n.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote fn = (InfinityNote)n;
-                    float endBarBeat = BeatManager.ToBarBeat(fn.endBar, fn.endBeat);
-                    float endCorrected = BeatManager.Instance.CorrectBarBeat(endBarBeat);
-                    if (endBarBeat != endCorrected)
-                    {
-                        fn.endBar = (int)endCorrected;
-                        fn.endBeat = (endCorrected - (int)endCorrected) * (float)GlobalDefines.BeatPerBar;
-                    }
-                }
             }
             foreach (Note n in effectNotes)
             {
@@ -252,33 +249,57 @@ namespace PopTheCircle.NoteEditor
 
         public void UpdateShotSound(float _startBarBeat, float _endBarBeat)
         {
+            bool isNormalTickPlayed = false;
             foreach (Note n in notes)
             {
+                if (n.GetType() == typeof(EffectNote))
+                {
+                    EffectNote effectNote = (EffectNote)n;
+
+                    if (effectNote.ContainsInBarBeat(_startBarBeat, _endBarBeat))
+                    {
+                        MusicManager.Instance.PlaySE(effectNote.seType);
+                        continue;
+                    }
+                    else if (effectNote.IsLongType && effectNote.ContainsInTickBarBeat(_startBarBeat, _endBarBeat))
+                    {
+                        MusicManager.Instance.PlaySE(effectNote.seType);
+                        continue;
+                    }
+                }
+
+                if (!isNormalTickPlayed)
+                {
+                    if (n.ContainsInBarBeat(_startBarBeat, _endBarBeat))
+                    {
+                        MusicManager.Instance.PlayShot();
+                        isNormalTickPlayed = true;
+                        continue;
+                    }
+
+                    if (n.GetType() == typeof(LongNote) ||
+                        (n.GetType() == typeof(SpaceNote) && ((SpaceNote)n).IsLongType))
+                    {
+                        LongNote ln = (LongNote)n;
+                        float endBarBeat = BeatManager.ToBarBeat(ln.endBar, ln.endBeat);
+                        if (endBarBeat >= _startBarBeat && endBarBeat <= _endBarBeat)
+                        {
+                            MusicManager.Instance.PlayShot();
+                            isNormalTickPlayed = true;
+                            continue;
+                        }
+                    }
+                }
+            }
+            foreach (Note n in effectNotes)
+            {
+                if (n.GetType() != typeof(TickNote))
+                    continue;
+
                 if (n.ContainsInBarBeat(_startBarBeat, _endBarBeat))
                 {
                     MusicManager.Instance.PlayShot();
                     break;
-                }
-
-                if (n.GetType() == typeof(LongNote))
-                {
-                    LongNote ln = (LongNote)n;
-                    float endBarBeat = BeatManager.ToBarBeat(ln.endBar, ln.endBeat);
-                    if (endBarBeat >= _startBarBeat && endBarBeat <= _endBarBeat)
-                    {
-                        MusicManager.Instance.PlayShot();
-                        break;
-                    }
-                }
-                else if (n.GetType() == typeof(InfinityNote))
-                {
-                    InfinityNote fn = (InfinityNote)n;
-                    float endBarBeat = BeatManager.ToBarBeat(fn.endBar, fn.endBeat);
-                    if (endBarBeat >= _startBarBeat && endBarBeat <= _endBarBeat)
-                    {
-                        MusicManager.Instance.PlayShot();
-                        break;
-                    }
                 }
             }
         }

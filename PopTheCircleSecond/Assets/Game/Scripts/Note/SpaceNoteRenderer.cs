@@ -43,6 +43,7 @@ namespace PopTheCircle.Game
 
         public override void InitializeNote()
         {
+            base.InitializeNote();
             if (note == null)
                 return;
 
@@ -81,8 +82,8 @@ namespace PopTheCircle.Game
                     (float)headToEndLength
                     / LongNote.bodyHeight
                     * BeatManager.Instance.GameSpeed;
-                if (bodyScale.x < 0.0f)
-                    bodyScale.x = 0.0f;
+                if (bodyScale.y < 0.0f)
+                    bodyScale.y = 0.0f;
                 bodyTransform.localScale = bodyScale;
             }
         }

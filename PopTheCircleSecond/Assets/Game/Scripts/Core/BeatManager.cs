@@ -60,10 +60,20 @@ namespace PopTheCircle.Game
         [SerializeField, Range(0.5f, 10.0f)]
         private float gameSpeed = 2.0f;
         /// <summary>
+        /// BPM과 연관되지 않는 게임의 고정 속도 값이다.
+        /// </summary>
+        [SerializeField, Range(0.5f, 10.0f)]
+        private float gameSpeedNotRelatedBPM = 2.0f;
+        /// <summary>
         /// BPM 정보들을 담는 리스트이다.
         /// </summary>
         [SerializeField, InspectorReadOnly]
         private List<BPMInfo> bpmInfos;
+        /// <summary>
+        ///  CT 정보들을 담는 리스트이다.
+        /// </summary>
+        [SerializeField, InspectorReadOnly]
+        private List<CTInfo> ctInfos;
         /// <summary>
         /// 마지막으로 읽은 BPM 정보의 인덱스 값이다.
         /// </summary>
@@ -79,9 +89,9 @@ namespace PopTheCircle.Game
         /// </summary>
         private bool isStopEffect = false;
         /// <summary>
-        /// 현재 정지 이펙트 적용의 여부를 나타낸다.
+        /// 노트 스피드가 BPM에 비례하여 변할지에 대한 여부이다.
         /// </summary>
-        private bool isSpeedRelatedToBPM = false;
+        public bool isSpeedRelatedToBPM = false;
 
         /// <summary>
         /// 한 박자를 의미하는 단위이다.
@@ -148,11 +158,7 @@ namespace PopTheCircle.Game
                         standardBPM = 60.0f;
                 }
 
-                if (!IsSpeedRelatedToBPM)
-                {
-                    float standardSpeed = UserSettings.gameSpeed * 60.0f;
-                    GameSpeed = UserSettings.gameSpeed * (60.0f / standardBPM);
-                }
+                gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
             }
         }
         /// <summary>
@@ -162,11 +168,25 @@ namespace PopTheCircle.Game
         {
             get
             {
-                return gameSpeed;
+                if (IsSpeedRelatedToBPM)
+                    return gameSpeed;
+                else
+                    return GameSpeedNotRelatedBPM;
             }
             set
             {
                 gameSpeed = value;
+                gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
+            }
+        }
+        /// <summary>
+        /// BPM과 연관되지 않는 게임의 고정 속도 값이다.
+        /// </summary>
+        public float GameSpeedNotRelatedBPM
+        {
+            get
+            {
+                return gameSpeedNotRelatedBPM;
             }
         }
         /// <summary>
@@ -194,7 +214,7 @@ namespace PopTheCircle.Game
             }
         }
         /// <summary>
-        /// 화면에서 라인 끝의 위치에 해당하는 박자 위치이다.
+        /// 노트 스피드가 BPM에 비례하여 변할지에 대한 여부이다.
         /// </summary>
         public bool IsSpeedRelatedToBPM
         {
@@ -207,6 +227,26 @@ namespace PopTheCircle.Game
                 isSpeedRelatedToBPM = value;
             }
         }
+        /// <summary>
+        /// BPM 정보들을 담는 리스트이다.
+        /// </summary>
+        public List<BPMInfo> BPMInfos
+        {
+            get
+            {
+                return bpmInfos;
+            }
+        }
+        /// <summary>
+        /// CT 정보들을 담는 리스트이다.
+        /// </summary>
+        public List<CTInfo> CTInfos
+        {
+            get
+            {
+                return ctInfos;
+            }
+        }
 
 
 
@@ -217,6 +257,7 @@ namespace PopTheCircle.Game
         {
             base.Awake();
             bpmInfos = new List<BPMInfo>();
+            ctInfos = new List<CTInfo>();
 
             GameSpeed = UserSettings.gameSpeed;
         }
@@ -247,8 +288,8 @@ namespace PopTheCircle.Game
             float increasedBeat = beatPerSecond * Time.deltaTime;
             beat += increasedBeat;
             position += (increasedBeat / GlobalDefines.BeatPerBar) * barToRailLength;
-            positionWithSpeed = position * gameSpeed;
-            railEndBarBeat = PositionToBarBeat(position + (GlobalDefines.RailLength / gameSpeed));
+            positionWithSpeed = position * GameSpeed;
+            railEndBarBeat = PositionToBarBeat(position + (GlobalDefines.RailLength / GameSpeed));
 
             if (beat >= GlobalDefines.BeatPerBar)
             {
@@ -399,7 +440,8 @@ namespace PopTheCircle.Game
                 if (info.position <= _position)
                 {
                     double positionDiff = _position - info.position;
-                    return ToBarBeat(info.bar, info.beat) + 
+                    float infoBarBeat = (float)info.bar + ((info.beat > 0.0f) ? 1.0f : 0.0f);
+                    return infoBarBeat + 
                         ((float)positionDiff / (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (info.bpm / 60.0f)));
                 }
             }
@@ -504,6 +546,30 @@ namespace PopTheCircle.Game
                     float modifiedBeat = beat - info.beat;
 
                     float corrected = (float)bar + 1.0f + (modifiedBeat / GlobalDefines.BeatPerBar);
+                    return corrected;
+                }
+            }
+            return _barBeat;
+        }
+
+        public float CorrectBarBeatReversed(float _barBeat)
+        {
+            int bar = (int)_barBeat;
+            float beat = (_barBeat - bar) * GlobalDefines.BeatPerBar;
+
+            foreach (BPMInfo info in bpmInfos)
+            {
+                if (info.bar > bar)
+                    return _barBeat;
+                else if (info.bar != bar)
+                    continue;
+
+                if (info.beat != 0.0f && info.beat <= beat)
+                {
+                    // 임시 작성, 계산식 수정 필요 (bpm 변경에 따른 보정)
+                    float modifiedBeat = info.beat - (GlobalDefines.BeatPerBar - beat);
+
+                    float corrected = (float)bar + (modifiedBeat / GlobalDefines.BeatPerBar);
                     return corrected;
                 }
             }

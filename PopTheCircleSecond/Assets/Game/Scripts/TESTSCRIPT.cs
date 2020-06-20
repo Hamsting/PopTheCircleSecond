@@ -1,9 +1,11 @@
-﻿#define LongNoteTest
+﻿// #define LongNoteTest
 // #define NormalNoteTest
 // #define NormalNotePatternedTest
 // #define DragNoteTest
 // #define InfinityNoteTest
 // #define DoubleNoteTest
+// #define EffectNoteTest
+// #define MineNoteTest
 
 using System.Collections;
 using System.Collections.Generic;
@@ -12,12 +14,21 @@ using PopTheCircle.Game;
 
 public class TESTSCRIPT : MonoBehaviour
 {
+    public AudioClip testMusicClip;
 
 
+
+    private void OnEnable()
+    {
+        GameObject gdObj = new GameObject("GlobalData");
+        GlobalData gd = gdObj.AddComponent<GlobalData>();
+        gd.musicClip = testMusicClip;
+
+    }
 
     private void Start()
     {
-        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 239.0f, false);
+        BeatManager.Instance.AddNewBPMInfo(0, 0.0f, 160.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(8, 0.0f, 80.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(12, 0.0f, 160.0f, false);
         // BeatManager.Instance.AddNewBPMInfo(20, 0.0f, 40.0f, false);
@@ -144,7 +155,7 @@ public class TESTSCRIPT : MonoBehaviour
         }
 
         // 매우 긴 롱노트
-
+        /*
         NoteManager.Instance.AddNote(new LongNote()
         {
             noteType = NoteType.Long,
@@ -193,6 +204,21 @@ public class TESTSCRIPT : MonoBehaviour
             railNumber = 3,
             connectedRail = 3
         });
+        */
+        NoteManager.Instance.AddNote(new LongNote()
+        {
+            noteType = NoteType.Long,
+            bar = 6,
+            beat = 0.0f,
+
+            endBar = 6,
+            endBeat = (float)GlobalDefines.BeatPerBar / 4.0f * 2.9f,
+            // endBar = 6,
+            // endBeat = (float)GlobalDefines.BeatPerBar / 1.0f,
+
+            railNumber = 3,
+            connectedRail = 3
+        });
 
 #endif
 
@@ -228,7 +254,27 @@ public class TESTSCRIPT : MonoBehaviour
 
 #endif
 
-#if (DoubleNoteTest)
+#if (EffectNoteTest)
+        
+        for (int i = 1; i < 240; ++i)
+        {
+            NoteManager.Instance.AddNote(new EffectNote()
+            {
+                noteType = NoteType.Effect,
+                bar = (int)(i * 3f),
+                beat = 0.0f,
+
+                endBar = (int)(i * 3f + 1f),
+                endBeat = GlobalDefines.BeatPerBar / 4 * 3,
+
+                railNumber = 5 + (i % 2),
+
+                seTickBeatRate = GlobalDefines.BeatPerBar / 4,
+                seType = EffectNoteSEType.Clap,
+            });
+        }
+        
+        /*
         for (int i = 0; i < 360; ++i)
         {
             int bar = i / 2;
@@ -236,35 +282,39 @@ public class TESTSCRIPT : MonoBehaviour
             if (!BeatManager.Instance.IsPossibleBarBeat(bar, beat))
                 continue;
 
-            NoteManager.Instance.AddNote(new DoubleNote()
+            NoteManager.Instance.AddNote(new EffectNote()
             {
+                noteType = NoteType.Effect,
+                bar = bar,
+                beat = beat,
+
+                endBar = 0,
+                endBeat = 0.0f,
+
+                railNumber = 5 + (i % 2),
+
+                seTickBeatRate = 0,
+                seType = EffectNoteSEType.Clap,
+            });
+        }
+        */
+#endif
+#if (MineNoteTest)
+        for (int i = 0; i < 360; ++i)
+        {
+            int bar = i / 2;
+            float beat = (float)(i % 2) / 2.0f * (float)GlobalDefines.BeatPerBar;
+            if (!BeatManager.Instance.IsPossibleBarBeat(bar, beat))
+                continue;
+
+            NoteManager.Instance.AddNote(new MineNote()
+            {
+                noteType = NoteType.Mine,
                 bar = bar,
                 beat = beat,
                 railNumber = i % 2
             });
         }
 #endif
-#if (DragNoteTest)
-        for (int i = 0; i < 360; ++i)
-        {
-            int bar = i / 2;
-            float beat = (float)(i % 2) / 2.0f * (float)GlobalDefines.BeatPerBar;
-            if (!BeatManager.Instance.IsPossibleBarBeat(bar, beat))
-                continue;
-
-            NoteManager.Instance.AddNote(new DragNote()
-            {
-                bar = bar,
-                beat = beat,
-                railNumber = i % 2,
-                direction = Random.Range(0, 2)
-            });
-        }
-#endif
-    }
-
-    private void Update()
-    {
-
     }
 }

@@ -15,6 +15,11 @@ public class TESTAUTOPLAY : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
+            isAutoPlayEnabled = !isAutoPlayEnabled;
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R))
+            UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
+
         if (nm == null)
             nm = NoteManager.Instance;
         if (jm == null)
@@ -41,16 +46,17 @@ public class TESTAUTOPLAY : MonoBehaviour
                 continue;
 
             if (n.noteType == NoteType.Long ||
-                (n.noteType == NoteType.Space && ((SpaceNote)n).IsLongType))
+               (n.noteType == NoteType.Space && ((SpaceNote)n).IsLongType) ||
+               (n.noteType == NoteType.Effect && ((EffectNote)n).IsLongType))
             {
                 LongNote ln = (LongNote)n;
                 ln.firstPressed = true;
                 ln.pressed = true;
                 ln.lastPressedBarBeat = BeatManager.ToBarBeat(bm.Bar, bm.Beat);
             }
-            else
+            else if (n.noteType != NoteType.Mine)
             {
-                jm.UpdateJudgeAndCombo(n.railNumber, 1);
+                jm.UpdateJudgeAndCombo(n, 1);
                 nm.DespawnNote(n, false);
                 --i;
             }

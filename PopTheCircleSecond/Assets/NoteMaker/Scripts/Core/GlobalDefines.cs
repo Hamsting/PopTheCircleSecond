@@ -10,17 +10,17 @@ namespace PopTheCircle.NoteEditor
     public static class GlobalDefines
     {
         // 박자노트의 비트 계산 관련 상수
-        public const int BeatPerBar = 96;
-        public const float DefaultBarCount = 32.0f;
-        public const float RailLength = 10.0f;
-        public const int TickBeatRate = BeatPerBar / 2;
+        public const int BeatPerBar = 192;
+        public const float DefaultBarCount = 48.0f;
+        public const float RailLength = 30.0f;
+        public const int TickBeatRate = BeatPerBar / 4;
         public const float TargetBPMForHalfTickBeatRate = 240.0f;
 
 
         // 판정 관련 상수
-        public const float JudgePerfectTime     = 0.116f;
-        public const float JudgeNiceTime        = 0.233f;
-        public const float JudgeEarlyFailTime   = 0.349f;
+        public const float JudgePerfectTime     = 0.066f;
+        public const float JudgeNiceTime        = 0.166f;
+        public const float JudgeEarlyFailTime   = 0.192f;
 
         public const int LongNoteReleaseTerm = BeatPerBar / 2;
 

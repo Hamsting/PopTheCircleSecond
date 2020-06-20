@@ -26,7 +26,7 @@ namespace PopTheCircle.Game
         /// <summary>
         /// 롱노트가 이어진 라인 번호이다.
         /// </summary>
-        public int connectedRail = 0;
+        public int connectedRail = -1;
 
         /// <summary>
         /// 노트가 사라지는 시간 값이다. 해당 값은 인게임에서 대입한다.
@@ -44,9 +44,14 @@ namespace PopTheCircle.Game
         public bool pressed = false;
 
         /// <summary>
-        /// 롱노트가 한 번이라 InputPress 되었는 지의 여부이다. 해당 값은 인게임에서 대입한다.
+        /// 롱노트가 한 번이라도 InputPress 되었는 지의 여부이다. 해당 값은 인게임에서 대입한다.
         /// </summary>
         public bool firstPressed = false;
+        
+        /// <summary>
+        /// 롱노트의 최초 틱이 발생되었는 지에 대한 여부이다. 해당 값은 인게임에서 대입한다.
+        /// </summary>
+        public bool firstTicked = false;
 
         /// <summary>
         /// 마지막으로 눌렀을 때의 박자비트 위치이다. 해당 값은 인게임에서 대입한다.
@@ -62,6 +67,18 @@ namespace PopTheCircle.Game
         /// 롱노트의 틱이 끝나는 박자비트 위치이다. 해당 값은 인게임에서 대입한다.
         /// </summary>
         public float tickEndBarBeat = 0.0f;
+
+        /*
+        /// <summary>
+        ///__TEST__1
+        /// </summary>
+        public int pupa1 = 0;
+
+        /// <summary>
+        /// __TEST__2
+        /// </summary>
+        public int pupa2 = 0;
+        */
     }
 
 }

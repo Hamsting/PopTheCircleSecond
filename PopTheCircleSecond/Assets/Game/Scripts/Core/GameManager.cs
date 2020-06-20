@@ -18,8 +18,33 @@ namespace PopTheCircle.Game
         public int maxCombo = 0;
         [InspectorReadOnly]
         public int score = 0;
-
+        [InspectorReadOnly]
+        public int judgePerfectCount = 0;
+        [InspectorReadOnly]
+        public int judgeNiceCount = 0;
+        [InspectorReadOnly]
+        public int judgeMissCount = 0;
+        [InspectorReadOnly]
+        public int totalCombo = 0;
+        [InspectorReadOnly]
+        public ClearGaugeType clearGaugeType = ClearGaugeType.Normal;
         
+        [SerializeField, InspectorReadOnly]
+        private float clearGauge = 0.0f;
+        public float ClearGauge
+        {
+            get
+            {
+                return clearGauge;
+            }
+            set
+            {
+                clearGauge = value;
+                clearGauge = Mathf.Clamp(clearGauge, 0.0f, 100.0f);
+            }
+        }
+
+
 
         private void Start()
         {
@@ -34,6 +59,10 @@ namespace PopTheCircle.Game
             // MusicManager.Instance.PlayMusic();
             MusicManager.Instance.MusicPosition = -StartDelayTime;
             BeatManager.Instance.GotoStartDelayTime(-StartDelayTime);
+
+            totalCombo = NoteTickCalculator.CalculateTotalTick(NoteManager.Instance.allNotes, BeatManager.Instance.BPMInfos, out int longNoteTotalCombo);
+            ClearGaugeCalculator.CalculateResult(clearGaugeType, totalCombo, longNoteTotalCombo, 
+                out JudgeManager.Instance.clearGaugeIncreaseAmount, out JudgeManager.Instance.clearGaugeDecreaseAmount);
         }
 
         private void Update()
@@ -45,11 +74,14 @@ namespace PopTheCircle.Game
                       ", MB D : " + (BeatManager.Instance.GameTime - MusicManager.Instance.MusicPosition) +
                       ", RM D : " + (MusicManager.Instance.MusicAudioSource.time - MusicManager.Instance.MusicPosition));
             */
-            if (Mathf.Abs(BeatManager.Instance.GameTime - MusicManager.Instance.MusicPosition) >= 0.032f)
+
+            float timeDiff = BeatManager.Instance.GameTime - MusicManager.Instance.MusicPosition;
+            if (Mathf.Abs(timeDiff) >= 0.033333f)
             {
                 Debug.LogWarning("Fixed times");
                 BeatManager.Instance.GameTime = MusicManager.Instance.MusicPosition;
             }
+            // BeatManager.Instance.GameTime = Mathf.Lerp(BeatManager.Instance.GameTime, MusicManager.Instance.MusicPosition, Time.deltaTime * 2.0f);
         }
     }
 }

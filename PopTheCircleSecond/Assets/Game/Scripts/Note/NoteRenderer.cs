@@ -49,7 +49,7 @@ namespace PopTheCircle.Game
             double positionDiff = note.position - BeatManager.Instance.Position;
             notePos.x = 0.0f;
             notePos.y = (float)positionDiff * BeatManager.Instance.GameSpeed;
-            notePos.z = (float)(positionDiff / GlobalDefines.RailLength) * 0.01f;
+            notePos.z = (float)(positionDiff / GlobalDefines.RailLength) * 0.0001f;
 
             float timeDiff = note.time - BeatManager.Instance.GameTime;
 

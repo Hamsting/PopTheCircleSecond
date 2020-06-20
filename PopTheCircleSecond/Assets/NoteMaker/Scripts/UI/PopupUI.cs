@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -113,7 +114,10 @@ namespace PopTheCircle.NoteEditor
             {
                 float bpm = float.Parse(bpmInput.text);
 
-                int index = BeatManager.Instance.BPMInfos.FindIndex((bi) => (bi.bar == _bar && bi.beat == _beat));
+                int index = BeatManager.Instance.BPMInfos.FindIndex((bi) => 
+                ((bi.bar == _bar && bi.beat == _beat) ||
+                 (bi.beat > 0.0f && _bar == bi.bar + 1 && _beat == 0.0f))
+                );
                 if (index >= 0)
                 {
                     BeatManager.Instance.BPMInfos[index].bpm = bpm;
@@ -129,37 +133,6 @@ namespace PopTheCircle.NoteEditor
             }
 
             ClosePopup("BPMChange");
-        }
-
-        public void OpenInfinityCountChangePopup(InfinityNote _fn)
-        {
-            StartCoroutine(InfinityCountChangePopupCoroutine(_fn));
-        }
-
-        private IEnumerator InfinityCountChangePopupCoroutine(InfinityNote _fn)
-        {
-            GameObject popup = ShowPopup("InfinityCountChange");
-            InputField countInput = popup.transform.Find("InputField").GetComponent<InputField>();
-            countInput.text = _fn.maxHitCount.ToString();
-
-            Text recommendText = popup.transform.Find("Recommend").GetComponent<Text>();
-            float length = BeatManager.ToBarBeat(_fn.endBar, _fn.endBeat) 
-                           - BeatManager.ToBarBeat(_fn.bar, _fn.beat);
-            recommendText.text = "Recommend Hit Count : 2 ~ " + (int)(length / 0.25f);
-
-            isWaitForApply = true;
-            while (isWaitForApply)
-            {
-                yield return null;
-            }
-
-            if (isApplied)
-            {
-                int count = int.Parse(countInput.text);
-                _fn.maxHitCount = count;
-            }
-
-            ClosePopup("InfinityCountChange");
         }
 
         public void OpenEventNotePopup(int _bar, float _beat)
@@ -201,6 +174,43 @@ namespace PopTheCircle.NoteEditor
             }
 
             ClosePopup("EventNote");
+        }
+
+        public void OpenEffectNotePopup(EffectNote _effectNote)
+        {
+            StartCoroutine(EffectNotePopupCoroutine(_effectNote));
+        }
+
+        private IEnumerator EffectNotePopupCoroutine(EffectNote _effectNote)
+        {
+            GameObject popup = ShowPopup("EffectNote");
+
+            Dropdown seDropdown = popup.transform.Find("SEDropdown").GetComponent<Dropdown>();
+            Dropdown tickRateDropdown = popup.transform.Find("TickRateDropdown").GetComponent<Dropdown>();
+
+            List<string> types = new List<string>(Enum.GetNames(typeof(EffectNoteSEType)));
+            seDropdown.ClearOptions();
+            seDropdown.AddOptions(types);
+            seDropdown.value = types.IndexOf(_effectNote.seType.ToString());
+
+            tickRateDropdown.value = MakerManager.SETickRates.IndexOf(GlobalDefines.BeatPerBar / _effectNote.seTickBeatRate);
+
+            isWaitForApply = true;
+            while (isWaitForApply)
+            {
+                yield return null;
+            }
+
+            if (isApplied)
+            {
+                EffectNoteSEType newType = EffectNoteSEType.None;
+                if (Enum.TryParse<EffectNoteSEType>(seDropdown.options[seDropdown.value].text, out newType))
+                    _effectNote.seType = newType;
+
+                _effectNote.seTickBeatRate = GlobalDefines.BeatPerBar / MakerManager.SETickRates[tickRateDropdown.value];
+            }
+
+            ClosePopup("EffectNote");
         }
     }
 }

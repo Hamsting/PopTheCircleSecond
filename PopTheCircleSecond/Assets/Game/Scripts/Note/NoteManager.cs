@@ -16,10 +16,11 @@ namespace PopTheCircle.Game
         [InspectorReadOnly]
         public List<Note> spawnedNotes;
         [InspectorReadOnly]
-        private List<Note> allNotes;
+        public List<Note> allNotes;
 
         private List<Note> remainNotes;
         private float noteScale = 3.0f;
+        private int maxBarNumber = -1;
 
         public float NoteScale
         {
@@ -37,8 +38,16 @@ namespace PopTheCircle.Game
             }
         }
 
+        public int MaxBarNumber
+        {
+            get
+            {
+                return maxBarNumber;
+            }
+        }
 
-        
+
+
         protected override void Awake()
         {
             allNotes = new List<Note>();
@@ -47,7 +56,7 @@ namespace PopTheCircle.Game
 
             noteScale = UserSettings.noteScale;
         }
-
+        
         private void Update()
         {
             // 화면에 보이기 시작할 노트 생성
@@ -62,12 +71,37 @@ namespace PopTheCircle.Game
             }
 
             JudgeManager.Instance.UpdateJudgeForNotes();
+
+            // __TEST__
+            /*
+            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.T))
+            {
+                foreach (var n in allNotes)
+                {
+                    if (n.noteType == NoteType.Long ||
+                       (n.noteType == NoteType.Space && ((SpaceNote)n).IsLongType) ||
+                       (n.noteType == NoteType.Effect && ((EffectNote)n).IsLongType))
+                    {
+                        LongNote ln = (LongNote)n;
+                        int pupaDiff = (ln.pupa2 - ln.pupa1);
+                        if (pupaDiff > 0)
+                            Debug.Log("NoteManager::LongNote pupa alert : " + "\n" +
+                                "Start = " + ln.bar + " / " + ln.beat + ", End = " + ln.endBar + "/" + ln.endBeat + "\n" +
+                                "TickStart = " + ln.tickStartBarBeat + ", TickEnd = " + ln.tickEndBarBeat + "\n" +
+                                "1 = " + ln.pupa1 + ", 2 = " + ln.pupa2 + ", diff = " + pupaDiff);
+                    }
+                }
+            }
+            */
         }
 
         public void AddNote(Note _note)
         {
+            if (maxBarNumber < _note.bar)
+                maxBarNumber = _note.bar;
+
             NoteType noteType = _note.noteType;
-            if (noteType == NoteType.Long || noteType == NoteType.Space)
+            if (noteType == NoteType.Long || noteType == NoteType.Space || noteType == NoteType.Effect)
             {
                 LongNote longNote = (LongNote)_note;
                 longNote.endTime = BeatManager.Instance.BarBeatToTime(longNote.endBar, longNote.endBeat);
@@ -77,7 +111,21 @@ namespace PopTheCircle.Game
                 float longNoteEndBarBeat = BeatManager.ToBarBeat(longNote.endBar, longNote.endBeat);
                 float tickBarBeat = (float)GlobalDefines.TickBeatRate / (float)GlobalDefines.BeatPerBar;
                 longNote.tickStartBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteBarBeat + tickBarBeat);
-                longNote.tickEndBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteEndBarBeat - tickBarBeat);
+                longNote.tickEndBarBeat = BeatManager.Instance.CorrectBarBeatReversed(longNoteEndBarBeat - tickBarBeat);
+                
+                if (maxBarNumber < longNote.endBar)
+                    maxBarNumber = longNote.endBar;
+            }
+            if (noteType == NoteType.Effect)
+            {
+                EffectNote effectNote = (EffectNote)_note;
+
+                float effectNoteStartBarBeat = BeatManager.ToBarBeat(effectNote.bar, effectNote.beat);
+                float effectNoteEndBarBeat = BeatManager.ToBarBeat(effectNote.endBar, effectNote.endBeat);
+                float tickBarBeat = (float)effectNote.seTickBeatRate / (float)GlobalDefines.BeatPerBar;
+                effectNote.seTickStartBarBeat = BeatManager.Instance.CorrectBarBeat(effectNoteStartBarBeat + tickBarBeat);
+                effectNote.seTickEndBarBeat = BeatManager.Instance.CorrectBarBeat(effectNoteEndBarBeat);
+                effectNote.seNextTickedBarBeat = effectNote.seTickStartBarBeat;
             }
 
             _note.time = BeatManager.Instance.BarBeatToTime(_note.bar, _note.beat);

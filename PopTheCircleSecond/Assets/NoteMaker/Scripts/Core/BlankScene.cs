@@ -13,7 +13,7 @@ namespace PopTheCircle.NoteEditor
             if (managers != null)
                 Destroy(managers);
 
-            SceneManager.LoadScene("Maker");
+            SceneManager.LoadScene("Maker_ref");
         }
     }
 }

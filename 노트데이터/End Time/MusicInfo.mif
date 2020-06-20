@@ -1,0 +1,16 @@
+﻿InfoVersion|1
+MusicArtist|ぺのれり
+MusicName|End Time
+MusicPath|GameData/End Time/Music
+JacketPath|GameData/End Time/Jacket
+Sample|43.0|56.5
+BPM|180
+BGColor|218|144|104|255
+BoardColor|173|57|57|255
+EffectColor|251|155|92|255
+NormalNotePath|None
+EnhancedNotePath|None
+ExtremeNotePath|./Assets/Resources/GameData/End Time/Extreme.ntd
+NormalDiff|5
+EnhancedDiff|11
+ExtremeDiff|17

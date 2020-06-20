@@ -12,9 +12,34 @@ namespace PopTheCircle.Game
         public const int InputPress     = 1;
         public const int InputStay      = 2;
         public const int InputRelease   = 3;
+        /*
+        private KeyCode[] keyCodes = new KeyCode[8]
+        {
+            KeyCode.S,
+            KeyCode.F,
+            KeyCode.J,
+            KeyCode.L,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.LeftShift,
+            KeyCode.RightShift,
+        };
+        */
+        private KeyCode[] keyCodes = new KeyCode[8]
+        {
+            KeyCode.D,
+            KeyCode.F,
+            KeyCode.J,
+            KeyCode.K,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.S,
+            KeyCode.L,
+        };
 
         [InspectorReadOnly]
         public List<TouchInfo> infos;
+        public int[] inputStates;
 
 
 
@@ -22,6 +47,7 @@ namespace PopTheCircle.Game
         {
             Input.multiTouchEnabled = true;
             infos = new List<TouchInfo>();
+            inputStates = new int[7];
         }
 
         private void Update()
@@ -63,64 +89,58 @@ namespace PopTheCircle.Game
             // 그 외의 경우. (에디터, 윈도우 등)
             else
             {
-                if (Input.GetKeyDown(KeyCode.S))
-                    JudgeManager.Instance.JudgeNoteAtLine(0, InputPress);
-                else if (Input.GetKey(KeyCode.S))
-                    JudgeManager.Instance.JudgeNoteAtLine(0, InputStay);
+                if (keyCodes == null || keyCodes.Length < 8)
+                    return;
 
-                if (Input.GetKeyDown(KeyCode.F))
-                    JudgeManager.Instance.JudgeNoteAtLine(1, InputPress);
-                else if (Input.GetKey(KeyCode.F))
-                    JudgeManager.Instance.JudgeNoteAtLine(1, InputStay);
+                if (Input.GetKeyDown(keyCodes[0]))
+                    InputRail(0, InputPress);
+                else if (Input.GetKey(keyCodes[0]))
+                    InputRail(0, InputStay);
 
-                if (Input.GetKeyDown(KeyCode.J))
-                    JudgeManager.Instance.JudgeNoteAtLine(2, InputPress);
-                else if (Input.GetKey(KeyCode.J))
-                    JudgeManager.Instance.JudgeNoteAtLine(2, InputStay);
+                if (Input.GetKeyDown(keyCodes[1]))
+                    InputRail(1, InputPress);
+                else if (Input.GetKey(keyCodes[1]))
+                    InputRail(1, InputStay);
 
-                if (Input.GetKeyDown(KeyCode.L))
-                    JudgeManager.Instance.JudgeNoteAtLine(3, InputPress);
-                else if (Input.GetKey(KeyCode.L))
-                    JudgeManager.Instance.JudgeNoteAtLine(3, InputStay);
+                if (Input.GetKeyDown(keyCodes[2]))
+                    InputRail(2, InputPress);
+                else if (Input.GetKey(keyCodes[2]))
+                    InputRail(2, InputStay);
+
+                if (Input.GetKeyDown(keyCodes[3]))
+                    InputRail(3, InputPress);
+                else if (Input.GetKey(keyCodes[3]))
+                    InputRail(3, InputStay);
                 
-                if (Input.GetKeyDown(KeyCode.Space))
-                    JudgeManager.Instance.JudgeNoteAtLine(4, InputPress);
-                else if (Input.GetKey(KeyCode.Space))
-                    JudgeManager.Instance.JudgeNoteAtLine(4, InputStay);
-
+                if (Input.GetKeyDown(keyCodes[4]) || Input.GetKeyDown(keyCodes[5]))
+                    InputRail(4, InputPress);
+                else if (Input.GetKey(keyCodes[4]) || Input.GetKey(keyCodes[5]))
+                    InputRail(4, InputStay);
+                
+                if (Input.GetKeyDown(keyCodes[6]))
+                    InputRail(5, InputPress);
+                else if (Input.GetKey(keyCodes[6]))
+                    InputRail(5, InputStay);
+                
+                if (Input.GetKeyDown(keyCodes[7]))
+                    InputRail(6, InputPress);
+                else if (Input.GetKey(keyCodes[7]))
+                    InputRail(6, InputStay);
             }
+        }
+
+        private void LateUpdate()
+        {
+            for (int i = 0; i < 7; ++i)
+            {
+                inputStates[i] = 0;
+            }
+        }
+
+        private void InputRail(int _railNumber, int _state)
+        {
+            JudgeManager.Instance.JudgeNoteAtRail(_railNumber, _state);
+            inputStates[_railNumber] = _state;
         }
     }
 }
-
-
-/*
-private void Update()
-{
-    // TEST
-    if (Input.GetKeyDown(KeyCode.LeftArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(0, InputPress);
-    else if (Input.GetKeyUp(KeyCode.LeftArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(0, InputRelease);
-    else if (Input.GetKey(KeyCode.LeftArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(0, InputStay);
-    if (Input.GetKeyDown(KeyCode.UpArrow))
-    {
-        JudgeManager.Instance.JudgeNoteAtLine(0, InputDrag);
-        JudgeManager.Instance.JudgeNoteAtLine(0, InputPress);
-    }
-
-    if (Input.GetKeyDown(KeyCode.RightArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(1, InputPress);
-    else if (Input.GetKeyUp(KeyCode.RightArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(1, InputRelease);
-    else if (Input.GetKey(KeyCode.RightArrow))
-        JudgeManager.Instance.JudgeNoteAtLine(1, InputStay);
-    if (Input.GetKeyDown(KeyCode.DownArrow))
-    {
-        JudgeManager.Instance.JudgeNoteAtLine(1, InputDrag);
-        JudgeManager.Instance.JudgeNoteAtLine(1, InputPress);
-    }
-
-}
-*/

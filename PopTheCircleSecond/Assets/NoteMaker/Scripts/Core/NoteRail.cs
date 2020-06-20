@@ -4,9 +4,10 @@ using UnityEngine;
 
 namespace PopTheCircle.NoteEditor
 {
+    [System.Serializable]
     public class NoteRail : MonoBehaviour
     {
-        public const float RailHeight = 2.41f;
+        public const float RailHeight = 3.60f;
         public const float RailOneBarWidth = 4.0f;
 
         public int RailNumber
@@ -45,16 +46,19 @@ namespace PopTheCircle.NoteEditor
             }
         }
 
-        [SerializeField]
+        [SerializeField, InspectorReadOnly]
         private TextMesh railNumberText;
-        [SerializeField]
+        [SerializeField, InspectorReadOnly]
         private Transform railImage;
-        [SerializeField]
+        [SerializeField, InspectorReadOnly]
         private SpriteRenderer barGridRenderer;
-        [SerializeField]
+        [SerializeField, InspectorReadOnly]
         private SpriteRenderer barRailRenderer;
+        [SerializeField, InspectorReadOnly]
         private int railNumber = 0;
+        [SerializeField, InspectorReadOnly]
         private int startBar = 0;
+        [SerializeField, InspectorReadOnly]
         private float barCount = 4;
 
 

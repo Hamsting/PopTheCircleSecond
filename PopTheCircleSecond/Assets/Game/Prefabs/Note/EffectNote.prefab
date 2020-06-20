@@ -77,7 +77,7 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
   m_SpriteSortPoint: 0
 --- !u!1 &5044386713804991158
 GameObject:
@@ -150,13 +150,13 @@ SpriteRenderer:
   m_Sprite: {fileID: 21300000, guid: f486c865b0923114592cf16534674f67, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
-  m_FlipY: 0
-  m_DrawMode: 0
-  m_Size: {x: 1.3, y: 1}
+  m_FlipY: 1
+  m_DrawMode: 2
+  m_Size: {x: 1.3, y: -1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
+  m_MaskInteraction: 1
   m_SpriteSortPoint: 0
 --- !u!1 &6612802633728356812
 GameObject:
@@ -182,7 +182,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6612802633728356812}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: -999, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -212,3 +212,5 @@ MonoBehaviour:
     position: 0
     isMissed: 0
     noteObject: {fileID: 0}
+  startTransform: {fileID: 3035929434025275858}
+  bodyTransform: {fileID: 8688320151904498075}

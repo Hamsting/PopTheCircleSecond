@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,19 +23,27 @@ namespace PopTheCircle.Game
 
             foreach (JSONObject bpmChangeJson in bpmChangeJsonList)
             {
-                BPMInfo bpm = new BPMInfo()
-                {
-                    bpm = GetFloatData(bpmChangeJson, "bpm"),
-                    bar = GetIntData(bpmChangeJson, "bar"),
-                    beat = GetFloatData(bpmChangeJson, "beat"),
-                    stopEffect = GetBoolData(bpmChangeJson, "stopEffect")
-                };
                 BeatManager.Instance.AddNewBPMInfo(
                     GetIntData(bpmChangeJson, "bar"),
                     GetFloatData(bpmChangeJson, "beat"),
                     GetFloatData(bpmChangeJson, "bpm"),
                     GetBoolData(bpmChangeJson, "stopEffect")
                     );
+            }
+
+
+            JSONObject ctChangesJson = _noteDataJson.GetField("CTChanges");
+            List<JSONObject> ctChangeJsonList = ctChangesJson.list;
+
+            BeatManager.Instance.CTInfos.Clear();
+            foreach (JSONObject ctChangeJson in ctChangeJsonList)
+            {
+                CTInfo ct = new CTInfo()
+                {
+                    bar = GetIntData(ctChangeJson, "bar"),
+                    numerator = GetIntData(ctChangeJson, "numerator")
+                };
+                BeatManager.Instance.CTInfos.Add(ct);
             }
 
 
@@ -51,7 +60,9 @@ namespace PopTheCircle.Game
 
             JSONObject headerJson = _noteDataJson.GetField("Header");
             MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f;
-            BeatManager.Instance.StandardBPM = (float)GetFloatData(headerJson, "standardBPM");
+            BeatManager.Instance.StandardBPM = GetFloatData(headerJson, "standardBPM");
+
+            Debug.Log("standardBPM : " + BeatManager.Instance.StandardBPM.ToString("F06"));
         }
         
         private Note GetNoteFromJSON(JSONObject _json)
@@ -73,13 +84,20 @@ namespace PopTheCircle.Game
                         noteType = NoteType.Pop,
                     };
                     break;
+                case "MineNote":
+                    n = new MineNote()
+                    {
+                        noteType = NoteType.Mine,
+                    };
+                    break;
                 case "LongNote":
                     {
                         n = new LongNote()
                         {
                             noteType = NoteType.Long,
                             endBar = GetIntData(_json, "endBar"),
-                            endBeat = GetFloatData(_json, "endBeat")
+                            endBeat = GetFloatData(_json, "endBeat"),
+                            connectedRail = GetIntData(_json, "connectedRail", -1)
                         };
                     }
                     break;
@@ -91,6 +109,28 @@ namespace PopTheCircle.Game
                             endBar = GetIntData(_json, "endBar"),
                             endBeat = GetFloatData(_json, "endBeat")
                         };
+                    }
+                    break;
+                case "EffectNote":
+                    {
+                        n = new EffectNote()
+                        {
+                            noteType = NoteType.Effect,
+                            endBar = GetIntData(_json, "endBar"),
+                            endBeat = GetFloatData(_json, "endBeat"),
+                            seTickBeatRate = GetIntData(_json, "seTickBeatRate", 4),
+                        };
+
+                        EffectNote effectNote = (EffectNote)n;
+
+                        string seTypeStr = GetStringData(_json, "seType");
+                        EffectNoteSEType seType = EffectNoteSEType.None;
+                        if (string.IsNullOrEmpty(seTypeStr))
+                            effectNote.seType = EffectNoteSEType.None;
+                        else if (!Enum.TryParse<EffectNoteSEType>(seTypeStr, out seType))
+                            effectNote.seType = EffectNoteSEType.None;
+                        else
+                            effectNote.seType = seType;
                     }
                     break;
                 default:
@@ -114,11 +154,11 @@ namespace PopTheCircle.Game
             return j.str;                
         }
 
-        private int GetIntData(JSONObject _json, string _field)
+        private int GetIntData(JSONObject _json, string _field, int _default = 0)
         {
             JSONObject j = _json.GetField(_field);
             if (j == null)
-                return 0;
+                return _default;
             return (int)j.i;
         }
 

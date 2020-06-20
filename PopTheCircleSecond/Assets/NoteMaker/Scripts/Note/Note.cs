@@ -7,9 +7,13 @@ namespace PopTheCircle.NoteEditor
     /// <summary>
     /// 노트 데이터의 기초 클래스이다.
     /// </summary>
-    // [System.Serializable]
+    [System.Serializable]
     public class Note
     {
+        /// <summary>
+        /// 해당 노트의 타입 Enum이다.
+        /// </summary>
+        public NoteType noteType = NoteType.Normal;
         /// <summary>
         /// 노트가 출현할 박자(Bar) 번호이다.
         /// </summary>
@@ -19,7 +23,7 @@ namespace PopTheCircle.NoteEditor
         /// </summary>
         public float beat = 0.0f;
         /// <summary>
-        /// 노트가 출현할 라인 번호이다. 왼쪽 : 0, 오른쪽 : 1
+        /// 노트가 출현할 라인 번호이다.
         /// </summary>
         public int railNumber = 0;
 
@@ -42,9 +46,9 @@ namespace PopTheCircle.NoteEditor
         /// 게임 내의 노트 오브젝트이다. 해당 값은 인게임에서 대입한다.
         /// </summary>
         public GameObject noteObject;
-
-
-
+               
+        
+        
         public virtual bool ContainsInBarBeat(float _startBarBeat, float _endBarBeat)
         {
             float barBeat = BeatManager.ToBarBeat(bar, beat);
@@ -52,5 +56,20 @@ namespace PopTheCircle.NoteEditor
                 return false;
             return true;
         }
+    }
+
+    public enum NoteType
+    {
+        Normal = 0,
+        Pop = 1,
+        Long = 2,
+        Space = 3,
+        Mine = 4,
+        Effect = 5,
+
+        Camera = 6,
+        BPMChange = 7,
+        CTChange = 8,
+        Tick = 9,
     }
 }

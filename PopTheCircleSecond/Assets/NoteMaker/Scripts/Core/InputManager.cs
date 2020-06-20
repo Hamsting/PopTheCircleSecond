@@ -11,7 +11,10 @@ namespace PopTheCircle.NoteEditor
         {
             if (!EventSystem.current.IsPointerOverGameObject())
             {
-                NoteRailManager.Instance.CurrentScroll -= Input.mouseScrollDelta.y;
+                float scrollDelta = Input.mouseScrollDelta.y;
+                if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+                    scrollDelta *= 10.0f;
+                NoteRailManager.Instance.CurrentScroll -= scrollDelta;
 
                 if (Input.GetMouseButtonDown(0))
                 {

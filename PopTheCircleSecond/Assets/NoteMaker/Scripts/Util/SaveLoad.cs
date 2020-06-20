@@ -11,10 +11,23 @@ namespace PopTheCircle.NoteEditor
     {
         public static IEnumerator LoadMusicFile(string _path, Action<AudioClip> _callback)
         {
+            string path = _path;
+
+            if (string.IsNullOrEmpty(path) || path.Equals("-"))
+            {
+                _callback(null);
+            }
+            if (!Path.IsPathRooted(path))
+            {
+                string noteDataDir = MakerManager.Instance.noteDataFilePath;
+                noteDataDir = noteDataDir.Substring(0, noteDataDir.LastIndexOf("\\")) + "\\";
+                path = noteDataDir + _path;
+            }
+
             float timer = 0.0f;
             bool isFailed = false;
 
-            WWW www = new WWW("file://" + _path);
+            WWW www = new WWW("file://" + path);
             while (!www.isDone)
             {
                 if (timer > 5.0f)

@@ -7,6 +7,9 @@ namespace PopTheCircle.Game
     [System.Serializable]
     public class SpaceNote : LongNote
     {
+        /// <summary>
+        /// 해당 노트가 롱노트 형태인지의 여부이다.
+        /// </summary>
         public bool IsLongType
         {
             get

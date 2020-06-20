@@ -1,0 +1,18 @@
+﻿InfoVersion|2
+MusicArtist|Xi
+MusicName|Freedom Dive
+MusicPath|GameData/Freedom Dive/Music
+JacketPath|GameData/Freedom Dive/Jacket
+Sample|24.5|42.0
+BPM|222
+BGColor|98|212|179|255
+BoardColor|57|152|124|255
+EffectColor|72|229|158|255
+NormalNotePath|./Assets/Resources/GameData/Freedom Dive/Normal.ntd
+EnhancedNotePath|./Assets/Resources/GameData/Freedom Dive/Enhanced.ntd
+ExtremeNotePath|./Assets/Resources/GameData/Freedom Dive/Extreme.ntd
+NormalDiff|4
+EnhancedDiff|8
+ExtremeDiff|16
+SpecialNotePath|./Assets/Resources/GameData/Freedom Dive/Special.ntd
+SpecialDiff|16

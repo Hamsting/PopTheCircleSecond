@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Threading;
 using UnityEngine;
 
 
@@ -9,10 +11,13 @@ namespace PopTheCircle.OldNoteDataConverter
 {
 	public class NoteManager : MonoBehaviour
 	{
-        public string directoryPath = "";
-        public string fileName = "";
+        public string readDirectoryPath = "";
+        public string writeDirectoryPath = "";
         public NoteDataJSONConverter con;
         public List<NoteData> noteDatas;
+
+        private string fileName = "";
+        Thread t;
 
         // Old Datas
         private int bpm = 0;
@@ -31,7 +36,7 @@ namespace PopTheCircle.OldNoteDataConverter
         {
             get
             {
-                return (int)((60.0f / (float)bpm) * ((float)syncNumerator / (float)syncDenominator) * 1000.0f);
+                return -(int)((60.0f / (float)bpm) * ((float)syncNumerator / (float)syncDenominator) * 1000.0f) * 2;
             }
         }
 
@@ -45,8 +50,47 @@ namespace PopTheCircle.OldNoteDataConverter
 
         private void Start()
         {
-            ReadNoteDataString();
-            WriteNoteDataString();
+            t = new Thread(ConvertAll);
+            t.Start();
+
+            // ConvertAll();
+            
+            // ReadNoteDataString();
+            // WriteNoteDataString();
+        }
+
+        private void OnDestroy()
+        {
+            if (t != null && t.IsAlive)
+            {
+                t.Abort();
+                t = null;
+            }
+        }
+
+        private void ConvertAll()
+        {
+            var noteDataFiles = Directory.EnumerateFiles(readDirectoryPath, "*.*", SearchOption.AllDirectories)
+                                .Where(s => s.EndsWith(".ntd") && (!s.Contains("_Converted") && !s.Contains("_converted")));
+
+            int i = 0;
+            int count = noteDataFiles.Count();
+            Debug.Log("Total " + count + " files found.");
+
+            foreach (var noteDataFile in noteDataFiles)
+            {
+                ++i;
+
+                fileName = noteDataFile.Replace(readDirectoryPath, "");
+
+                string debugProgressStr = "[" + i + "/" + count + "]";
+                Debug.Log(debugProgressStr + " File found : " + readDirectoryPath + fileName + "\nThis will be saved at : " + writeDirectoryPath + fileName);
+
+                ReadNoteDataString();
+                WriteNoteDataString();
+
+                noteDatas.Clear();
+            }
         }
 
 
@@ -69,7 +113,7 @@ namespace PopTheCircle.OldNoteDataConverter
 		{
 			NoteData n = null;
 
-            string fullPath = directoryPath + fileName;
+            string fullPath = readDirectoryPath + fileName;
             string noteDataString = File.ReadAllText(fullPath);
 
             string[] lines = noteDataString.Split(new char[] { '\n' });
@@ -133,9 +177,16 @@ namespace PopTheCircle.OldNoteDataConverter
 		public void WriteNoteDataString()
 		{
             JSONObject json = con.NoteDataToJSON();
+            if (json == null)
+                return;
 
-            string fullPath = directoryPath + fileName + "_converted.ntd";
-            File.WriteAllText(fullPath, json.ToString(true));
+            string fullPath = writeDirectoryPath + fileName.Replace(".ntd", "") + "_converted.ntd";
+
+            string fullDirPath = fullPath.Substring(0, fullPath.LastIndexOf("\\"));
+            if (!Directory.Exists(fullDirPath))
+                Directory.CreateDirectory(fullDirPath);
+
+            File.WriteAllText(fullPath, json.ToString(true), System.Text.Encoding.Unicode);
         }
 	}
 }

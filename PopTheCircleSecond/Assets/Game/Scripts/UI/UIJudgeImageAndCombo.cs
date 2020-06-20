@@ -8,7 +8,7 @@ namespace PopTheCircle.Game
     public class UIJudgeImageAndCombo : MonoBehaviour
     {
         private const float DissapearStartTime = 0.75f;
-        private const float TotalAppearDuration = 3.00f;
+        private const float TotalAppearDuration = 2.00f;
 
         public Sprite perfectSprite;
         public Sprite greatSprite;

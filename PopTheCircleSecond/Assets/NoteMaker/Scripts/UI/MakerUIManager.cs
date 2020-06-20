@@ -19,6 +19,7 @@ namespace PopTheCircle.NoteEditor
         public GameObject loadingPanel;
 
         [Header("Other Menu")]
+        public GameObject developerMenu;
         public ExpandMenuUI expandMenu;
         public OptionMenuUI optionMenu;
         public PopupUI popup;
@@ -80,8 +81,7 @@ namespace PopTheCircle.NoteEditor
         public void ChangeBarGrid(int _index)
         {
             NoteRailManager.Instance.UpdateBarGrid(_index);
-            int[] barGrids = new int[] { 4, 8, 12, 16, 24, 32, 48 };
-            MakerManager.Instance.barGrid = barGrids[_index];
+            MakerManager.Instance.barGrid = MakerManager.BarGrids[_index];
         }
                 
         public void ApplyNoteDataInfo()
@@ -142,6 +142,50 @@ namespace PopTheCircle.NoteEditor
             int sec = (int)(_time % 60.0f);
             int mil = (int)(((_time % 60.0f) - (float)sec) * 1000.0f);
             return min.ToString("D02") + ":" + sec.ToString("D02") + "." + mil.ToString("D03");
+        }
+
+
+
+
+
+        // Developer Menu Functions
+
+        public void NoteFitToGrid()
+        {
+            foreach (var note in NoteManager.Instance.notes)
+            {
+                if ( note.noteType == NoteType.Long ||
+                    (note.noteType == NoteType.Effect && ((EffectNote)note).IsLongType) ||
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
+                    PopTheCircle.OldNoteDataConverter.ConvertedNoteFitter.FitLongNoteToGrid((LongNote)note);
+                else
+                    PopTheCircle.OldNoteDataConverter.ConvertedNoteFitter.FitNoteToGrid(note);
+            }
+            NoteManager.Instance.UpdateNoteSpawn();
+        }
+
+        public void PushNoteOneBar()
+        {
+            foreach (var note in NoteManager.Instance.notes)
+            {
+                if (note.noteType == NoteType.Long ||
+                    (note.noteType == NoteType.Effect && ((EffectNote)note).IsLongType) ||
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
+                {
+                    LongNote longNote = (LongNote)note;
+                    longNote.bar += 1;
+                    longNote.endBar += 1;
+                }
+                else
+                {
+                    note.bar += 1;
+                }
+            }
+            foreach (var effNote in NoteManager.Instance.effectNotes)
+            {
+                effNote.bar += 1;
+            }
+            NoteManager.Instance.UpdateNoteSpawn();
         }
     }
 }

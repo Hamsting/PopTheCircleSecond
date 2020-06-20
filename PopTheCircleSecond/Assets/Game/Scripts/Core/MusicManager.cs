@@ -8,12 +8,16 @@ namespace PopTheCircle.Game
     {
         private AudioSource musicAudioSource;
         private AudioSource shotAudioSource;
+        private AudioSource longTickAudioSource;
+        private AudioSource seAudioSource;
         private float musicStartTime = 0.0f;
         private float musicPosition = 0.0f;
         private bool isPlaying = false;
         private bool playedShotThisFrame = false;
+        private bool playedLongTickThisFrame = false;
 
         public AudioClip[] shotClips;
+        public AudioClip[] seClips;
         [InspectorReadOnly]
         public bool isMusicLoaded = false;
 
@@ -29,7 +33,6 @@ namespace PopTheCircle.Game
             set
             {
                 musicAudioSource.clip = value;
-                Debug.Log(value);
                 isMusicLoaded = (value != null);
             }
         }
@@ -102,6 +105,9 @@ namespace PopTheCircle.Game
             AudioSource[] audioSources = this.GetComponents<AudioSource>();
             musicAudioSource = audioSources[0];
             shotAudioSource = audioSources[1];
+            longTickAudioSource = audioSources[2];
+            longTickAudioSource.clip = shotClips[2];
+            seAudioSource = audioSources[3];
 
             musicPosition = 0.0f;
             isPlaying = false;
@@ -146,6 +152,7 @@ namespace PopTheCircle.Game
         public void LateUpdate()
         {
             playedShotThisFrame = false;
+            playedLongTickThisFrame = false;
         }
 
         public void PlayMusic()
@@ -184,9 +191,36 @@ namespace PopTheCircle.Game
             else if (_judge == 2)
                 shotAudioSource.clip = shotClips[1];
 
-            shotAudioSource.time = 0.0f;
+            shotAudioSource.time = 0.03f;
             shotAudioSource.Play();
             playedShotThisFrame = true;
+        }
+
+        public void PlayLongTick()
+        {
+            if (playedLongTickThisFrame)
+                return;
+
+            // longTickAudioSource.Stop();
+            // longTickAudioSource.time = 0.0f;
+            // longTickAudioSource.Play();
+            playedLongTickThisFrame = true;
+        }
+
+        public void PlaySE(EffectNoteSEType _seType)
+        {
+            string seName = "Effect_" + _seType.ToString();
+            foreach (var seClip in seClips)
+            {
+                if (seClip.name.Equals(seName))
+                {
+                    seAudioSource.Stop();
+                    seAudioSource.clip = seClip;
+                    seAudioSource.time = 0.0f;
+                    seAudioSource.Play();
+                    break;
+                }
+            }
         }
     }
 }

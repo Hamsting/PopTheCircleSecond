@@ -4,6 +4,14 @@ using UnityEngine;
 
 namespace PopTheCircle.NoteEditor
 {
+    [System.Serializable]
+    public class NoteRailLineInfo
+    {
+        public int railNumber = 0;
+        public float startYPos = 0.0f;
+        public float lineHeight = 1.0f;
+    }
+
     public class NoteRailManager : Singleton<NoteRailManager>
     {
         public Transform railPivot;
@@ -14,6 +22,7 @@ namespace PopTheCircle.NoteEditor
         public float railSpacing = 1.2f;
         public float visibleRailStartBarBeat = 0.0f;
         public float visibleRailEndBarBeat = 4.0f;
+        public List<NoteRailLineInfo> lineInfos = new List<NoteRailLineInfo>();
         public float CurrentScroll
         {
             get
@@ -41,15 +50,17 @@ namespace PopTheCircle.NoteEditor
             }
         }
 
-        private float cameraHeight = 5.0f;
+        private float cameraHeight = 12.0f;
         [SerializeField, InspectorReadOnly]
         private float currentScroll = 0.0f;
         [SerializeField, InspectorReadOnly]
         private int railMinNumber = -1;
         [SerializeField, InspectorReadOnly]
         private int railMaxNumber = -1;
+        [SerializeField, InspectorReadOnly]
         private List<NoteRail> noteRails;
         private int barRailIndex = 0;
+        private float screenRatio = 16.0f / 9.0f;
 
 
 
@@ -57,6 +68,8 @@ namespace PopTheCircle.NoteEditor
         {
             noteRails = new List<NoteRail>();
             cameraHeight = Camera.main.orthographicSize * 2.0f;
+            screenRatio = (float)Screen.width / (float)Screen.height;
+
             UpdateRail();
             UpdateCameraSize();
         }
@@ -77,10 +90,15 @@ namespace PopTheCircle.NoteEditor
         private void UpdateCameraSize()
         {
             Camera.main.orthographicSize = cameraHeight * 0.5f;
+            // railPivot.localPosition = new Vector3(
+            //     -(cameraHeight * 0.5f) / Screen.height * Screen.width + 1.38f,
+            //     cameraHeight * 0.5f - (5.6f + 2.5f * (cameraHeight / 10.0f - 1.0f)),
+            //     0.0f);
             railPivot.localPosition = new Vector3(
-                -(cameraHeight * 0.5f) / Screen.height * Screen.width + 1.38f,
-                cameraHeight * 0.5f - (4.0f + 2.5f * (cameraHeight / 10.0f - 1.0f)),
+                -cameraHeight * 0.5f + 1.2f,
+                (cameraHeight * 0.5f) * screenRatio - 2.5f,
                 0.0f);
+            UpdateRail();
         }
 
         private void UpdateRail()
@@ -91,7 +109,7 @@ namespace PopTheCircle.NoteEditor
             float topRailPos = (currentScroll % railHeightWithSpacing) % NoteRail.RailHeight;
 
             railMinNumber = Mathf.Clamp((int)(currentScroll / railHeightWithSpacing), 1, 32767);
-            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight + topRailPos) / railHeightWithSpacing) + 1, 1, 32767);
+            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight * screenRatio + topRailPos) / railHeightWithSpacing) + 2, 1, 32767);
 
             if (lastRailMinNumber != railMinNumber || lastRailMaxNumber != railMaxNumber)
                 UpdateRailSpawn();
@@ -115,6 +133,9 @@ namespace PopTheCircle.NoteEditor
             {
                 GameObject railObj = ObjectPoolManager.Instance.Get(noteRailPrefab.name, true);
                 railObj.transform.parent = railRoot;
+                railObj.transform.localPosition = Vector3.zero;
+                railObj.transform.localRotation = Quaternion.identity;
+                railObj.transform.localScale = Vector3.one;
 
                 /*
                 float barCount = (float)(BeatManager.Instance.ctInfos[BeatManager.Instance.ctInfos.Count - 1].numerator);
@@ -163,7 +184,7 @@ namespace PopTheCircle.NoteEditor
             float topRailPos = (currentScroll % railHeightWithSpacing) % NoteRail.RailHeight;
 
             railMinNumber = Mathf.Clamp((int)(currentScroll / railHeightWithSpacing), 1, 32767);
-            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight + topRailPos) / railHeightWithSpacing) + 1, 1, 32767);
+            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight * screenRatio + topRailPos) / railHeightWithSpacing) + 2, 1, 32767);
 
             UpdateRailSpawn();
 
@@ -172,6 +193,28 @@ namespace PopTheCircle.NoteEditor
             {
                 r.transform.localPosition = new Vector3(0.0f, (r.RailNumber - 1) * -railHeightWithSpacing, 0.0f);
             }
+        }
+
+        public int RailYPosToRailNumber(float _yPos)
+        {
+            foreach (var line in lineInfos)
+            {
+                float lineStartPos = NoteRail.RailHeight * 0.5f - line.startYPos;
+                float lineEndYPos = lineStartPos + line.lineHeight;
+                if (_yPos >= lineStartPos && _yPos <= lineEndYPos)
+                {
+                    return line.railNumber;    
+                }
+            }
+            return 0;
+        }
+        
+        public float RailNumberToLineNoteYPos(int _railNumber)
+        {
+            var line = lineInfos.Find((l) => (l.railNumber == _railNumber));
+            return (line != null) ? 
+                line.startYPos - line.lineHeight * 0.5f
+                : 0.0f;
         }
     }
 }

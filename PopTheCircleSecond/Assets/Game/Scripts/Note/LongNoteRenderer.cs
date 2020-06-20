@@ -7,6 +7,8 @@ namespace PopTheCircle.Game
 
     public class LongNoteRenderer : NoteRenderer
     {
+        private const float ConnectorDefaultYScale = 0.45f;
+
         [Header("시작")]
         public Transform startTransform;
         [Header("몸")]
@@ -15,24 +17,25 @@ namespace PopTheCircle.Game
         public Transform conTransform;
 
         /// <summary>
-        /// 롱 노트의 시작 노트 스프라이트 렌더러
+        /// 롱 노트의 시작 스프라이트 렌더러
         /// </summary>
         private SpriteRenderer startSpriteRenderer;
         /// <summary>
-        /// 롱 노트의 중간 노트 스프라이트 렌더러
+        /// 롱 노트의 중간 스프라이트 렌더러
         /// </summary>
         private SpriteRenderer bodySpriteRenderer;
         /// <summary>
-        /// 롱 노트의 끝 노트 스프라이트 렌더러
+        /// 롱 노트의 커넥터 스프라이트 렌더러
         /// </summary>
-        private SpriteRenderer endSpriteRenderer;
+        private SpriteRenderer conSpriteRenderer;
 
         private LongNote longNote;
         private double endPosition;
         private double length = 0.0f;
         private float noteEndTime = 0.0f;
         private Vector3 bodyScale = Vector3.one;
-        private Vector3 endNotePos = Vector3.zero;
+        private Vector3 conPos = Vector3.zero;
+        private Vector3 conScale = Vector3.one;
 
 
 
@@ -46,7 +49,7 @@ namespace PopTheCircle.Game
         {
             startSpriteRenderer = startTransform.GetComponent<SpriteRenderer>();
             bodySpriteRenderer = bodyTransform.GetComponent<SpriteRenderer>();
-            endSpriteRenderer = conTransform.GetComponent<SpriteRenderer>();
+            conSpriteRenderer = conTransform.GetComponent<SpriteRenderer>();
             base.Awake();
         }
 
@@ -61,8 +64,20 @@ namespace PopTheCircle.Game
             endPosition = BeatManager.Instance.BarBeatToPosition(longNote.endBar, longNote.endBeat);
             noteEndTime = BeatManager.Instance.BarBeatToTime(longNote.endBar, longNote.endBeat);
             
-            // conTransform.gameObject.SetActive(longNote.railNumber != longNote.connectedRail);
-            conTransform.gameObject.SetActive(false);
+            if (longNote.railNumber != longNote.connectedRail && longNote.connectedRail != -1)
+            {
+                int railDiff = longNote.connectedRail - longNote.railNumber;
+                conTransform.gameObject.SetActive(true);
+
+                conScale = new Vector3(
+                    1.0f + (float)Mathf.Abs(railDiff) * 1.08f,
+                    ConnectorDefaultYScale * BeatManager.Instance.GameSpeed,
+                    1.0f);
+                conTransform.localScale = conScale;
+                conPos = new Vector3((float)railDiff * 1.08f * 0.5f, 0.0f, 0.0f);
+            }
+            else
+                conTransform.gameObject.SetActive(false);
 
             bodyScale = bodyTransform.localScale;
         }
@@ -89,14 +104,17 @@ namespace PopTheCircle.Game
                 (float)headToEndLength
                 / LongNote.bodyHeight
                 * BeatManager.Instance.GameSpeed;
-            if (bodyScale.x < 0.0f)
-                bodyScale.x = 0.0f;
+            if (bodyScale.y < 0.0f)
+                bodyScale.y = 0.0f;
             bodyTransform.localScale = bodyScale;
-            
-            // endNotePos.x = (float)headToEndLength * BeatManager.Instance.GameSpeed / NoteManager.Instance.NoteScale;
-            // if (endNotePos.x < 0.0f)
-            //     endNotePos.x = 0.0f;
-            // conTransform.localPosition = endNotePos;
+
+            conPos.y = (float)headToEndLength * BeatManager.Instance.GameSpeed; //  / NoteManager.Instance.NoteScale;
+            if (conPos.y < 0.0f)
+                conPos.y = 0.0f;
+            conTransform.localPosition = conPos;
+
+            conScale.y = ConnectorDefaultYScale * BeatManager.Instance.GameSpeed;
+            conTransform.localScale = conScale;
         }
 
         public override void SetNoteScale(float _scale)

@@ -15,19 +15,27 @@ namespace PopTheCircle.NoteEditor
     public enum EditType
     {
         NormalNote,
-        DoubleNote,
-        DragNote,
+        PopNote,
+        MineNote,
         LongNote,
-        InfinityNote,
+        SpaceNote,
+        EffectNote,
         BPMChangeNote,
         CTChangeNote,
         CameraNote,
         EventNote,
+        TickNote,
     }
 
     public class MakerManager : Singleton<MakerManager>
     {
+        public static readonly List<int> BarGrids    = new List<int>() {  4,  8, 12, 16, 24, 32, 48, 64, 96 };
+        public static readonly List<int> SETickRates = new List<int>() {  1,  2,  3,  4,  6,  8, 12, 16, 24 };
+
         public GameObject longTypePreview;
+        public Sprite longNotePreviewSprite;
+        public Sprite effectNotePreviewSprite;
+        public Sprite spaceNotePreviewSprite;
         [InspectorReadOnly]
         public string noteDataFilePath = "";
         [InspectorReadOnly]
@@ -42,12 +50,15 @@ namespace PopTheCircle.NoteEditor
         private bool isPlacingLongTypeNote = false;
         private float longTypeStartBarBeat = 0.0f;
         private int longTypeRailNumber = 0;
+        private SpriteRenderer notePreviewRenderer;
 
 
 
         protected override void Awake()
         {
             noteDataFilePath = "Untitled.ntd";
+
+            notePreviewRenderer = longTypePreview.GetComponent<SpriteRenderer>();
         }
 
         public void LeftClickField(Vector3 _worldPos)
@@ -72,7 +83,10 @@ namespace PopTheCircle.NoteEditor
             float resultBarBeat = rl.startBarBeat + gridedLocalBarBeat;
             int bar = (int)resultBarBeat;
             float beat = (resultBarBeat - bar) * (float)GlobalDefines.BeatPerBar;
-            int railNumber = (int)((-railLocalPos.y % railTotalHeight) / (NoteRail.RailHeight * 0.3f));
+            // int railNumber = (int)((-railLocalPos.y % railTotalHeight) / (NoteRail.RailHeight * 0.3f));
+            int railNumber = NoteRailManager.Instance.RailYPosToRailNumber(-railLocalPos.y % railTotalHeight);
+            // Debug.Log(-railLocalPos.y % railTotalHeight + " => Line : " + railNumber);
+
 
             if (editMode == EditMode.PositionBar)
             {
@@ -91,7 +105,7 @@ namespace PopTheCircle.NoteEditor
                 {
                     case EditType.NormalNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             if (NoteManager.Instance.FindNote(bar, beat, railNumber) != null)
                                 break;
@@ -104,55 +118,46 @@ namespace PopTheCircle.NoteEditor
                             NoteManager.Instance.AddNote(normalNote);
                         }
                         break;
-                    case EditType.DoubleNote:
+                    case EditType.PopNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             if (NoteManager.Instance.FindNote(bar, beat, railNumber) != null)
                                 break;
-                            DoubleNote doubleNote = new DoubleNote()
+                            PopNote popNote = new PopNote()
                             {
                                 bar = bar,
                                 beat = beat,
                                 railNumber = railNumber
                             };
-                            NoteManager.Instance.AddNote(doubleNote);
+                            NoteManager.Instance.AddNote(popNote);
                         }
                         break;
-                    case EditType.DragNote:
+                    case EditType.MineNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
-                            Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                            if (note != null)
+                            if (NoteManager.Instance.FindNote(bar, beat, railNumber) != null)
+                                break;
+                            MineNote mineNote = new MineNote()
                             {
-                                DragNote dragNote = (DragNote)note;
-                                dragNote.direction = 1 - dragNote.direction;
-                                NoteManager.Instance.UpdateNoteSpawn();
-                            }
-                            else
-                            {
-                                DragNote dragNote = new DragNote()
-                                {
-                                    bar = bar,
-                                    beat = beat,
-                                    railNumber = railNumber,
-                                    direction = 0
-                                };
-                                NoteManager.Instance.AddNote(dragNote);
-                            }
+                                bar = bar,
+                                beat = beat,
+                                railNumber = railNumber
+                            };
+                            NoteManager.Instance.AddNote(mineNote);
                         }
                         break;
                     case EditType.LongNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             if (NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber) != null)
                                 break;
 
                             if (isPlacingLongTypeNote)
                             {
-                                if (longTypeStartBarBeat != resultBarBeat)
+                                if (longTypeStartBarBeat < resultBarBeat)
                                 {
                                     LongNote longNote = new LongNote()
                                     {
@@ -176,33 +181,74 @@ namespace PopTheCircle.NoteEditor
                             }
                         }
                         break;
-                    case EditType.InfinityNote:
+                    case EditType.SpaceNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 4)
+                                break;
+                            if (NoteManager.Instance.FindLongTypeNote(bar, beat, 4) != null)
                                 break;
 
-                            Note existed = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
-                            if (existed != null)
+                            if (isPlacingLongTypeNote)
                             {
-                                if (existed.GetType() == typeof(InfinityNote) && !isPlacingLongTypeNote)
-                                    MakerUIManager.Instance.popup.OpenInfinityCountChangePopup((InfinityNote)existed);
+                                if (longTypeStartBarBeat <= resultBarBeat)
+                                {
+                                    SpaceNote spaceNote = new SpaceNote()
+                                    {
+                                        bar = (int)longTypeStartBarBeat,
+                                        beat = (longTypeStartBarBeat - (int)longTypeStartBarBeat) * GlobalDefines.BeatPerBar,
+                                        endBar = (longTypeStartBarBeat < resultBarBeat) ? bar : 0,
+                                        endBeat = (longTypeStartBarBeat < resultBarBeat) ? beat : 0.0f,
+                                        railNumber = 4
+                                    };
+                                    NoteManager.Instance.AddNote(spaceNote);
+                                }
+                                HideLongTypePreview();
+                                isPlacingLongTypeNote = false;
+                            }
+                            else
+                            {
+                                longTypeStartBarBeat = resultBarBeat;
+                                longTypeRailNumber = 4;
+                                ShowLongTypePreview(resultBarBeat, 4);
+                                isPlacingLongTypeNote = true;
+                            }
+                        }
+                        break;
+                    case EditType.EffectNote:
+                        {
+                            if (railNumber < 5 || railNumber > 6)
+                                break;
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
+                            if (note != null)
+                            {
+                                if (note.GetType() == typeof(EffectNote))
+                                    MakerUIManager.Instance.popup.OpenEffectNotePopup((EffectNote)note);
+                                break;
+                            }
+                            note = NoteManager.Instance.FindNote(bar, beat, railNumber, true);
+                            if (note != null)
+                            {
+                                if (note.GetType() == typeof(EffectNote))
+                                    MakerUIManager.Instance.popup.OpenEffectNotePopup((EffectNote)note);
                                 break;
                             }
 
                             if (isPlacingLongTypeNote)
                             {
-                                if (longTypeStartBarBeat != resultBarBeat)
+                                if (longTypeStartBarBeat <= resultBarBeat)
                                 {
-                                    InfinityNote infinityNote = new InfinityNote()
+                                    EffectNote effectNote = new EffectNote()
                                     {
                                         bar = (int)longTypeStartBarBeat,
                                         beat = (longTypeStartBarBeat - (int)longTypeStartBarBeat) * GlobalDefines.BeatPerBar,
-                                        endBar = bar,
-                                        endBeat = beat,
-                                        railNumber = longTypeRailNumber
+                                        endBar = (longTypeStartBarBeat < resultBarBeat) ? bar : 0,
+                                        endBeat = (longTypeStartBarBeat < resultBarBeat) ? beat : 0.0f,
+                                        railNumber = longTypeRailNumber,
+                                        seType = EffectNoteSEType.None,
+                                        seTickBeatRate = GlobalDefines.BeatPerBar / 4,
                                     };
-                                    NoteManager.Instance.AddNote(infinityNote);
-                                    MakerUIManager.Instance.popup.OpenInfinityCountChangePopup(infinityNote);
+                                    NoteManager.Instance.AddNote(effectNote);
+                                    MakerUIManager.Instance.popup.OpenEffectNotePopup(effectNote);
                                 }
                                 HideLongTypePreview();
                                 isPlacingLongTypeNote = false;
@@ -217,14 +263,18 @@ namespace PopTheCircle.NoteEditor
                         }
                         break;
                     case EditType.BPMChangeNote:
-                        MakerUIManager.Instance.popup.OpenBPMChangePopup(bar, beat);
+                        {
+                            MakerUIManager.Instance.popup.OpenBPMChangePopup(bar, beat);
+                        }
                         break;
                     case EditType.CTChangeNote:
-                        MakerUIManager.Instance.popup.OpenCTChangePopup(bar);
+                        {
+                            MakerUIManager.Instance.popup.OpenCTChangePopup(bar);
+                        }
                         break;
                     case EditType.CameraNote:
                         {
-                            if (railNumber < 2)
+                            if (railNumber != 8)
                                 break;
                             Note existed = NoteManager.Instance.FindEffectNote(bar, beat, typeof(CameraNote));
                             if (existed != null)
@@ -237,7 +287,7 @@ namespace PopTheCircle.NoteEditor
                                 {
                                     bar = bar,
                                     beat = beat,
-                                    railNumber = 0,
+                                    railNumber = railNumber,
                                 };
                                 NoteManager.Instance.AddNote(cameraNote);
                                 // WIP
@@ -245,7 +295,24 @@ namespace PopTheCircle.NoteEditor
                         }
                         break;
                     case EditType.EventNote:
-                        MakerUIManager.Instance.popup.OpenEventNotePopup(bar, beat);
+                        {
+                            MakerUIManager.Instance.popup.OpenEventNotePopup(bar, beat);
+                        }
+                        break;
+                    case EditType.TickNote:
+                        {
+                            if (railNumber != 7)
+                                break;
+                            if (NoteManager.Instance.FindEffectNote(bar, beat, typeof(TickNote)) != null)
+                                break;
+                            TickNote tickNote = new TickNote()
+                            {
+                                bar = bar,
+                                beat = beat,
+                                railNumber = railNumber
+                            };
+                            NoteManager.Instance.AddNote(tickNote);
+                        }
                         break;
                     default:
                         break;
@@ -257,46 +324,61 @@ namespace PopTheCircle.NoteEditor
                 {
                     case EditType.NormalNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
                             if (note != null && note.GetType() == typeof(NormalNote))
                                 NoteManager.Instance.RemoveNote(note);
                         }
                         break;
-                    case EditType.DoubleNote:
+                    case EditType.PopNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                            if (note != null && note.GetType() == typeof(DoubleNote))
+                            if (note != null && note.GetType() == typeof(PopNote))
                                 NoteManager.Instance.RemoveNote(note);
                         }
                         break;
-                    case EditType.DragNote:
+                    case EditType.MineNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
                             Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                            if (note != null && note.GetType() == typeof(DragNote))
+                            if (note != null && note.GetType() == typeof(MineNote))
                                 NoteManager.Instance.RemoveNote(note);
                         }
                         break;
                     case EditType.LongNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 3)
                                 break;
-                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
                             if (note != null && note.GetType() == typeof(LongNote))
                                 NoteManager.Instance.RemoveNote(note);
                         }
                         break;
-                    case EditType.InfinityNote:
+                    case EditType.SpaceNote:
                         {
-                            if (railNumber >= 2)
+                            if (railNumber > 4)
                                 break;
-                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
-                            if (note != null && note.GetType() == typeof(InfinityNote))
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, 4, true);
+                            if (note == null)
+                                note = NoteManager.Instance.FindNote(bar, beat, 4, true);
+
+                            if (note != null && note.GetType() == typeof(SpaceNote))
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.EffectNote:
+                        {
+                            if (railNumber < 5 || railNumber > 6)
+                                break;
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
+                            if (note == null)
+                                note = NoteManager.Instance.FindNote(bar, beat, railNumber, true);
+
+                            if (note != null && note.GetType() == typeof(EffectNote))
                                 NoteManager.Instance.RemoveNote(note);
                         }
                         break;
@@ -333,7 +415,7 @@ namespace PopTheCircle.NoteEditor
                         break;
                     case EditType.CameraNote:
                         {
-                            if (railNumber < 2)
+                            if (railNumber != 8)
                                 break;
                             Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(CameraNote));
                             if (note != null)
@@ -343,6 +425,15 @@ namespace PopTheCircle.NoteEditor
                     case EditType.EventNote:
                         {
                             Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(EventNote));
+                            if (note != null)
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.TickNote:
+                        {
+                            if (railNumber != 7)
+                                break;
+                            Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(TickNote));
                             if (note != null)
                                 NoteManager.Instance.RemoveNote(note);
                         }
@@ -375,52 +466,68 @@ namespace PopTheCircle.NoteEditor
             float resultBarBeat = rl.startBarBeat + gridedLocalBarBeat;
             int bar = (int)resultBarBeat;
             float beat = (resultBarBeat - (int)resultBarBeat) * (float)GlobalDefines.BeatPerBar;
-            int railNumber = (int)((-railLocalPos.y % railTotalHeight) / (NoteRail.RailHeight * 0.3f));
+            // int railNumber = (int)((-railLocalPos.y % railTotalHeight) / (NoteRail.RailHeight * 0.3f));
+            int railNumber = NoteRailManager.Instance.RailYPosToRailNumber(-railLocalPos.y % railTotalHeight);
 
             switch (editType)
             {
                 case EditType.NormalNote:
                     {
-                        if (railNumber >= 2)
+                        if (railNumber > 3)
                             break;
                         Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
                         if (note != null && note.GetType() == typeof(NormalNote))
                             NoteManager.Instance.RemoveNote(note);
                     }
                     break;
-                case EditType.DoubleNote:
+                case EditType.PopNote:
                     {
-                        if (railNumber >= 2)
+                        if (railNumber > 3)
                             break;
                         Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(DoubleNote))
+                        if (note != null && note.GetType() == typeof(PopNote))
                             NoteManager.Instance.RemoveNote(note);
                     }
                     break;
-                case EditType.DragNote:
+                case EditType.MineNote:
                     {
-                        if (railNumber >= 2)
+                        if (railNumber > 3)
                             break;
                         Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(DragNote))
+                        if (note != null && note.GetType() == typeof(MineNote))
                             NoteManager.Instance.RemoveNote(note);
                     }
                     break;
                 case EditType.LongNote:
                     {
-                        if (railNumber >= 2)
+                        if (railNumber > 3)
                             break;
-                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
+                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
                         if (note != null && note.GetType() == typeof(LongNote))
                             NoteManager.Instance.RemoveNote(note);
                     }
                     break;
-                case EditType.InfinityNote:
+                case EditType.SpaceNote:
                     {
-                        if (railNumber >= 2)
+                        if (railNumber > 4)
                             break;
-                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(InfinityNote))
+                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, 4, true);
+                        if (note == null)
+                            note = NoteManager.Instance.FindNote(bar, beat, 4, true);
+
+                        if (note != null && note.GetType() == typeof(SpaceNote))
+                            NoteManager.Instance.RemoveNote(note);
+                    }
+                    break;
+                case EditType.EffectNote:
+                    {
+                        if (railNumber < 5 || railNumber > 6)
+                            break;
+                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
+                        if (note == null)
+                            note = NoteManager.Instance.FindNote(bar, beat, railNumber, true);
+
+                        if (note != null && note.GetType() == typeof(EffectNote))
                             NoteManager.Instance.RemoveNote(note);
                     }
                     break;
@@ -457,7 +564,7 @@ namespace PopTheCircle.NoteEditor
                     break;
                 case EditType.CameraNote:
                     {
-                        if (railNumber < 2)
+                        if (railNumber != 8)
                             break;
                         Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(CameraNote));
                         if (note != null)
@@ -467,6 +574,15 @@ namespace PopTheCircle.NoteEditor
                 case EditType.EventNote:
                     {
                         Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(EventNote));
+                        if (note != null)
+                            NoteManager.Instance.RemoveNote(note);
+                    }
+                    break;
+                case EditType.TickNote:
+                    {
+                        if (railNumber != 7)
+                            break;
+                        Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(TickNote));
                         if (note != null)
                             NoteManager.Instance.RemoveNote(note);
                     }
@@ -502,9 +618,24 @@ namespace PopTheCircle.NoteEditor
             MusicManager.Instance.MusicPosition = BeatManager.Instance.GameTime;
         }
 
-        private void ShowLongTypePreview(float _barBeat, float _railNumber)
+        private void ShowLongTypePreview(float _barBeat, int _railNumber)
         {
             longTypePreview.SetActive(true);
+
+            switch (editType)
+            {
+                case EditType.LongNote:
+                    notePreviewRenderer.sprite = longNotePreviewSprite;
+                    break;
+                case EditType.EffectNote:
+                    notePreviewRenderer.sprite = effectNotePreviewSprite;
+                    break;
+                case EditType.SpaceNote:
+                    notePreviewRenderer.sprite = spaceNotePreviewSprite;
+                    break;
+                default:
+                    break;
+            }
 
             NoteRailLength rl = BeatManager.Instance.GetNoteRailLengthWithBarBeat(_barBeat);
             float localBarBeatDiff = _barBeat - rl.startBarBeat;
@@ -512,9 +643,10 @@ namespace PopTheCircle.NoteEditor
 
             Vector3 pos = Vector3.zero;
             pos.x = localBarBeatDiff * NoteRail.RailOneBarWidth;
-            pos.y = (rl.railNumber - 1) * -railTotalHeight;
-            if (_railNumber == 0)
-                pos.y += NoteRail.RailHeight * 0.333333f;
+            // pos.y = (rl.railNumber - 1) * -railTotalHeight;
+            // if (_railNumber == 0)
+            //     pos.y += NoteRail.RailHeight * 0.333333f;
+            pos.y = (rl.railNumber - 1) * -railTotalHeight + NoteRailManager.Instance.RailNumberToLineNoteYPos(_railNumber);
             pos.z = -0.5f;
 
             longTypePreview.transform.localPosition = pos;
@@ -563,6 +695,56 @@ namespace PopTheCircle.NoteEditor
             if (MakerUIManager.Instance.optionMenu.gameObject.activeSelf)
                 MakerUIManager.Instance.ToggleOptionMenu();
             MakerUIManager.Instance.UpdateDefaultMenuUI();
+        }
+
+
+
+        // Developer HotKey Functions
+        
+        private void Update()
+        {
+            UpdateDeveloperHotKeyState();
+        }
+
+        private void UpdateDeveloperHotKeyState()
+        {
+            if (Input.GetKey(KeyCode.LeftShift) && Input.GetKey(KeyCode.RightShift) && Input.GetKeyDown(KeyCode.D))
+            {
+                MakerUIManager.Instance.developerMenu.SetActive(!MakerUIManager.Instance.developerMenu.activeSelf);
+            }
+            else if (Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
+            {
+                if (Input.GetKey(KeyCode.D) && Input.GetMouseButtonDown(2))
+                {
+                    DeleteNoteNearestCursor();
+                }
+            }
+        }
+
+        private void DeleteNoteNearestCursor()
+        {
+            Vector3 cursorRailPos = NoteRailManager.Instance.railRoot.InverseTransformPoint(Camera.main.ScreenToWorldPoint(Input.mousePosition));
+            cursorRailPos.z = 0.0f;
+
+            NoteRenderer target = null;
+            float targetDis = 99999.0f;
+            foreach (var ren in NoteManager.Instance.SpawnedRenderers)
+            {
+                Vector3 renPos = ren.transform.localPosition;
+                renPos.z = 0.0f;
+
+                float dis = Vector3.Distance(cursorRailPos, renPos);
+                if (dis < targetDis)
+                {
+                    target = ren;
+                    targetDis = dis;
+                }
+            }
+
+            if (target != null)
+            {
+                NoteManager.Instance.RemoveNote(target.note);
+            }
         }
     }
 }

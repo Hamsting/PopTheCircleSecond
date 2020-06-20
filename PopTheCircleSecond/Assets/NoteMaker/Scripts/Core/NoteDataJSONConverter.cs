@@ -94,25 +94,37 @@ namespace PopTheCircle.NoteEditor
             MakerManager.Instance.noteData = noteData;
 
 
-            JSONObject notesJson = _noteDataJson.GetField("Notes");
-            List<JSONObject> noteJsonList = notesJson.list;
-
             NoteManager.Instance.notes.Clear();
-            foreach (JSONObject noteJson in noteJsonList)
+            JSONObject notesJson = _noteDataJson.GetField("Notes");
+            if (notesJson != null)
             {
-                Note n = GetNoteFromJSON(noteJson);
-                NoteManager.Instance.notes.Add(n);
+                List<JSONObject> noteJsonList = notesJson.list;
+
+                if (noteJsonList != null)
+                {
+                    foreach (JSONObject noteJson in noteJsonList)
+                    {
+                        Note n = GetNoteFromJSON(noteJson);
+                        NoteManager.Instance.notes.Add(n);
+                    }
+                }
             }
 
 
-            JSONObject effectNotesJson = _noteDataJson.GetField("EffectNotes");
-            List<JSONObject> effectNoteJsonList = effectNotesJson.list;
-
             NoteManager.Instance.effectNotes.Clear();
-            foreach (JSONObject effectNoteJson in effectNoteJsonList)
+            JSONObject effectNotesJson = _noteDataJson.GetField("EffectNotes");
+            if (effectNotesJson != null)
             {
-                Note n = GetNoteFromJSON(effectNoteJson);
-                NoteManager.Instance.effectNotes.Add(n);
+                List<JSONObject> effectNoteJsonList = effectNotesJson.list;
+
+                if (effectNoteJsonList != null)
+                {
+                    foreach (JSONObject effectNoteJson in effectNoteJsonList)
+                    {
+                        Note n = GetNoteFromJSON(effectNoteJson);
+                        NoteManager.Instance.effectNotes.Add(n);
+                    }
+                }
             }
 
 
@@ -169,13 +181,9 @@ namespace PopTheCircle.NoteEditor
             {
                 default:
                 case "NormalNote":
-                case "DoubleNote":
-                    break;
-                case "DragNote":
-                    {
-                        DragNote dragNote = (DragNote)_n;
-                        noteJson.AddField("direction", dragNote.direction);
-                    }
+                case "PopNote":
+                case "MineNote":
+                case "TickNote":
                     break;
                 case "LongNote":
                     {
@@ -184,12 +192,20 @@ namespace PopTheCircle.NoteEditor
                         noteJson.AddField("endBeat", longNote.endBeat);
                     }
                     break;
-                case "InfinityNote":
+                case "SpaceNote":
                     {
-                        InfinityNote infinityNote = (InfinityNote)_n;
-                        noteJson.AddField("endBar", infinityNote.endBar);
-                        noteJson.AddField("endBeat", infinityNote.endBeat);
-                        noteJson.AddField("maxHitCount", infinityNote.maxHitCount);
+                        SpaceNote spaceNote = (SpaceNote)_n;
+                        noteJson.AddField("endBar", spaceNote.endBar);
+                        noteJson.AddField("endBeat", spaceNote.endBeat);
+                    }
+                    break;
+                case "EffectNote":
+                    {
+                        EffectNote effectNote = (EffectNote)_n;
+                        noteJson.AddField("endBar", effectNote.endBar);
+                        noteJson.AddField("endBeat", effectNote.endBeat);
+                        noteJson.AddField("seType", effectNote.seType.ToString());
+                        noteJson.AddField("seTickBeatRate", effectNote.seTickBeatRate);
                     }
                     break;
                 case "CameraNote":
@@ -224,16 +240,14 @@ namespace PopTheCircle.NoteEditor
                 case "NormalNote":
                     n = new NormalNote();
                     break;
-                case "DoubleNote":
-                    n = new DoubleNote();
+                case "PopNote":
+                    n = new PopNote();
                     break;
-                case "DragNote":
-                    {
-                        n = new DragNote()
-                        {
-                            direction = GetIntData(_json, "direction")
-                        };
-                    }
+                case "MineNote":
+                    n = new MineNote();
+                    break;
+                case "TickNote":
+                    n = new TickNote();
                     break;
                 case "LongNote":
                     {
@@ -244,14 +258,34 @@ namespace PopTheCircle.NoteEditor
                         };
                     }
                     break;
-                case "InfinityNote":
+                case "SpaceNote":
                     {
-                        n = new InfinityNote()
+                        n = new SpaceNote()
+                        {
+                            endBar = GetIntData(_json, "endBar"),
+                            endBeat = GetFloatData(_json, "endBeat")
+                        };
+                    }
+                    break;
+                case "EffectNote":
+                    {
+                        n = new EffectNote()
                         {
                             endBar = GetIntData(_json, "endBar"),
                             endBeat = GetFloatData(_json, "endBeat"),
-                            maxHitCount = GetIntData(_json, "maxHitCount")
+                            seTickBeatRate = GetIntData(_json, "seTickBeatRate", 4),
                         };
+
+                        EffectNote effectNote = (EffectNote)n;
+
+                        string seTypeStr = GetStringData(_json, "seType");
+                        EffectNoteSEType seType = EffectNoteSEType.None;
+                        if (string.IsNullOrEmpty(seTypeStr))
+                            effectNote.seType = EffectNoteSEType.None;
+                        else if (!Enum.TryParse<EffectNoteSEType>(seTypeStr, out seType))
+                            effectNote.seType = EffectNoteSEType.None;
+                        else
+                            effectNote.seType = seType;
                     }
                     break;
                 case "CameraNote":
@@ -281,28 +315,35 @@ namespace PopTheCircle.NoteEditor
             n.bar = GetIntData(_json, "bar");
             n.beat = GetFloatData(_json, "beat");
             n.railNumber = GetIntData(_json, "railNumber");
+            Enum.TryParse<NoteType>(noteTypeName.Replace("Note", ""), out n.noteType);
 
             return n;
         }
 
         private string GetStringData(JSONObject _json, string _field)
         {
+            if (_json == null)
+                return "";
              JSONObject j = _json.GetField(_field);
             if (j == null)
                 return "";
             return j.str;                
         }
 
-        private int GetIntData(JSONObject _json, string _field)
+        private int GetIntData(JSONObject _json, string _field, int _default = 0)
         {
+            if (_json == null)
+                return _default;
             JSONObject j = _json.GetField(_field);
             if (j == null)
-                return 0;
+                return _default;
             return (int)j.i;
         }
 
         private float GetFloatData(JSONObject _json, string _field)
         {
+            if (_json == null)
+                return 0.0f;
             JSONObject j = _json.GetField(_field);
             if (j == null)
                 return 0.0f;
@@ -311,6 +352,8 @@ namespace PopTheCircle.NoteEditor
 
         private bool GetBoolData(JSONObject _json, string _field)
         {
+            if (_json == null)
+                return false;
             JSONObject j = _json.GetField(_field);
             if (j == null)
                 return false;
@@ -319,6 +362,8 @@ namespace PopTheCircle.NoteEditor
 
         private Vector2 GetVector2Data(JSONObject _json, string _field)
         {
+            if (_json == null)
+                return Vector2.zero;
             JSONObject j = _json.GetField(_field);
             if (j == null)
                 return Vector2.zero;
