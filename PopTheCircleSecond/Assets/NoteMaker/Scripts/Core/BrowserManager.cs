@@ -34,5 +34,21 @@ namespace PopTheCircle.NoteEditor
                 fileBrowserScript.OnFileSelect += _onPathSelected;
             }
         }
+
+        public void OpenSyncPathSelectBrowser(Action<string> _onPathSelected)
+        {
+            GameObject fileBrowserObject = Instantiate(fileBrowserPrefab, transform);
+            fileBrowserObject.name = "FileBrowser";
+
+            FileBrowser fileBrowserScript = fileBrowserObject.GetComponent<FileBrowser>();
+            float aspectRatio = (float)Screen.width / (float)Screen.height;
+            fileBrowserScript.SetupFileBrowser(
+                (aspectRatio > 1.0f) ? ViewMode.Landscape : ViewMode.Portrait,
+                (PlayerPrefs.HasKey("LastDirectory")) ? PlayerPrefs.GetString("LastDirectory", "") : ""
+                );
+
+            fileBrowserScript.OpenFilePanel(new string[] { "json" });
+            fileBrowserScript.OnFileSelect += _onPathSelected;
+        }
     }
 }

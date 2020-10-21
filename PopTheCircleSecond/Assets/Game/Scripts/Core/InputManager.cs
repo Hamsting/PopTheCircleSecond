@@ -25,7 +25,8 @@ namespace PopTheCircle.Game
             KeyCode.RightShift,
         };
         */
-        private KeyCode[] keyCodes = new KeyCode[8]
+        
+        private KeyCode[] mainKeyCodes = new KeyCode[8]
         {
             KeyCode.D,
             KeyCode.F,
@@ -36,6 +37,20 @@ namespace PopTheCircle.Game
             KeyCode.S,
             KeyCode.L,
         };
+        
+        /*
+        private KeyCode[] mainKeyCodes = new KeyCode[8]
+        {
+            KeyCode.S,
+            KeyCode.D,
+            KeyCode.L,
+            KeyCode.Semicolon,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.A,
+            KeyCode.Quote,
+        };
+        */
 
         [InspectorReadOnly]
         public List<TouchInfo> infos;
@@ -89,42 +104,42 @@ namespace PopTheCircle.Game
             // 그 외의 경우. (에디터, 윈도우 등)
             else
             {
-                if (keyCodes == null || keyCodes.Length < 8)
+                if (mainKeyCodes == null || mainKeyCodes.Length < 8)
                     return;
 
-                if (Input.GetKeyDown(keyCodes[0]))
+                if (Input.GetKeyDown(mainKeyCodes[0]))
                     InputRail(0, InputPress);
-                else if (Input.GetKey(keyCodes[0]))
+                else if (Input.GetKey(mainKeyCodes[0]))
                     InputRail(0, InputStay);
 
-                if (Input.GetKeyDown(keyCodes[1]))
+                if (Input.GetKeyDown(mainKeyCodes[1]))
                     InputRail(1, InputPress);
-                else if (Input.GetKey(keyCodes[1]))
+                else if (Input.GetKey(mainKeyCodes[1]))
                     InputRail(1, InputStay);
 
-                if (Input.GetKeyDown(keyCodes[2]))
+                if (Input.GetKeyDown(mainKeyCodes[2]))
                     InputRail(2, InputPress);
-                else if (Input.GetKey(keyCodes[2]))
+                else if (Input.GetKey(mainKeyCodes[2]))
                     InputRail(2, InputStay);
 
-                if (Input.GetKeyDown(keyCodes[3]))
+                if (Input.GetKeyDown(mainKeyCodes[3]))
                     InputRail(3, InputPress);
-                else if (Input.GetKey(keyCodes[3]))
+                else if (Input.GetKey(mainKeyCodes[3]))
                     InputRail(3, InputStay);
                 
-                if (Input.GetKeyDown(keyCodes[4]) || Input.GetKeyDown(keyCodes[5]))
+                if (Input.GetKeyDown(mainKeyCodes[4]) || Input.GetKeyDown(mainKeyCodes[5]))
                     InputRail(4, InputPress);
-                else if (Input.GetKey(keyCodes[4]) || Input.GetKey(keyCodes[5]))
+                else if (Input.GetKey(mainKeyCodes[4]) || Input.GetKey(mainKeyCodes[5]))
                     InputRail(4, InputStay);
                 
-                if (Input.GetKeyDown(keyCodes[6]))
+                if (Input.GetKeyDown(mainKeyCodes[6]))
                     InputRail(5, InputPress);
-                else if (Input.GetKey(keyCodes[6]))
+                else if (Input.GetKey(mainKeyCodes[6]))
                     InputRail(5, InputStay);
                 
-                if (Input.GetKeyDown(keyCodes[7]))
+                if (Input.GetKeyDown(mainKeyCodes[7]))
                     InputRail(6, InputPress);
-                else if (Input.GetKey(keyCodes[7]))
+                else if (Input.GetKey(mainKeyCodes[7]))
                     InputRail(6, InputStay);
             }
         }

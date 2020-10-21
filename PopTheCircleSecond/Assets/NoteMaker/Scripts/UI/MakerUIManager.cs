@@ -29,6 +29,8 @@ namespace PopTheCircle.NoteEditor
         private void Start()
         {
             optionMenu.ui = this;
+            optionMenu.LoadVolumeSettings();
+
             UpdateDefaultMenuUI();
         }
 
@@ -144,6 +146,26 @@ namespace PopTheCircle.NoteEditor
             return min.ToString("D02") + ":" + sec.ToString("D02") + "." + mil.ToString("D03");
         }
 
+        public void SyncUpload()
+        {
+            if (string.IsNullOrEmpty(NoteDataSyncManager.Instance.syncRootPath))
+                SetSyncPath();
+            else
+                NoteDataSyncManager.Instance.StartSyncUpload();
+        }
+
+        public void SyncDownload()
+        {
+            if (string.IsNullOrEmpty(NoteDataSyncManager.Instance.syncRootPath))
+                SetSyncPath();
+            else
+                NoteDataSyncManager.Instance.StartSyncDownload();
+        }
+
+        public void SetSyncPath()
+        {
+            BrowserManager.Instance.OpenSyncPathSelectBrowser(NoteDataSyncManager.Instance.SetSyncRootPath);
+        }
 
 
 

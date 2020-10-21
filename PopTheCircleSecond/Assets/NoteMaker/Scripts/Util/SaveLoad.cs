@@ -20,7 +20,11 @@ namespace PopTheCircle.NoteEditor
             if (!Path.IsPathRooted(path))
             {
                 string noteDataDir = MakerManager.Instance.noteDataFilePath;
+#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
                 noteDataDir = noteDataDir.Substring(0, noteDataDir.LastIndexOf("\\")) + "\\";
+#else
+                noteDataDir = noteDataDir.Substring(0, noteDataDir.LastIndexOf("/")) + "/";
+#endif
                 path = noteDataDir + _path;
             }
 

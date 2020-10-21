@@ -1,0 +1,434 @@
+﻿{
+	"version":1,
+	"updatedTime":"2020-10-02 15:41:27",
+	"hashes":[
+		{
+			"key":"01_Converted",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Angelic Jelly",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Blastix Riotz",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Dyscontrolled Galaxy",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/ECHIDNA",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/End Time",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Everlasting Message",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Freedom Dive",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Go Beyond",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Rebellio",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Technical Master",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/XyHatte",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/ΑΩ",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/上海紅茶館 ～ Chinese Tea Orchid Remix",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Angelic Jelly",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Blastix Riotz",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Chrono Diver -PENDULUMs-",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Chronomia",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Dyscontrolled Galaxy",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/ECHIDNA",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/End Time",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Everlasting Message",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Freedom Dive",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Go Beyond",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Grievous Lady",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Lachryma《ReQueen’M》",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/PUPA",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Rebellio",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/Technical Master",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/XyHatte",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/ΑΩ",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/上海紅茶館 ～ Chinese Tea Orchid Remix",
+			"value":"Dir"
+		},
+		{
+			"key":"01_Converted/Angelic Jelly/Enhanced_converted.ntd",
+			"value":"1b6381f472e5086064a0a5ffb466e185"
+		},
+		{
+			"key":"01_Converted/Angelic Jelly/Extreme_converted.ntd",
+			"value":"579243c53078886fbca995b841dc808d"
+		},
+		{
+			"key":"01_Converted/Angelic Jelly/music.mp3",
+			"value":"39fecf7b4cc95faddc4fee924bf904fc"
+		},
+		{
+			"key":"01_Converted/Angelic Jelly/Normal_converted.ntd",
+			"value":"3a74c86f2b2f6c537539fb9719c598d0"
+		},
+		{
+			"key":"01_Converted/Blastix Riotz/Extreme_converted.ntd",
+			"value":"3cc66b63f26e289351f04205680178f5"
+		},
+		{
+			"key":"01_Converted/Blastix Riotz/Music.mp3",
+			"value":"91ddeb189f5f421bf54fbd32e2705fcc"
+		},
+		{
+			"key":"01_Converted/Dyscontrolled Galaxy/Extreme_converted.ntd",
+			"value":"29c3f6bc0d72b28161c005f8fc1cdcdf"
+		},
+		{
+			"key":"01_Converted/Dyscontrolled Galaxy/music.mp3",
+			"value":"9743ae1ea9d9200f1d276271679e5a1c"
+		},
+		{
+			"key":"01_Converted/Dyscontrolled Galaxy/test_converted.ntd",
+			"value":"e2d216a1e66b89d635edd93a958582c9"
+		},
+		{
+			"key":"01_Converted/ECHIDNA/Extreme_converted.ntd",
+			"value":"01f99197e15b1ed6ed4d6298714d7c27"
+		},
+		{
+			"key":"01_Converted/ECHIDNA/Music.mp3",
+			"value":"d0412595ea10750dffa120e284855d27"
+		},
+		{
+			"key":"01_Converted/ECHIDNA/Special_converted.ntd",
+			"value":"3d29ef1a69b58e2f500fc5f612409383"
+		},
+		{
+			"key":"01_Converted/End Time/Extreme_converted.ntd",
+			"value":"35b304a4255c5308b4a8f85317d4f4d5"
+		},
+		{
+			"key":"01_Converted/End Time/Music.mp3",
+			"value":"ec8a697627f02e5a38325142f95eb54f"
+		},
+		{
+			"key":"01_Converted/Everlasting Message/Extreme_converted.ntd",
+			"value":"88d6462e26dfd72d43c0e3a551c64e21"
+		},
+		{
+			"key":"01_Converted/Everlasting Message/Music.mp3",
+			"value":"a3b900e5a80bcfc9aeb674569e4ad59d"
+		},
+		{
+			"key":"01_Converted/Freedom Dive/Enhanced_converted.ntd",
+			"value":"03cab0359acdc053735e62bd71c9a248"
+		},
+		{
+			"key":"01_Converted/Freedom Dive/Extreme_converted.ntd",
+			"value":"d11f9eb8660adbacd6b9b5dfbeed97bc"
+		},
+		{
+			"key":"01_Converted/Freedom Dive/Music.mp3",
+			"value":"da79d766584365b19e32abdbddd729cd"
+		},
+		{
+			"key":"01_Converted/Freedom Dive/Normal_converted.ntd",
+			"value":"228c17ed5f68fc06332f61781f37dec0"
+		},
+		{
+			"key":"01_Converted/Freedom Dive/Special_converted.ntd",
+			"value":"98bdce7e325403c4e45f00c8557408ec"
+		},
+		{
+			"key":"01_Converted/Go Beyond/Enhanced_converted.ntd",
+			"value":"de035c6a1598ad34e960f7ccd10225bd"
+		},
+		{
+			"key":"01_Converted/Go Beyond/Extreme_converted.ntd",
+			"value":"f87aae7f7c64d44fa9d85ca59e98e714"
+		},
+		{
+			"key":"01_Converted/Go Beyond/Music.mp3",
+			"value":"7e8621e2866061060236976b8c7298d9"
+		},
+		{
+			"key":"01_Converted/Go Beyond/Normal_converted.ntd",
+			"value":"d387fb56f4472895e01bfa2779ea8765"
+		},
+		{
+			"key":"01_Converted/Go Beyond/Special_converted.ntd",
+			"value":"a734a0e331cb914d9d00eee052d8afd2"
+		},
+		{
+			"key":"01_Converted/Rebellio/Enhanced_converted.ntd",
+			"value":"8d6990a11bb5fa471089e97db0faa731"
+		},
+		{
+			"key":"01_Converted/Rebellio/Extreme_converted.ntd",
+			"value":"487bc1258141b14f94480ca33a09071b"
+		},
+		{
+			"key":"01_Converted/Rebellio/Music.mp3",
+			"value":"67cb3925b7ce49fb6d59d0cf95b28c0c"
+		},
+		{
+			"key":"01_Converted/Rebellio/Special_converted.ntd",
+			"value":"39df969e631274f0c0deed4127a11b07"
+		},
+		{
+			"key":"01_Converted/Technical Master/Extreme_converted.ntd",
+			"value":"3f151af811a2e4977f4be7dbe4077624"
+		},
+		{
+			"key":"01_Converted/Technical Master/music.mp3",
+			"value":"c07e73289cbeece6a0e4ecd8d51ed755"
+		},
+		{
+			"key":"01_Converted/Technical Master/Normal_converted.ntd",
+			"value":"4a027be41f459f37a25fac91e5b95e31"
+		},
+		{
+			"key":"01_Converted/XyHatte/Extreme_converted.ntd",
+			"value":"adb7c6f7e99e3c97e830cdc804cd4b60"
+		},
+		{
+			"key":"01_Converted/XyHatte/music.mp3",
+			"value":"92ac41a3f2a7f3b59a52c3a34d0c6baa"
+		},
+		{
+			"key":"01_Converted/ΑΩ/Extreme_converted.ntd",
+			"value":"32210882a46473fbc9a125eed1fa6349"
+		},
+		{
+			"key":"01_Converted/ΑΩ/music.mp3",
+			"value":"d426d87763b4afcef6dfb6ec9bc9822b"
+		},
+		{
+			"key":"01_Converted/上海紅茶館 ～ Chinese Tea Orchid Remix/Extreme_converted.ntd",
+			"value":"b89d57265bff5e88195e67191eb77ca9"
+		},
+		{
+			"key":"01_Converted/上海紅茶館 ～ Chinese Tea Orchid Remix/music.mp3",
+			"value":"a40a3ff7506751cd392012103ac6ca0b"
+		},
+		{
+			"key":"02_Making/Angelic Jelly/Music.mp3",
+			"value":"39fecf7b4cc95faddc4fee924bf904fc"
+		},
+		{
+			"key":"02_Making/Blastix Riotz/Music.mp3",
+			"value":"91ddeb189f5f421bf54fbd32e2705fcc"
+		},
+		{
+			"key":"02_Making/Chrono Diver -PENDULUMs-/Enhanced.ntd",
+			"value":"ffe1050540f98a8ea7280a27bb59631d"
+		},
+		{
+			"key":"02_Making/Chrono Diver -PENDULUMs-/Extreme.ntd",
+			"value":"62199ccbfc5abe81e756b4a2e4b09f09"
+		},
+		{
+			"key":"02_Making/Chrono Diver -PENDULUMs-/Music.mp3",
+			"value":"03cdbf8537450f12996d9de28c31456d"
+		},
+		{
+			"key":"02_Making/Chronomia/Extreme.ntd",
+			"value":"4dfcde81e37ffb6c9039819d22bda507"
+		},
+		{
+			"key":"02_Making/Chronomia/Music.mp3",
+			"value":"515e0b080af67bbf0b419f6278fdd4df"
+		},
+		{
+			"key":"02_Making/Dyscontrolled Galaxy/Music.mp3",
+			"value":"9743ae1ea9d9200f1d276271679e5a1c"
+		},
+		{
+			"key":"02_Making/ECHIDNA/Extreme.ntd",
+			"value":"f41bb2201202a5d813a24cb76f6607ea"
+		},
+		{
+			"key":"02_Making/ECHIDNA/Music.mp3",
+			"value":"d0412595ea10750dffa120e284855d27"
+		},
+		{
+			"key":"02_Making/ECHIDNA/Special.ntd",
+			"value":"aea3c59f33744cc762533275a0cbbc86"
+		},
+		{
+			"key":"02_Making/End Time/Extreme.ntd",
+			"value":"69b062eeacd5379f412ffd35c6ad1dd7"
+		},
+		{
+			"key":"02_Making/End Time/Music.mp3",
+			"value":"ec8a697627f02e5a38325142f95eb54f"
+		},
+		{
+			"key":"02_Making/Everlasting Message/Music.mp3",
+			"value":"a3b900e5a80bcfc9aeb674569e4ad59d"
+		},
+		{
+			"key":"02_Making/Freedom Dive/Extreme.ntd",
+			"value":"677b151a07dfc47638cdd8bd1ec1820b"
+		},
+		{
+			"key":"02_Making/Freedom Dive/Music.mp3",
+			"value":"da79d766584365b19e32abdbddd729cd"
+		},
+		{
+			"key":"02_Making/Freedom Dive/Special.ntd",
+			"value":"c14e62e16c9fefc927468a2d99e7da24"
+		},
+		{
+			"key":"02_Making/Go Beyond/Extreme.ntd",
+			"value":"fd4e81585328f7ea7e816850f96c6a9b"
+		},
+		{
+			"key":"02_Making/Go Beyond/Music.mp3",
+			"value":"7e8621e2866061060236976b8c7298d9"
+		},
+		{
+			"key":"02_Making/Go Beyond/Special.ntd",
+			"value":"eb1e301ec266edb624df6a6bd814c4f1"
+		},
+		{
+			"key":"02_Making/Grievous Lady/Extreme.ntd",
+			"value":"c46a29c925355d4125c866fdb164a379"
+		},
+		{
+			"key":"02_Making/Grievous Lady/music.mp3",
+			"value":"7eff2bfadf7ec944d73462fffceaf511"
+		},
+		{
+			"key":"02_Making/Lachryma《ReQueen’M》/Extreme.ntd",
+			"value":"50f055a970aaada6d5424c49219c81dc"
+		},
+		{
+			"key":"02_Making/Lachryma《ReQueen’M》/music.mp3",
+			"value":"f49b3cffa5b174d5d33400ca7ee1a985"
+		},
+		{
+			"key":"02_Making/PUPA/Extreme.ntd",
+			"value":"567ab0069bfe0d02da8033897f567b4d"
+		},
+		{
+			"key":"02_Making/PUPA/Music.mp3",
+			"value":"8e264447dae59a44317fff7669199f83"
+		},
+		{
+			"key":"02_Making/Rebellio/Music.mp3",
+			"value":"67cb3925b7ce49fb6d59d0cf95b28c0c"
+		},
+		{
+			"key":"02_Making/Technical Master/Extreme.ntd",
+			"value":"88ab00a3998931dff6163239d49ff8dc"
+		},
+		{
+			"key":"02_Making/Technical Master/Music.mp3",
+			"value":"c07e73289cbeece6a0e4ecd8d51ed755"
+		},
+		{
+			"key":"02_Making/XyHatte/Extreme.ntd",
+			"value":"0255440df982b6042369f3cfdc14bb98"
+		},
+		{
+			"key":"02_Making/XyHatte/Music.mp3",
+			"value":"92ac41a3f2a7f3b59a52c3a34d0c6baa"
+		},
+		{
+			"key":"02_Making/ΑΩ/Extreme.ntd",
+			"value":"a01c136270da2a767a00db4294126a0a"
+		},
+		{
+			"key":"02_Making/ΑΩ/Music.mp3",
+			"value":"d426d87763b4afcef6dfb6ec9bc9822b"
+		},
+		{
+			"key":"02_Making/上海紅茶館 ～ Chinese Tea Orchid Remix/Extreme.ntd",
+			"value":"65c13a9fbc16b5d763eb2cbe7397ab20"
+		},
+		{
+			"key":"02_Making/上海紅茶館 ～ Chinese Tea Orchid Remix/Music.mp3",
+			"value":"a40a3ff7506751cd392012103ac6ca0b"
+		}
+	]
+}

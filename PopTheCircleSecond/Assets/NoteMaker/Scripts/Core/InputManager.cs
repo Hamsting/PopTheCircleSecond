@@ -7,6 +7,11 @@ namespace PopTheCircle.NoteEditor
 {
     public class InputManager : Singleton<InputManager>
     {
+        private void Start()
+        {
+            Input.simulateMouseWithTouches = true;
+        }
+
         private void Update()
         {
             if (!EventSystem.current.IsPointerOverGameObject())

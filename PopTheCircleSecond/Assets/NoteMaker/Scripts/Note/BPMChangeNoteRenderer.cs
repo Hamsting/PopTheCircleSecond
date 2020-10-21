@@ -27,8 +27,11 @@ namespace PopTheCircle.NoteEditor
             notePos.z = -0.5f;
 
             this.transform.localPosition = notePos;
-            
-            bpmText.text = bpmInfo.bpm.ToString("0.###");
+
+            string resStr = bpmInfo.bpm.ToString("0.###");
+            if (bpmInfo.stopEffect)
+                resStr += "(STOP)";
+            bpmText.text = resStr;
         }
     }
 }

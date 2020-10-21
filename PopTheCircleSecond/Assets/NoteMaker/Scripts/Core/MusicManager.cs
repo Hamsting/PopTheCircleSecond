@@ -88,6 +88,21 @@ namespace PopTheCircle.NoteEditor
                 musicAudioSource.pitch = value;
             }
         }
+        public float MusicVolume
+        {
+            get { return musicAudioSource.volume; }
+            set { musicAudioSource.volume = value; }
+        }
+        public float ShotVolume
+        {
+            get { return shotAudioSource.volume; }
+            set { shotAudioSource.volume = value; }
+        }
+        public float SEVolume
+        {
+            get { return seAudioSource.volume; }
+            set { seAudioSource.volume = value; }
+        }
 
 
 

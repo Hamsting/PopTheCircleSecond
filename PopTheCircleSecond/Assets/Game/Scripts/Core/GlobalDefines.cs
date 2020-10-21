@@ -34,7 +34,7 @@ namespace PopTheCircle.Game
         public const int   ClearGaugeLongNoteTickRatio = 2;
 
         public const float ClearGaugeHealRateNormal = 230.0f;
-        public const float ClearGaugeDamageNormal = 2.0f;
+        public const float ClearGaugeDamageNormal   = 3.0f; // 4.0f; // 2.0f;
         public const float ClearGaugeCriteriaNormal = 70.0f;
 
         // public const float JudgePerfectTime  = 0.216f;

@@ -1597,6 +1597,83 @@ Transform:
   m_Father: {fileID: 1420871574}
   m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1059798367
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1059798368}
+  - component: {fileID: 1059798370}
+  - component: {fileID: 1059798369}
+  m_Layer: 5
+  m_Name: Speed
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1059798368
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059798367}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1.0007789, y: 1.0007789, z: 1.0007789}
+  m_Children: []
+  m_Father: {fileID: 1480797252}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 437, y: -19.05}
+  m_SizeDelta: {x: 623.9, y: 38.1}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1059798369
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059798367}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 708705254, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 25
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 2
+    m_MaxSize: 46
+    m_Alignment: 0
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 0
+    m_VerticalOverflow: 0
+    m_LineSpacing: 1
+  m_Text: 'Speed : 160 x 3.00 = 480'
+--- !u!222 &1059798370
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1059798367}
+  m_CullTransparentMesh: 0
 --- !u!1 &1214821606
 GameObject:
   m_ObjectHideFlags: 0
@@ -1634,7 +1711,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 60, y: -33.2}
+  m_AnchoredPosition: {x: 60, y: -33.200073}
   m_SizeDelta: {x: 66.1, y: 682.7}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1214821608
@@ -2281,6 +2358,7 @@ RectTransform:
   m_Children:
   - {fileID: 632632712}
   - {fileID: 1662524387}
+  - {fileID: 1059798368}
   m_Father: {fileID: 1976573194}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2450,7 +2528,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 516, y: -232.80078}
+  m_AnchoredPosition: {x: 437, y: -251.7001}
   m_SizeDelta: {x: 623.9, y: 427.2}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1662524388
@@ -2920,6 +2998,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   scoreText: {fileID: 632632714}
   debugText: {fileID: 1662524388}
+  speedText: {fileID: 1059798369}
 --- !u!1 &1742362294
 GameObject:
   m_ObjectHideFlags: 0
@@ -3184,10 +3263,10 @@ MonoBehaviour:
   judgeEvent:
     m_PersistentCalls:
       m_Calls: []
-  tickLastBar: 0
-  tickLastBeat: 0
   clearGaugeIncreaseAmount: 0
   clearGaugeDecreaseAmount: 0
+  tickLastBar: 0
+  tickLastBeat: 0
 --- !u!114 &1810484772
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3236,6 +3315,7 @@ MonoBehaviour:
   judgeNiceCount: 0
   judgeMissCount: 0
   totalCombo: 0
+  clearGaugeType: 0
   clearGauge: 0
 --- !u!114 &1810484774
 MonoBehaviour:
@@ -3259,10 +3339,12 @@ MonoBehaviour:
   standardBPM: 60
   beatPerSecond: 192
   gameSpeed: 1
+  gameSpeedNotRelatedBPM: 2
   bpmInfos: []
   ctInfos: []
   bpmInfoLastIndex: -1
   barToRailLength: 0.625
+  isSpeedRelatedToBPM: 0
 --- !u!82 &1810484775
 AudioSource:
   m_ObjectHideFlags: 0

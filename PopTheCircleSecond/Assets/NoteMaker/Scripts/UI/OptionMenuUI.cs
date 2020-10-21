@@ -14,8 +14,13 @@ namespace PopTheCircle.NoteEditor
         public InputField musicBPMInput;
         public InputField musicStartTime;
         public InputField standardBPM;
+        [Header("Volume")]
+        public Slider musicVolumeSlider;
+        public Slider shotVolumeSlider;
+        public Slider seVolumeSlider;
         [HideInInspector]
         public MakerUIManager ui;
+
 
 
         public void LoadNoteDataInfo()
@@ -93,6 +98,33 @@ namespace PopTheCircle.NoteEditor
             if (!_allowNegative && res < 0.0f)
                 res = 0.0f;
             return res;
+        }
+
+        public void SaveVolumeSettings()
+        {
+            PlayerPrefs.SetFloat("musicVolume", musicVolumeSlider.value);
+            PlayerPrefs.SetFloat("shotVolume", shotVolumeSlider.value);
+            PlayerPrefs.SetFloat("seVolume", seVolumeSlider.value);
+            PlayerPrefs.Save();
+        }
+
+        public void LoadVolumeSettings()
+        {
+            musicVolumeSlider.value = PlayerPrefs.GetFloat("musicVolume");
+            shotVolumeSlider.value = PlayerPrefs.GetFloat("shotVolume");
+            seVolumeSlider.value = PlayerPrefs.GetFloat("seVolume");
+        }
+
+        public void OnVolumeSliderValueChanged(int _audioSourceIndex)
+        {
+            if (_audioSourceIndex == 0)
+                MusicManager.Instance.MusicVolume = musicVolumeSlider.value;
+            else if (_audioSourceIndex == 1)
+                MusicManager.Instance.ShotVolume = shotVolumeSlider.value;
+            else if (_audioSourceIndex == 2)
+                MusicManager.Instance.SEVolume = seVolumeSlider.value;
+
+            SaveVolumeSettings();
         }
     }
 }

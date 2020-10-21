@@ -59,7 +59,8 @@ namespace PopTheCircle.Game
 
 
             JSONObject headerJson = _noteDataJson.GetField("Header");
-            MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f;
+            // MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f;
+            MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f + 0.033f;
             BeatManager.Instance.StandardBPM = GetFloatData(headerJson, "standardBPM");
 
             Debug.Log("standardBPM : " + BeatManager.Instance.StandardBPM.ToString("F06"));

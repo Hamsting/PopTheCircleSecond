@@ -101,8 +101,14 @@ namespace PopTheCircle.NoteEditor
         private IEnumerator BPMChangePopupCoroutine(int _bar, float _beat)
         {
             GameObject popup = ShowPopup("BPMChange");
+
+            BPMInfo curBpmInfo = BeatManager.Instance.GetBPMWithBarBeat(_bar, _beat);
+
             InputField bpmInput = popup.transform.Find("InputField").GetComponent<InputField>();
-            bpmInput.text = BeatManager.Instance.GetBPMWithBarBeat(_bar, _beat).ToString("0.###");
+            bpmInput.text = curBpmInfo.bpm.ToString("0.###");
+
+            Toggle stopToggle = popup.transform.Find("Toggle").GetComponent<Toggle>();
+            stopToggle.isOn = curBpmInfo.stopEffect;
 
             isWaitForApply = true;
             while (isWaitForApply)
@@ -113,6 +119,7 @@ namespace PopTheCircle.NoteEditor
             if (isApplied)
             {
                 float bpm = float.Parse(bpmInput.text);
+                bool stopEffect = stopToggle.isOn;
 
                 int index = BeatManager.Instance.BPMInfos.FindIndex((bi) => 
                 ((bi.bar == _bar && bi.beat == _beat) ||
@@ -120,12 +127,14 @@ namespace PopTheCircle.NoteEditor
                 );
                 if (index >= 0)
                 {
-                    BeatManager.Instance.BPMInfos[index].bpm = bpm;
+                    var targetInfo = BeatManager.Instance.BPMInfos[index];
+                    targetInfo.bpm = bpm;
+                    targetInfo.stopEffect = stopEffect;
                     BeatManager.Instance.UpdateBPMInfo();
                     BeatManager.Instance.UpdateRailLengths();
                 }
                 else
-                    BeatManager.Instance.AddNewBPMInfo(_bar, _beat, bpm);
+                    BeatManager.Instance.AddNewBPMInfo(_bar, _beat, bpm, stopEffect);
 
                 NoteManager.Instance.FixIncorrectBarBeatNotes();
                 NoteRailManager.Instance.UpdateRailSpawnImmediately();
@@ -211,6 +220,60 @@ namespace PopTheCircle.NoteEditor
             }
 
             ClosePopup("EffectNote");
+        }
+
+        public void OpenSyncUploadNotePopup()
+        {
+            StartCoroutine(SyncUploadPopupCoroutine());
+        }
+
+        private IEnumerator SyncUploadPopupCoroutine()
+        {
+            GameObject popup = ShowPopup("SyncUpload");
+
+            Text serverDateText = popup.transform.Find("ServerDateText").GetComponent<Text>();
+            Text changeListText = popup.transform.Find("ChangeListView").Find("Viewport").Find("Content").GetComponent<Text>();
+
+            serverDateText.text = NoteDataSyncManager.Instance.loadedServerHashDateStr + " (ver " + NoteDataSyncManager.Instance.loadedServerHashVersion + ")";
+            changeListText.text = NoteDataSyncManager.Instance.MakeUploadChangeListString();
+
+            isWaitForApply = true;
+            while (isWaitForApply)
+            {
+                yield return null;
+            }
+
+            NoteDataSyncManager.Instance.isPopupConfirmed = isApplied;
+            NoteDataSyncManager.Instance.isUploadPopupNeededAndOpened = false;
+
+            ClosePopup("SyncUpload");
+        }
+
+        public void OpenSyncDownloadNotePopup()
+        {
+            StartCoroutine(SyncDownloadPopupCoroutine());
+        }
+
+        private IEnumerator SyncDownloadPopupCoroutine()
+        {
+            GameObject popup = ShowPopup("SyncDownload");
+
+            Text serverDateText = popup.transform.Find("ServerDateText").GetComponent<Text>();
+            Text changeListText = popup.transform.Find("ChangeListView").Find("Viewport").Find("Content").GetComponent<Text>();
+
+            serverDateText.text = NoteDataSyncManager.Instance.loadedServerHashDateStr + " (ver " + NoteDataSyncManager.Instance.loadedServerHashVersion + ")";
+            changeListText.text = NoteDataSyncManager.Instance.MakeDownloadChangeListString();
+
+            isWaitForApply = true;
+            while (isWaitForApply)
+            {
+                yield return null;
+            }
+
+            NoteDataSyncManager.Instance.isPopupConfirmed = isApplied;
+            NoteDataSyncManager.Instance.isDownloadPopupNeededAndOpened = false;
+
+            ClosePopup("SyncDownload");
         }
     }
 }

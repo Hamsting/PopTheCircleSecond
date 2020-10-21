@@ -88,7 +88,7 @@ namespace PopTheCircle.NoteEditor
             // Debug.Log(-railLocalPos.y % railTotalHeight + " => Line : " + railNumber);
 
 
-            if (editMode == EditMode.PositionBar)
+            if (editMode == EditMode.PositionBar || BeatManager.Instance.IsPlaying)
             {
                 BeatManager.Instance.GotoBarBeat(bar, beat);
                 MusicManager.Instance.MusicPosition = BeatManager.Instance.GameTime;
@@ -469,126 +469,134 @@ namespace PopTheCircle.NoteEditor
             // int railNumber = (int)((-railLocalPos.y % railTotalHeight) / (NoteRail.RailHeight * 0.3f));
             int railNumber = NoteRailManager.Instance.RailYPosToRailNumber(-railLocalPos.y % railTotalHeight);
 
-            switch (editType)
+            if (BeatManager.Instance.IsPlaying)
             {
-                case EditType.NormalNote:
-                    {
-                        if (railNumber > 3)
-                            break;
-                        Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(NormalNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.PopNote:
-                    {
-                        if (railNumber > 3)
-                            break;
-                        Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(PopNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.MineNote:
-                    {
-                        if (railNumber > 3)
-                            break;
-                        Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
-                        if (note != null && note.GetType() == typeof(MineNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.LongNote:
-                    {
-                        if (railNumber > 3)
-                            break;
-                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
-                        if (note != null && note.GetType() == typeof(LongNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.SpaceNote:
-                    {
-                        if (railNumber > 4)
-                            break;
-                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, 4, true);
-                        if (note == null)
-                            note = NoteManager.Instance.FindNote(bar, beat, 4, true);
-
-                        if (note != null && note.GetType() == typeof(SpaceNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.EffectNote:
-                    {
-                        if (railNumber < 5 || railNumber > 6)
-                            break;
-                        Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
-                        if (note == null)
-                            note = NoteManager.Instance.FindNote(bar, beat, railNumber, true);
-
-                        if (note != null && note.GetType() == typeof(EffectNote))
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.BPMChangeNote:
-                    {
-                        int index = BeatManager.Instance.BPMInfos.FindIndex(
-                            (bi) => (
-                            BeatManager.Instance.CorrectBarBeat(BeatManager.ToBarBeat(bi.bar, bi.beat))
-                             == resultBarBeat
-                            ));
-                        if (index > 0)
+                BeatManager.Instance.GotoBarBeat(bar, beat);
+                MusicManager.Instance.MusicPosition = BeatManager.Instance.GameTime;
+            }
+            else
+            {
+                switch (editType)
+                {
+                    case EditType.NormalNote:
                         {
-                            BeatManager.Instance.BPMInfos.RemoveAt(index);
-                            BeatManager.Instance.UpdateBPMInfo();
-                            NoteManager.Instance.FixIncorrectBarBeatNotes();
-                            BeatManager.Instance.UpdateRailLengths();
-                            NoteRailManager.Instance.UpdateRailSpawnImmediately();
-                            BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            if (railNumber > 3)
+                                break;
+                            Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
+                            if (note != null && note.GetType() == typeof(NormalNote))
+                                NoteManager.Instance.RemoveNote(note);
                         }
-                    }
-                    break;
-                case EditType.CTChangeNote:
-                    {
-                        int index = BeatManager.Instance.ctInfos.FindIndex((ct) => (ct.bar == bar));
-                        if (index > 0)
+                        break;
+                    case EditType.PopNote:
                         {
-                            BeatManager.Instance.ctInfos.RemoveAt(index);
-                            NoteManager.Instance.FixIncorrectBarBeatNotes();
-                            BeatManager.Instance.UpdateRailLengths();
-                            NoteRailManager.Instance.UpdateRailSpawnImmediately();
-                            BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            if (railNumber > 3)
+                                break;
+                            Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
+                            if (note != null && note.GetType() == typeof(PopNote))
+                                NoteManager.Instance.RemoveNote(note);
                         }
-                    }
-                    break;
-                case EditType.CameraNote:
-                    {
-                        if (railNumber != 8)
-                            break;
-                        Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(CameraNote));
-                        if (note != null)
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.EventNote:
-                    {
-                        Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(EventNote));
-                        if (note != null)
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                case EditType.TickNote:
-                    {
-                        if (railNumber != 7)
-                            break;
-                        Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(TickNote));
-                        if (note != null)
-                            NoteManager.Instance.RemoveNote(note);
-                    }
-                    break;
-                default:
-                    break;
+                        break;
+                    case EditType.MineNote:
+                        {
+                            if (railNumber > 3)
+                                break;
+                            Note note = NoteManager.Instance.FindNote(bar, beat, railNumber);
+                            if (note != null && note.GetType() == typeof(MineNote))
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.LongNote:
+                        {
+                            if (railNumber > 3)
+                                break;
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
+                            if (note != null && note.GetType() == typeof(LongNote))
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.SpaceNote:
+                        {
+                            if (railNumber > 4)
+                                break;
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, 4, true);
+                            if (note == null)
+                                note = NoteManager.Instance.FindNote(bar, beat, 4, true);
+
+                            if (note != null && note.GetType() == typeof(SpaceNote))
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.EffectNote:
+                        {
+                            if (railNumber < 5 || railNumber > 6)
+                                break;
+                            Note note = NoteManager.Instance.FindLongTypeNote(bar, beat, railNumber, true);
+                            if (note == null)
+                                note = NoteManager.Instance.FindNote(bar, beat, railNumber, true);
+
+                            if (note != null && note.GetType() == typeof(EffectNote))
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.BPMChangeNote:
+                        {
+                            int index = BeatManager.Instance.BPMInfos.FindIndex(
+                                (bi) => (
+                                BeatManager.Instance.CorrectBarBeat(BeatManager.ToBarBeat(bi.bar, bi.beat))
+                                 == resultBarBeat
+                                ));
+                            if (index > 0)
+                            {
+                                BeatManager.Instance.BPMInfos.RemoveAt(index);
+                                BeatManager.Instance.UpdateBPMInfo();
+                                NoteManager.Instance.FixIncorrectBarBeatNotes();
+                                BeatManager.Instance.UpdateRailLengths();
+                                NoteRailManager.Instance.UpdateRailSpawnImmediately();
+                                BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            }
+                        }
+                        break;
+                    case EditType.CTChangeNote:
+                        {
+                            int index = BeatManager.Instance.ctInfos.FindIndex((ct) => (ct.bar == bar));
+                            if (index > 0)
+                            {
+                                BeatManager.Instance.ctInfos.RemoveAt(index);
+                                NoteManager.Instance.FixIncorrectBarBeatNotes();
+                                BeatManager.Instance.UpdateRailLengths();
+                                NoteRailManager.Instance.UpdateRailSpawnImmediately();
+                                BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            }
+                        }
+                        break;
+                    case EditType.CameraNote:
+                        {
+                            if (railNumber != 8)
+                                break;
+                            Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(CameraNote));
+                            if (note != null)
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.EventNote:
+                        {
+                            Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(EventNote));
+                            if (note != null)
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    case EditType.TickNote:
+                        {
+                            if (railNumber != 7)
+                                break;
+                            Note note = NoteManager.Instance.FindEffectNote(bar, beat, typeof(TickNote));
+                            if (note != null)
+                                NoteManager.Instance.RemoveNote(note);
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
 

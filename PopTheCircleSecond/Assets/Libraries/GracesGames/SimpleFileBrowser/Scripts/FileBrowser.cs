@@ -104,7 +104,8 @@ namespace GracesGames.SimpleFileBrowser.Scripts {
 				Debug.LogError("Make sure there is a canvas GameObject present in the Hierarcy (Create UI/Canvas)");
 			}
 
-			SetupPath(startPath);
+            SetupAndroidVariables();
+            SetupPath(startPath);
 		}
 
 		// Sets the current path (Android or other devices)
@@ -113,7 +114,6 @@ namespace GracesGames.SimpleFileBrowser.Scripts {
 			if (!String.IsNullOrEmpty(startPath) && Directory.Exists(startPath)) {
 				_currentPath = startPath;
 			} else if (IsAndroidPlatform()) {
-				SetupAndroidVariables();
 				_currentPath = _rootAndroidPath;
 			} else {
 				_currentPath = Directory.GetCurrentDirectory();

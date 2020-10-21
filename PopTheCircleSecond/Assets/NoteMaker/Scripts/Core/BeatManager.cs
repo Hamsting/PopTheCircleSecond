@@ -468,7 +468,7 @@ namespace PopTheCircle.NoteEditor
         /// <summary>
         /// 특정 박자 위치에서 적용되는 BPM 정보를 가져온다.
         /// </summary>
-        public float GetBPMWithBarBeat(int _bar, float _beat = 0.0f)
+        public BPMInfo GetBPMWithBarBeat(int _bar, float _beat = 0.0f)
         {
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
@@ -476,10 +476,10 @@ namespace PopTheCircle.NoteEditor
                 int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
                 if (infoStartBar <= _bar)
                 {
-                    return info.bpm;
+                    return info;
                 }
             }
-            return 60.0f;
+            return bpmInfos[0];
         }
 
         /// <summary>

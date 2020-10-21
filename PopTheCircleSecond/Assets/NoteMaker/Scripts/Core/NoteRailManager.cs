@@ -50,7 +50,7 @@ namespace PopTheCircle.NoteEditor
             }
         }
 
-        private float cameraHeight = 12.0f;
+        private float cameraHeight = 13.0f;
         [SerializeField, InspectorReadOnly]
         private float currentScroll = 0.0f;
         [SerializeField, InspectorReadOnly]
@@ -82,7 +82,8 @@ namespace PopTheCircle.NoteEditor
             Vector3 pos = new Vector3(0.0f, 0.0f, -5.0f);
             int railIndex = rl.railNumber - 1;
             float barBeat = curBarBeat - rl.startBarBeat;
-            pos.x = (barBeat / 4.0f) * 16.0f;
+            // pos.x = (barBeat / 4.0f) * 16.0f;
+            pos.x = barBeat * NoteRail.RailOneBarWidth;
             pos.y = railIndex * -(NoteRail.RailHeight + railSpacing);
             positionBar.transform.localPosition = pos;
         }
@@ -108,8 +109,8 @@ namespace PopTheCircle.NoteEditor
             float railHeightWithSpacing = NoteRail.RailHeight + railSpacing;
             float topRailPos = (currentScroll % railHeightWithSpacing) % NoteRail.RailHeight;
 
-            railMinNumber = Mathf.Clamp((int)(currentScroll / railHeightWithSpacing), 1, 32767);
-            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight * screenRatio + topRailPos) / railHeightWithSpacing) + 2, 1, 32767);
+            railMinNumber = Mathf.Clamp((int)(currentScroll / railHeightWithSpacing) - 3, 1, 32767);
+            railMaxNumber = Mathf.Clamp(railMinNumber + (int)((cameraHeight * screenRatio + topRailPos) / railHeightWithSpacing) + 2 + 3, 1, 32767);
 
             if (lastRailMinNumber != railMinNumber || lastRailMaxNumber != railMaxNumber)
                 UpdateRailSpawn();
@@ -135,7 +136,7 @@ namespace PopTheCircle.NoteEditor
                 railObj.transform.parent = railRoot;
                 railObj.transform.localPosition = Vector3.zero;
                 railObj.transform.localRotation = Quaternion.identity;
-                railObj.transform.localScale = Vector3.one;
+                // railObj.transform.localScale = Vector3.one;
 
                 /*
                 float barCount = (float)(BeatManager.Instance.ctInfos[BeatManager.Instance.ctInfos.Count - 1].numerator);
