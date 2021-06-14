@@ -49,13 +49,13 @@ namespace PopTheCircle.Game
                         float longFirstTickLimitTime = longNote.time + GlobalDefines.JudgeNiceTime;
                         if (longNote.firstPressed && BeatManager.Instance.GameTime <= longFirstTickLimitTime && BeatManager.Instance.GameTime >= longNote.time)
                         {
-                            UpdateJudgeAndCombo(note, 1, false, false);
+                            UpdateJudgeAndCombo(note, 1, 0, false, false);
                             longNote.firstTicked = true;
 
                         }
                         else if (!longNote.firstPressed && BeatManager.Instance.GameTime > longFirstTickLimitTime)
                         {
-                            UpdateJudgeAndCombo(note, 0, false, false);
+                            UpdateJudgeAndCombo(note, 0, 0, false, false);
                             longNote.firstTicked = true;
                         }
                     }
@@ -76,14 +76,14 @@ namespace PopTheCircle.Game
                         if (longNote.pressed)
                         {
                             NoteManager.Instance.DespawnNote(note, false);
-                            UpdateJudgeAndCombo(note, 1, false, true);
+                            UpdateJudgeAndCombo(note, 1, 0, false, true);
                         }
                         else
                         {
                             if (!longNote.firstTicked)
-                                UpdateJudgeAndCombo(note, 0, false, false);
+                                UpdateJudgeAndCombo(note, 0, 0, false, false);
                             NoteManager.Instance.DespawnNote(note, false);
-                            UpdateJudgeAndCombo(note, 0, false, true);
+                            UpdateJudgeAndCombo(note, 0, 0, false, true);
                         }
                         --i;
                     }
@@ -91,13 +91,13 @@ namespace PopTheCircle.Game
                 else if (note.noteType == NoteType.Mine && BeatManager.Instance.GameTime >= note.time)
                 {
                     bool isMissed = InputManager.Instance.inputStates[note.railNumber] != 0;
-                    UpdateJudgeAndCombo(note, isMissed ? 0 : 1, false, false);
+                    UpdateJudgeAndCombo(note, isMissed ? 0 : 1, 0, false, false);
                     NoteManager.Instance.DespawnNote(note, isMissed);
                 }
                 else if (BeatManager.Instance.GameTime >= note.time + GlobalDefines.JudgeNiceTime)
                 {
                     NoteManager.Instance.DespawnNote(note, true);
-                    UpdateJudgeAndCombo(note, 0, false, false);
+                    UpdateJudgeAndCombo(note, 0, 0, false, false);
                     --i;
                 }
             }
@@ -119,7 +119,7 @@ namespace PopTheCircle.Game
                         if (tickLastBarBeat >= longNote.tickStartBarBeat &&
                             tickLastBarBeat <= longNote.tickEndBarBeat)
                         {
-                            UpdateJudgeAndCombo(longNote, (longNote.pressed) ? 1 : 0, true, false);
+                            UpdateJudgeAndCombo(longNote, (longNote.pressed) ? 1 : 0, 0, true, false);
                         }
                     }
                 }
@@ -165,17 +165,27 @@ namespace PopTheCircle.Game
 
         public void JudgeNoteAtRail(int _railNumber, int _inputState)
         {
-            Note target = null;
+            Note targetNote = null;
+            Note nearestNote = null;
             float targetTimeDiff = 999.0f;
+            float nearestTimeDiff = 999.0f;
             foreach (Note note in NoteManager.Instance.spawnedNotes)
             {
                 if (note.railNumber != _railNumber)
                     continue;
 
-                if (note.noteType == NoteType.Mine)
-                    continue;
-
                 float timeDiff = note.time - BeatManager.Instance.GameTime;
+
+                if (timeDiff < nearestTimeDiff)
+                {
+                    nearestNote = note;
+                    nearestTimeDiff = timeDiff;
+                }
+
+                if (note.noteType == NoteType.Mine)
+                {
+                    continue;
+                }
 
                 if ((note.noteType == NoteType.Long ||
                     (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType) ||
@@ -186,16 +196,24 @@ namespace PopTheCircle.Game
                     longNote.firstPressed = true;
                 }
 
-                if (timeDiff < -GlobalDefines.JudgePerfectTime || timeDiff > GlobalDefines.JudgeEarlyFailTime)
-                    continue;
+                if (note.noteType == NoteType.Pop)
+                {
+                    if (timeDiff < -GlobalDefines.JudgeNiceTime || timeDiff > GlobalDefines.JudgeNiceTime)
+                        continue;
+                }
+                else
+                {
+                    if (timeDiff < -GlobalDefines.JudgeNiceTime || timeDiff > GlobalDefines.JudgeEarlyFailTime)
+                        continue;
+                }
 
                 if (timeDiff < targetTimeDiff)
                 {
-                    target = note;
+                    targetNote = note;
                     targetTimeDiff = timeDiff;
                 }
             }
-
+            
             if (_inputState == InputManager.InputStay)
             {
                 foreach (Note note in NoteManager.Instance.spawnedNotes)
@@ -212,7 +230,9 @@ namespace PopTheCircle.Game
                         continue;
 
                     float barBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
-                    if (barBeat < longNote.tickStartBarBeat - GlobalDefines.JudgeNiceTime || barBeat > longNote.tickEndBarBeat)
+                    float lnBarBeat = BeatManager.ToBarBeat(longNote.bar, longNote.beat);
+                    // if (barBeat < longNote.tickStartBarBeat - GlobalDefines.JudgeNiceTime || barBeat > longNote.tickEndBarBeat)
+                    if (barBeat < lnBarBeat - GlobalDefines.JudgeNiceTime || barBeat > longNote.tickEndBarBeat)
                         continue;
 
                     longNote.pressed = true;
@@ -221,43 +241,48 @@ namespace PopTheCircle.Game
             }
             else if (_inputState == InputManager.InputPress)
             {
-                if (target != null)
+                if (targetNote != null && targetNote == nearestNote)
                 {
-                    if (target.noteType == NoteType.Long ||
-                       (target.noteType == NoteType.Space && ((SpaceNote)target).IsLongType) ||
-                       (target.noteType == NoteType.Effect && ((EffectNote)target).IsLongType))
+                    if (targetNote.noteType == NoteType.Long ||
+                       (targetNote.noteType == NoteType.Space && ((SpaceNote)targetNote).IsLongType) ||
+                       (targetNote.noteType == NoteType.Effect && ((EffectNote)targetNote).IsLongType))
                     {
                         if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
                         {
-                            LongNote targetLong = (LongNote)target;
+                            LongNote targetLong = (LongNote)targetNote;
                             targetLong.pressed = true;
                             targetLong.firstPressed = true;
                             targetLong.lastPressedBarBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
                         }
                     }
+                    else if (targetNote.noteType == NoteType.Pop)
+                    {
+                        NoteManager.Instance.DespawnNote(targetNote, false);
+                        UpdateJudgeAndCombo(targetNote, 1, 0, false, false);
+                    }
                     else
                     {
-                        if (targetTimeDiff <= GlobalDefines.JudgePerfectTime)
+                        if (Mathf.Abs(targetTimeDiff) <= GlobalDefines.JudgePerfectTime)
                         {
-                            NoteManager.Instance.DespawnNote(target, false);
-                            UpdateJudgeAndCombo(target, 1, false, false);
+                            NoteManager.Instance.DespawnNote(targetNote, false);
+                            UpdateJudgeAndCombo(targetNote, 1, 0, false, false);
                         }
-                        else if (targetTimeDiff <= GlobalDefines.JudgeNiceTime)
+                        else if (Mathf.Abs(targetTimeDiff) <= GlobalDefines.JudgeNiceTime)
                         {
-                            NoteManager.Instance.DespawnNote(target, false);
-                            UpdateJudgeAndCombo(target, 2, false, false);
+                            NoteManager.Instance.DespawnNote(targetNote, false);
+                            UpdateJudgeAndCombo(targetNote, 2, (int)Mathf.Sign(targetTimeDiff), false, false);
                         }
                         else
                         {
-                            NoteManager.Instance.DespawnNote(target, true);
-                            UpdateJudgeAndCombo(target, 0, false, false);
+                            NoteManager.Instance.DespawnNote(targetNote, true);
+                            UpdateJudgeAndCombo(targetNote, 0, 0, false, false);
                         }
                     }
                 }
             }
         }
 
-        public void UpdateJudgeAndCombo(Note _note, int _judge, bool _isLongTick = false, bool _isLongLastTick = false)
+        public void UpdateJudgeAndCombo(Note _note, int _judge, int _timingDir, bool _isLongTick = false, bool _isLongLastTick = false)
         {
             bool isLongTypeNote =
                (_note.noteType == NoteType.Long ||
@@ -293,9 +318,6 @@ namespace PopTheCircle.Game
 
             if (_judge == 0)
             {
-                if (GameManager.Instance.currentCombo > GameManager.Instance.maxCombo)
-                    GameManager.Instance.maxCombo = GameManager.Instance.currentCombo;
-
                 GameManager.Instance.currentCombo = 0;
             }
             else
@@ -322,7 +344,9 @@ namespace PopTheCircle.Game
                     (_judge == 1) ? KeyBeamManager.KeyBeamState.Perfect : KeyBeamManager.KeyBeamState.Great);
             }
 
-            GameUI.Instance.uIJudgeImageAndCombo.Appear(_note.railNumber, _judge);
+            if (GameManager.Instance.currentCombo > GameManager.Instance.maxCombo)
+                GameManager.Instance.maxCombo = GameManager.Instance.currentCombo;
+            GameUI.Instance.uIJudgeImageAndCombo.Appear(_note.railNumber, _judge, _timingDir);
 
             // __TEST__
             /*

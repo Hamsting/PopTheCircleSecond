@@ -35,10 +35,10 @@ namespace PopTheCircle.Game
         [SerializeField, InspectorReadOnly]
         private double positionWithSpeed = 0.0f;
         /// <summary>
-        /// 화면에서 라인 끝의 위치에 해당하는 박자 위치이다.
+        /// 화면에서 라인 끝의 위치에 해당하는 위치이다.
         /// </summary>
         [SerializeField, InspectorReadOnly]
-        private float railEndBarBeat = 0.0f;
+        private double railEndPosition = 0.0f;
         /// <summary>
         /// 분당 출력되는 박자 수 값이다.
         /// </summary>
@@ -62,8 +62,8 @@ namespace PopTheCircle.Game
         /// <summary>
         /// BPM과 연관되지 않는 게임의 고정 속도 값이다.
         /// </summary>
-        [SerializeField, Range(0.5f, 10.0f)]
-        private float gameSpeedNotRelatedBPM = 2.0f;
+        // [SerializeField, Range(0.5f, 10.0f)]
+        // private float gameSpeedNotRelatedBPM = 2.0f;
         /// <summary>
         /// BPM 정보들을 담는 리스트이다.
         /// </summary>
@@ -74,6 +74,11 @@ namespace PopTheCircle.Game
         /// </summary>
         [SerializeField, InspectorReadOnly]
         private List<CTInfo> ctInfos;
+        /// <summary>
+        /// JP 정보들을 담는 리스트이다.
+        /// </summary>
+        [SerializeField, InspectorReadOnly]
+        private List<JPInfo> jpInfos;
         /// <summary>
         /// 마지막으로 읽은 BPM 정보의 인덱스 값이다.
         /// </summary>
@@ -91,7 +96,7 @@ namespace PopTheCircle.Game
         /// <summary>
         /// 노트 스피드가 BPM에 비례하여 변할지에 대한 여부이다.
         /// </summary>
-        public bool isSpeedRelatedToBPM = false;
+        // public bool isSpeedRelatedToBPM = false;
 
         /// <summary>
         /// 한 박자를 의미하는 단위이다.
@@ -158,7 +163,7 @@ namespace PopTheCircle.Game
                         standardBPM = 60.0f;
                 }
 
-                gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
+                // gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
             }
         }
         /// <summary>
@@ -168,15 +173,18 @@ namespace PopTheCircle.Game
         {
             get
             {
+                /*
                 if (IsSpeedRelatedToBPM)
                     return gameSpeed;
                 else
-                    return GameSpeedNotRelatedBPM;
+                    return gameSpeedNotRelatedBPM;
+                */
+                return gameSpeed;
             }
             set
             {
                 gameSpeed = value;
-                gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
+                // gameSpeedNotRelatedBPM = gameSpeed / (standardBPM / 60.0f);
             }
         }
         /// <summary>
@@ -186,7 +194,11 @@ namespace PopTheCircle.Game
         {
             get
             {
-                return gameSpeedNotRelatedBPM;
+                return gameSpeed * standardBPM * (standardBPM / 60.0f);
+            }
+            set
+            {
+                gameSpeed = value / standardBPM / (standardBPM / 60.0f);
             }
         }
         /// <summary>
@@ -204,18 +216,19 @@ namespace PopTheCircle.Game
             }
         }
         /// <summary>
-        /// 화면에서 라인 끝의 위치에 해당하는 박자 위치이다.
+        /// 화면에서 라인 끝의 위치에 해당하는 위치이다.
         /// </summary>
-        public float RailEndBarBeat
+        public double RailEndPosition
         {
             get
             {
-                return railEndBarBeat;
+                return railEndPosition;
             }
         }
         /// <summary>
         /// 노트 스피드가 BPM에 비례하여 변할지에 대한 여부이다.
         /// </summary>
+        /*
         public bool IsSpeedRelatedToBPM
         {
             get
@@ -227,6 +240,7 @@ namespace PopTheCircle.Game
                 isSpeedRelatedToBPM = value;
             }
         }
+        */
         /// <summary>
         /// BPM 정보들을 담는 리스트이다.
         /// </summary>
@@ -247,6 +261,16 @@ namespace PopTheCircle.Game
                 return ctInfos;
             }
         }
+        /// <summary>
+        /// JP 정보들을 담는 리스트이다.
+        /// </summary>
+        public List<JPInfo> JPInfos
+        {
+            get
+            {
+                return jpInfos;
+            }
+        }
 
 
 
@@ -258,8 +282,7 @@ namespace PopTheCircle.Game
             base.Awake();
             bpmInfos = new List<BPMInfo>();
             ctInfos = new List<CTInfo>();
-
-            GameSpeed = UserSettings.gameSpeed;
+            jpInfos = new List<JPInfo>();
         }
 
         /// <summary>
@@ -267,7 +290,6 @@ namespace PopTheCircle.Game
         /// </summary>
         private void Start()
         {
-
         }
 
         /// <summary>
@@ -276,6 +298,7 @@ namespace PopTheCircle.Game
         private void Update()
         {
             UpdateBarAndBeat();
+            UpdateJumpPosition();
             UpdateBPM();
         }
 
@@ -289,12 +312,28 @@ namespace PopTheCircle.Game
             beat += increasedBeat;
             position += (increasedBeat / GlobalDefines.BeatPerBar) * barToRailLength;
             positionWithSpeed = position * GameSpeed;
-            railEndBarBeat = PositionToBarBeat(position + (GlobalDefines.RailLength / GameSpeed));
+            railEndPosition = position + (GlobalDefines.RailLength / GameSpeed);
 
             if (beat >= GlobalDefines.BeatPerBar)
             {
                 bar += (int)beat / GlobalDefines.BeatPerBar;
                 beat = beat % (float)GlobalDefines.BeatPerBar;
+            }
+        }
+
+        private void UpdateJumpPosition()
+        {
+            if (jpInfos != null)
+            {
+                for (int i = 0; i < jpInfos.Count; ++i)
+                {
+                    JPInfo jp = jpInfos[i];
+                    if (!jp.isJumped && GetBarDifference(jp.bar, jp.beat, bar, beat) <= 0.0f)
+                    {
+                        position -= jp.jumpPositionAmount;
+                        jp.isJumped = true;
+                    }
+                }
             }
         }
 
@@ -307,21 +346,29 @@ namespace PopTheCircle.Game
             {
                 BPMInfo nextInfo = bpmInfos[bpmInfoLastIndex + 1];
                 float barDiff = GetBarDifference(bar, beat, nextInfo.bar, nextInfo.beat);
-                if (barDiff >= 0.0f)
+                if (barDiff > 0.0f)
                 {
                     float bpmDiffRatio = nextInfo.bpm / bpm;
                     float fixedBarDiff = barDiff * bpmDiffRatio;
 
-                    bar = nextInfo.bar;
-                    beat = 0.0f;
-                    if (nextInfo.beat > 0.0f)
-                        ++bar;
-
+                    /*
                     beat += fixedBarDiff * GlobalDefines.BeatPerBar;
                     if (beat >= GlobalDefines.BeatPerBar)
                     {
                         bar += (int)beat / GlobalDefines.BeatPerBar;
                         beat = beat % (float)GlobalDefines.BeatPerBar;
+                    }
+                    */
+                    beat -= (barDiff - fixedBarDiff) * GlobalDefines.BeatPerBar;
+                    if (beat >= GlobalDefines.BeatPerBar)
+                    {
+                        bar += (int)beat / GlobalDefines.BeatPerBar;
+                        beat = beat % (float)GlobalDefines.BeatPerBar;
+                    }
+                    else if (beat < 0.0f)
+                    {
+                        bar -= 1 + ((int)beat / GlobalDefines.BeatPerBar);
+                        beat = (float)GlobalDefines.BeatPerBar - (Mathf.Abs(beat) % (float)GlobalDefines.BeatPerBar);
                     }
 
                     isStopEffect = nextInfo.stopEffect;
@@ -390,8 +437,7 @@ namespace PopTheCircle.Game
                 double pivotPos = lastInfo.position;
                 float pivotTime = lastInfo.time;
                 
-                int lastInfoStartBar = (lastInfo.beat == 0.0f) ? lastInfo.bar : lastInfo.bar + 1;
-                float barDiff = GetBarDifference(_bar, _beat, lastInfoStartBar, 0.0f);
+                float barDiff = GetBarDifference(_bar, _beat, lastInfo.bar, lastInfo.beat);
 
                 if (lastInfo.stopEffect)
                     info.position = pivotPos;
@@ -408,6 +454,72 @@ namespace PopTheCircle.Game
         }
 
         /// <summary>
+        /// 새로운 JP 정보를 입력한다.
+        /// </summary>
+        public void AddNewJPInfo(int _bar, float _beat, int _jumpBar, float _jumpBeat)
+        {
+            JPInfo info = new JPInfo()
+            {
+                bar = _bar,
+                beat = _beat,
+                jumpBar = _jumpBar,
+                jumpBeat = _jumpBeat,
+            };
+
+            BPMInfo targetBPMInfo = bpmInfos[0];
+            int targetBPMInfoIndex = 0;
+            for (int i = bpmInfos.Count - 1; i >= 0; --i)
+            {
+                BPMInfo bpmInfo = bpmInfos[i];
+                if (GetBarDifference(_bar, _beat, bpmInfo.bar, bpmInfo.beat) >= 0.0f)
+                {
+                    targetBPMInfo = bpmInfo;
+                    targetBPMInfoIndex = i;
+                    break;
+                }
+            }
+
+            info.jumpPositionAmount = info.jumpBarBeat * 
+                (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (targetBPMInfo.bpm / 60.0f));
+            jpInfos.Add(info);
+
+
+            for (int i = targetBPMInfoIndex + 1; i < bpmInfos.Count; ++i)
+            {
+                BPMInfo bpmInfo = bpmInfos[i];
+                if (GetBarDifference(_bar, _beat, bpmInfo.bar, bpmInfo.beat) < 0.0f)
+                    bpmInfo.position -= info.jumpPositionAmount;
+            }
+            /*
+            BPMInfo nextBPMInfo = null;
+            int nextBPMInfoIndex = targetBPMInfoIndex + 1;
+            if (bpmInfos.Count > nextBPMInfoIndex)
+                nextBPMInfo = bpmInfos[nextBPMInfoIndex];
+
+            for (int i = 0; i < NoteManager.Instance.allNotes.Count; ++i)
+            {
+                Note n = NoteManager.Instance.allNotes[i];
+
+                if (nextBPMInfo != null && GetBarDifference(nextBPMInfo.bar, nextBPMInfo.beat, n.bar, n.beat) > 0.0f)
+                    continue;
+
+                if (GetBarDifference(_bar, _beat, n.bar, n.beat) > 0.0f)
+                {
+                    n.position -= info.jumpPositionAmount;
+
+                    if ((n.GetType() == typeof(LongNote)) ||
+                        (n.GetType() == typeof(SpaceNote) && ((SpaceNote)n).IsLongType) ||
+                        (n.GetType() == typeof(EffectNote) && ((EffectNote)n).IsLongType))
+                    {
+                        LongNote ln = (LongNote)n;
+                        ln.endPosition -= info.jumpPositionAmount;
+                    }
+                }
+            }
+            */
+        }
+
+        /// <summary>
         /// 박자를 공간적 위치의 값으로 변경한다.
         /// </summary>
         public double BarBeatToPosition(int _bar, float _beat = 0.0f)
@@ -415,23 +527,39 @@ namespace PopTheCircle.Game
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
+                    double resPosition = 0.0d;
+
                     if (info.stopEffect)
-                        return info.position;
+                        resPosition = info.position;
                     else
-                        return info.position + GetBarDifference(_bar, _beat, infoStartBar, 0.0f) * 
+                        resPosition = info.position + GetBarDifference(_bar, _beat, info.bar, info.beat) * 
                             (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (info.bpm / 60.0f));
+
+                    if (jpInfos != null)
+                    {
+                        foreach (JPInfo jp in jpInfos)
+                        {
+                            if (GetBarDifference(jp.bar, jp.beat, info.bar, info.beat) >= 0.0f &&
+                                GetBarDifference(_bar, _beat, jp.bar, jp.beat) > 0.0f)
+                            {
+                                resPosition -= jp.jumpPositionAmount;
+                            }
+                        }
+                    }
+
+                    return resPosition;
                 }
             }
 
-            return 0.0f;
+            return 0.0d;
         }
 
         /// <summary>
         /// 공간적 위치를 박자 위치로 변경한다.
         /// </summary>
+        /*
         public float PositionToBarBeat(double _position)
         {
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
@@ -440,7 +568,7 @@ namespace PopTheCircle.Game
                 if (info.position <= _position)
                 {
                     double positionDiff = _position - info.position;
-                    float infoBarBeat = (float)info.bar + ((info.beat > 0.0f) ? 1.0f : 0.0f);
+                    float infoBarBeat = ToBarBeat(info.bar, info.beat);
                     return infoBarBeat + 
                         ((float)positionDiff / (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (info.bpm / 60.0f)));
                 }
@@ -448,6 +576,7 @@ namespace PopTheCircle.Game
 
             return 0.0f;
         }
+        */
 
         /// <summary>
         /// 두 박자값 간의 차이를 계산한다.
@@ -466,8 +595,7 @@ namespace PopTheCircle.Game
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
                     return info.bpm; 
                 }
@@ -483,10 +611,9 @@ namespace PopTheCircle.Game
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
-                    return info.time + GetBarDifference(_bar, _beat, infoStartBar, 0.0f) / (info.bpm / 60.0f);
+                    return info.time + GetBarDifference(_bar, _beat, info.bar, info.beat) / (info.bpm / 60.0f);
                 }
             }
 
@@ -512,6 +639,7 @@ namespace PopTheCircle.Game
         /// </summary>
         public bool IsPossibleBarBeat(int _bar, float _beat)
         {
+            /*
             foreach (BPMInfo info in bpmInfos)
             {
                 if (info.bar > _bar)
@@ -522,6 +650,7 @@ namespace PopTheCircle.Game
                 if (info.beat != 0.0f && info.beat <= _beat)
                     return false;
             }
+            */
             return true;
         }
 
@@ -530,6 +659,7 @@ namespace PopTheCircle.Game
         /// </summary>
         public float CorrectBarBeat(float _barBeat)
         {
+            /*
             int bar = (int)_barBeat;
             float beat = (_barBeat - bar) * GlobalDefines.BeatPerBar;
 
@@ -549,11 +679,13 @@ namespace PopTheCircle.Game
                     return corrected;
                 }
             }
+            */
             return _barBeat;
         }
 
         public float CorrectBarBeatReversed(float _barBeat)
         {
+            /*
             int bar = (int)_barBeat;
             float beat = (_barBeat - bar) * GlobalDefines.BeatPerBar;
 
@@ -573,6 +705,7 @@ namespace PopTheCircle.Game
                     return corrected;
                 }
             }
+            */
             return _barBeat;
         }
 
@@ -592,8 +725,8 @@ namespace PopTheCircle.Game
             float barBeatDiff = timeDiff * (bpmInfo.bpm / 60.0f);
 
             position = bpmInfo.position + barBeatDiff * barToRailLength;
-            bar = ((bpmInfo.beat == 0.0f) ? bpmInfo.bar : bpmInfo.bar + 1) + (int)barBeatDiff;
-            beat = (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
+            bar = bpmInfo.bar + (int)barBeatDiff;
+            beat = bpmInfo.beat + (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
         }
         
         /// <summary>
@@ -619,9 +752,21 @@ namespace PopTheCircle.Game
             float timeDiff = _time - bpmInfos[bpmInfoLastIndex].time;
             float barBeatDiff = timeDiff * (bpmInfo.bpm / 60.0f);
 
+            bar = bpmInfo.bar + (int)barBeatDiff;
+            beat = bpmInfo.beat + (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
+
             position = bpmInfo.position + barBeatDiff * barToRailLength;
-            bar = ((bpmInfo.beat == 0.0f) ? bpmInfo.bar : bpmInfo.bar + 1) + (int)barBeatDiff;
-            beat = (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
+            if (jpInfos != null)
+            {
+                foreach (JPInfo jp in jpInfos)
+                {
+                    if (GetBarDifference(jp.bar, jp.beat, bpmInfo.bar, bpmInfo.beat) >= 0.0f &&
+                        GetBarDifference(bar, beat, jp.bar, jp.beat) > 0.0f)
+                    {
+                        position -= jp.jumpPositionAmount;
+                    }
+                }
+            }
         }
     }
 }

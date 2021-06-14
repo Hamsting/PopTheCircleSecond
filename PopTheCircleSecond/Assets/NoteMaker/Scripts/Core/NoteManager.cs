@@ -44,11 +44,13 @@ namespace PopTheCircle.NoteEditor
                 float barBeat = BeatManager.ToBarBeat(n.bar, n.beat);
                 if (barBeat < vStart || barBeat > vEnd)
                 {
-                    if (n.GetType() == typeof(LongNote))
+                    if ((n.GetType() == typeof(LongNote)) ||
+                        (n.GetType() == typeof(SpaceNote) && ((SpaceNote)n).IsLongType) ||
+                        (n.GetType() == typeof(EffectNote) && ((EffectNote)n).IsLongType))
                     {
                         LongNote longNote = (LongNote)n;
                         float endBarBeat = BeatManager.ToBarBeat(longNote.endBar, longNote.endBeat);
-                        if (endBarBeat < vStart || endBarBeat > vEnd)
+                        if (!(barBeat <= vEnd && vStart <= endBarBeat))
                             continue;
                     }
                     else
@@ -128,6 +130,23 @@ namespace PopTheCircle.NoteEditor
                 ctRen.ctInfo = ct;
                 ctRen.Initialize();
                 spawnedRenderers.Add(ctRen);
+            }
+            foreach (JPInfo jp in BeatManager.Instance.JPInfos)
+            {
+                float barBeat = BeatManager.ToBarBeat(jp.bar, jp.beat);
+                if (barBeat < vStart || barBeat > vEnd)
+                    continue;
+
+                GameObject jpObj = ObjectPoolManager.Instance.Get("JPNote", true);
+                jpObj.transform.parent = NoteRailManager.Instance.railRoot;
+                jpObj.transform.localPosition = Vector3.zero;
+                jpObj.transform.localRotation = Quaternion.identity;
+                jpObj.transform.localScale = Vector3.one;
+
+                JPNoteRenderer jpRen = jpObj.GetComponent<JPNoteRenderer>();
+                jpRen.jpInfo = jp;
+                jpRen.Initialize();
+                spawnedRenderers.Add(jpRen);
             }
         }
 

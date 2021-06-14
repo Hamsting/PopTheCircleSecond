@@ -50,7 +50,34 @@ namespace PopTheCircle.Game
     public enum EffectNoteSEType
     {
         None = 0,
-        Clap = 1,
-        SharpKick = 2,
+        Clap = -1, // OLD
+        SharpKick = -2, // OLD
+
+        E001_DrumClap_1 = 1,
+        E002_SharpKick_1,
+        E003_DrumClap_2,
+        E004_BangKit_1,
+        E005_BangKit_2,
+        E006_BangKit_3,
+        E007_BangKit_4,
+        E008_DrumKick_1,
+        E009_DrumKick_2,
+        E010_DrumKick_3,
+        E011_DrumKick_4,
+        E012_DrumKick_5,
+        E013_DrumSnare_1,
+        E014_DrumSnare_2,
+        E015_DrumSnare_3,
+        E016_DrumSnare_4,
+        E017_DrunSnare_5,
+        E018_Dubstep_1,
+        E019_EastKit_1,
+        E020_EchoKit_1,
+        E021_LowKit_1,
+        E022_ScrubKit_1,
+        E023_StompKit_1,
+        E024_StompKit_2,
+        E025_StompKit_3,
+        E026_StompKit_4,
     }
 }

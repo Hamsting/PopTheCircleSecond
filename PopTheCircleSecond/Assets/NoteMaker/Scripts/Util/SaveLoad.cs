@@ -80,6 +80,13 @@ namespace PopTheCircle.NoteEditor
         {
             if (!string.IsNullOrEmpty(_path))
             {
+                FileInfo fileInfo = new FileInfo(_path);
+                if (!fileInfo.Exists)
+                {
+                    Debug.Log("SaveLoad::Invalid path or empty file given : " + _path);
+                    return null;
+                }
+
                 string jsonStr = File.ReadAllText(_path, Encoding.Unicode);
                 return new JSONObject(jsonStr);
             }

@@ -22,6 +22,7 @@ namespace PopTheCircle.NoteEditor
         EffectNote,
         BPMChangeNote,
         CTChangeNote,
+        JPNote,
         CameraNote,
         EventNote,
         TickNote,
@@ -54,11 +55,46 @@ namespace PopTheCircle.NoteEditor
 
 
 
-        protected override void Awake()
+        // protected override void Awake()
+        private void Start()
         {
-            noteDataFilePath = "Untitled.ntd";
+            if (SimulateController.InstanceCheckOnly == null)
+            {
+                GameObject obj = new GameObject("PopTheCircle.NoteEditor.SimulateController");
+                obj.AddComponent<SimulateController>();
+                DontDestroyOnLoad(obj);
+
+                noteDataFilePath = "Untitled.ntd";
+            }
+            else
+            {
+                if (!string.IsNullOrEmpty(SimulateController.Instance.lastNoteDataJsonPath) &&
+                    !SimulateController.Instance.lastNoteDataJsonPath.Equals(noteDataFilePath))
+                    LoadNoteData(SimulateController.Instance.lastNoteDataJsonPath);
+                else
+                    noteDataFilePath = "Untitled.ntd";
+
+                StartCoroutine(GotoLastPosition());
+            }
 
             notePreviewRenderer = longTypePreview.GetComponent<SpriteRenderer>();
+        }
+
+        private IEnumerator GotoLastPosition()
+        {
+            while (!MusicManager.Instance.isMusicLoaded)
+                yield return null;
+
+            BeatManager.Instance.GotoBarBeat(
+                SimulateController.Instance.lastPositionBar, SimulateController.Instance.lastPositionBeat);
+            MusicManager.Instance.MusicPosition = BeatManager.Instance.GameTime;
+
+            yield return null;
+            yield return null;
+
+            float scroll = NoteRailManager.Instance.positionBar.transform.localPosition.y + 
+                           NoteRailManager.Instance.CameraHeight * 0.5f;
+            NoteRailManager.Instance.CurrentScroll = -scroll;
         }
 
         public void LeftClickField(Vector3 _worldPos)
@@ -272,6 +308,11 @@ namespace PopTheCircle.NoteEditor
                             MakerUIManager.Instance.popup.OpenCTChangePopup(bar);
                         }
                         break;
+                    case EditType.JPNote:
+                        {
+                            MakerUIManager.Instance.popup.OpenJPNotePopup(bar, beat);
+                        }
+                        break;
                     case EditType.CameraNote:
                         {
                             if (railNumber != 8)
@@ -408,6 +449,21 @@ namespace PopTheCircle.NoteEditor
                                 BeatManager.Instance.ctInfos.RemoveAt(index);
                                 NoteManager.Instance.FixIncorrectBarBeatNotes();
                                 BeatManager.Instance.UpdateRailLengths();
+                                NoteRailManager.Instance.UpdateRailSpawnImmediately();
+                                BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            }
+                        }
+                        break;
+                    case EditType.JPNote:
+                        {
+                            int index = BeatManager.Instance.JPInfos.FindIndex(
+                                (jpi) => (
+                                    BeatManager.Instance.CorrectBarBeat(BeatManager.ToBarBeat(jpi.bar, jpi.beat))
+                                     == resultBarBeat
+                                ));
+                            if (index >= 0)
+                            {
+                                BeatManager.Instance.JPInfos.RemoveAt(index);
                                 NoteRailManager.Instance.UpdateRailSpawnImmediately();
                                 BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
                             }
@@ -564,6 +620,21 @@ namespace PopTheCircle.NoteEditor
                                 BeatManager.Instance.ctInfos.RemoveAt(index);
                                 NoteManager.Instance.FixIncorrectBarBeatNotes();
                                 BeatManager.Instance.UpdateRailLengths();
+                                NoteRailManager.Instance.UpdateRailSpawnImmediately();
+                                BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
+                            }
+                        }
+                        break;
+                    case EditType.JPNote:
+                        {
+                            int index = BeatManager.Instance.JPInfos.FindIndex(
+                                (jpi) => (
+                                    BeatManager.Instance.CorrectBarBeat(BeatManager.ToBarBeat(jpi.bar, jpi.beat))
+                                     == resultBarBeat
+                                ));
+                            if (index >= 0)
+                            {
+                                BeatManager.Instance.JPInfos.RemoveAt(index);
                                 NoteRailManager.Instance.UpdateRailSpawnImmediately();
                                 BeatManager.Instance.GotoTime(BeatManager.Instance.GameTime);
                             }

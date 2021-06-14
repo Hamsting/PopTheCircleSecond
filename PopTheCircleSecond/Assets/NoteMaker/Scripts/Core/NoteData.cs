@@ -15,6 +15,10 @@ namespace PopTheCircle.NoteEditor
         public int musicStartTime = 0;
         public float standardBPM = 60.0f;
 
+        public int noteDifficultyLevel = 0;
+        public enum NoteDifficultyType { Unknown = 0, Normal = 1, Enhanced = 2, Extreme = 3, Special = 4, }
+        public NoteDifficultyType noteDifficultyType = NoteDifficultyType.Unknown;
+
         // Body
         public List<Note> notes;
     }

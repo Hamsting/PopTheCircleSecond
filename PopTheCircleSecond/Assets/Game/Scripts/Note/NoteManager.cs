@@ -46,6 +46,8 @@ namespace PopTheCircle.Game
             }
         }
 
+        public int[] noteResRailTable = new int[7];
+
 
 
         protected override void Awake()
@@ -54,7 +56,60 @@ namespace PopTheCircle.Game
             remainNotes = new List<Note>();
             spawnedNotes = new List<Note>();
 
-            noteScale = UserSettings.noteScale;
+            noteScale = UserSettings.UserNoteScale;
+
+            InitNoteAppearType(UserSettings.NoteAppearType);
+        }
+
+        public void InitNoteAppearType(NoteAppearType _appearType)
+        {
+            noteResRailTable = new int[7] { 0, 1, 2, 3, 4, 5, 6 };
+            switch (_appearType)
+            {
+                case NoteAppearType.Normal:
+                default:
+                    {
+                    } break;
+
+                case NoteAppearType.Mirror:
+                    {
+                        noteResRailTable = new int[7] { 3, 2, 1, 0, 4, 6, 5 };
+                    } break;
+
+                case NoteAppearType.R_Random:
+                    {
+                        int rotationCount = UnityEngine.Random.Range(1, 4);
+                        for (int i = 0; i < 4; ++i)
+                            noteResRailTable[i] = (i + rotationCount) % 4;
+                        // EffectNote는 랜덤 X
+                        noteResRailTable[4] = 4;
+                    } break;
+
+                case NoteAppearType.N_Random:
+                    {
+                        List<int> temp;
+                        temp = new List<int>(new int[] { 0, 1, 2, 3, });
+                        for (int i = 0; i < 4; ++i)
+                        {
+                            int tempR = UnityEngine.Random.Range(0, temp.Count);
+                            noteResRailTable[i] = temp[tempR];
+                            temp.RemoveAt(tempR);
+                        }
+                        temp = new List<int>(new int[] { 5, 6, });
+                        for (int i = 0; i < 2; ++i)
+                        {
+                            int tempR = UnityEngine.Random.Range(0, temp.Count);
+                            noteResRailTable[5 + i] = temp[tempR];
+                            temp.RemoveAt(tempR);
+                        }
+                        noteResRailTable[4] = 4;
+                    } break;
+
+                case NoteAppearType.A_Random:
+                    {
+                        // TBD
+                    } break;
+            }
         }
         
         private void Update()
@@ -63,7 +118,8 @@ namespace PopTheCircle.Game
             for (int i = 0; i < remainNotes.Count; ++i)
             {
                 Note note = remainNotes[i];
-                if (BeatManager.ToBarBeat(note.bar, note.beat) <= BeatManager.Instance.RailEndBarBeat)
+                // if (BeatManager.ToBarBeat(note.bar, note.beat) <= BeatManager.Instance.RailEndBarBeat)
+                if (note.position <= BeatManager.Instance.RailEndPosition)
                 {
                     SpawnNote(note);
                     remainNotes.RemoveAt(i--);
@@ -71,28 +127,6 @@ namespace PopTheCircle.Game
             }
 
             JudgeManager.Instance.UpdateJudgeForNotes();
-
-            // __TEST__
-            /*
-            if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.T))
-            {
-                foreach (var n in allNotes)
-                {
-                    if (n.noteType == NoteType.Long ||
-                       (n.noteType == NoteType.Space && ((SpaceNote)n).IsLongType) ||
-                       (n.noteType == NoteType.Effect && ((EffectNote)n).IsLongType))
-                    {
-                        LongNote ln = (LongNote)n;
-                        int pupaDiff = (ln.pupa2 - ln.pupa1);
-                        if (pupaDiff > 0)
-                            Debug.Log("NoteManager::LongNote pupa alert : " + "\n" +
-                                "Start = " + ln.bar + " / " + ln.beat + ", End = " + ln.endBar + "/" + ln.endBeat + "\n" +
-                                "TickStart = " + ln.tickStartBarBeat + ", TickEnd = " + ln.tickEndBarBeat + "\n" +
-                                "1 = " + ln.pupa1 + ", 2 = " + ln.pupa2 + ", diff = " + pupaDiff);
-                    }
-                }
-            }
-            */
         }
 
         public void AddNote(Note _note)
@@ -130,7 +164,9 @@ namespace PopTheCircle.Game
 
             _note.time = BeatManager.Instance.BarBeatToTime(_note.bar, _note.beat);
             _note.position = BeatManager.Instance.BarBeatToPosition(_note.bar, _note.beat);
-            
+
+            _note.railNumber = noteResRailTable[_note.railNumber];
+
             allNotes.Add(_note);
             remainNotes.Add(_note);
         }
@@ -148,6 +184,7 @@ namespace PopTheCircle.Game
             noteRen.SetNoteScale(noteScale);
 
             _note.noteObject = obj;
+
             obj.transform.parent = rails[_note.railNumber];
             obj.SetActive(true);
             spawnedNotes.Add(_note);
@@ -168,5 +205,14 @@ namespace PopTheCircle.Game
 
             spawnedNotes.Remove(_note);
         }
+    }
+
+    public enum NoteAppearType
+    {
+        Normal = 0,
+        Mirror = 1,
+        R_Random = 2, // Rotation Random
+        N_Random = 3, // Normal Random
+        A_Random = 4, // All Random
     }
 }

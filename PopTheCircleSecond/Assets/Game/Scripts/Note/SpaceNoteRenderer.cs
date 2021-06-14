@@ -21,9 +21,6 @@ namespace PopTheCircle.Game
         private SpriteRenderer bodySpriteRenderer;
 
         private SpaceNote spaceNote;
-        private double endPosition;
-        private double length = 0.0f;
-        private float noteEndTime = 0.0f;
         private Vector3 bodyScale = Vector3.one;
         private Vector3 endNotePos = Vector3.zero;
 
@@ -49,18 +46,21 @@ namespace PopTheCircle.Game
 
             spaceNote = (SpaceNote)note;
 
-            endPosition = BeatManager.Instance.BarBeatToPosition(spaceNote.endBar, spaceNote.endBeat);
-            noteEndTime = BeatManager.Instance.BarBeatToTime(spaceNote.endBar, spaceNote.endBeat);
-
             // bodyTransform.gameObject.SetActive(longNote.railNumber != longNote.connectedRail);
             bodyTransform.gameObject.SetActive(spaceNote.IsLongType);
 
             bodyScale = bodyTransform.localScale;
+
+            Color c = bodySpriteRenderer.color;
+            c.a = 1.0f;
+            bodySpriteRenderer.color = c;
         }
 
         protected override void Update()
         {
             base.Update();
+
+            UpdateLongMissedState();
         }
 
         protected override void UpdatePosition()
@@ -91,6 +91,16 @@ namespace PopTheCircle.Game
         public override void SetNoteScale(float _scale)
         {
             startTransform.localScale = new Vector3(1.0f, _scale, 1.0f);
+        }
+
+        private void UpdateLongMissedState()
+        {
+            if (!spaceNote.IsLongType || !spaceNote.firstTicked)
+                return;
+
+            Color c = bodySpriteRenderer.color;
+            c.a = (spaceNote.pressed) ? 1.0f : 0.35f;
+            bodySpriteRenderer.color = c;
         }
     }
 }

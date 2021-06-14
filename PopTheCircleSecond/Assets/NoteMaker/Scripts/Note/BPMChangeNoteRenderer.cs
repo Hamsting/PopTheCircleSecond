@@ -21,8 +21,8 @@ namespace PopTheCircle.NoteEditor
             railLength = BeatManager.Instance.GetNoteRailLengthWithBarBeat(barBeat);
             float localBarBeatDiff = barBeat - railLength.startBarBeat;
             float railTotalHeight = NoteRail.RailHeight + NoteRailManager.Instance.railSpacing;
-
-            notePos.x = 0.0f;
+            
+            notePos.x = localBarBeatDiff * NoteRail.RailOneBarWidth;
             notePos.y = (railLength.railNumber - 1) * -railTotalHeight;
             notePos.z = -0.5f;
 

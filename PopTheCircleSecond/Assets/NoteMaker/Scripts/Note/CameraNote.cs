@@ -41,6 +41,30 @@ namespace PopTheCircle.NoteEditor
         /// 카메라 줌 변화값
         /// </summary>
         public float sizeChange = 5.0f;
+
+
+
+        public override Note GetInstance()
+        {
+            return new CameraNote()
+            {
+                bar = this.bar,
+                beat = this.beat,
+                noteType = this.noteType,
+                railNumber = this.railNumber,
+
+                curve = this.curve,
+                duration = this.duration,
+                positionChange = this.positionChange,
+                rotationChange = this.rotationChange,
+                sizeChange = this.sizeChange,
+
+                position = this.position,
+                time = this.time,
+                isMissed = this.isMissed,
+                noteObject = this.noteObject,
+            };
+        }
     }
 
 }

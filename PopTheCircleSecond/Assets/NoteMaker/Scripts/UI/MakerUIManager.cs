@@ -103,7 +103,13 @@ namespace PopTheCircle.NoteEditor
 
         public void OpenNoteDataFile()
         {
-            BrowserManager.Instance.OpenFileBrowser(FileBrowserMode.Load, MakerManager.Instance.LoadNoteData);
+            BrowserManager.Instance.OpenFileBrowser(FileBrowserMode.Load, 
+                delegate (string _path)
+                {
+                    MakerManager.Instance.LoadNoteData(_path);
+                    SimulateController.Instance.lastPositionBar = 0;
+                    SimulateController.Instance.lastPositionBeat = 0.0f;
+                });
         }
 
         public void SaveNoteDataFile()
@@ -166,6 +172,46 @@ namespace PopTheCircle.NoteEditor
         {
             BrowserManager.Instance.OpenSyncPathSelectBrowser(NoteDataSyncManager.Instance.SetSyncRootPath);
         }
+        
+        public void PlaySimulate()
+        {
+            PlaySimulate(0, 0.0f);
+        }
+
+        public void PlaySimulate(int _bar, float _beat)
+        {
+            if (MusicManager.Instance.Music == null)
+                return;
+
+            if (string.IsNullOrEmpty(MakerManager.Instance.noteDataFilePath) ||
+                MakerManager.Instance.noteDataFilePath.Equals("Untitled.ntd"))
+                SaveNoteDataFileAsNew();
+            else
+                SaveNoteDataFile();
+
+            if (FindObjectOfType<PopTheCircle.Game.GlobalData>() == null)
+            {
+                GameObject globalDataObj = new GameObject("PopTheCircle.Game.GlobalData");
+                globalDataObj.AddComponent<PopTheCircle.Game.GlobalData>();
+            }
+
+            SimulateController.Instance.lastNoteDataJsonPath = MakerManager.Instance.noteDataFilePath;
+            SimulateController.Instance.lastPositionBar = BeatManager.Instance.Bar;
+            SimulateController.Instance.lastPositionBeat = BeatManager.Instance.Beat;
+            SimulateController.Instance.simulateStartBar = _bar;
+            SimulateController.Instance.simulateStartBeat = _beat;
+
+            PopTheCircle.Game.GlobalData.Instance.musicClip = MusicManager.Instance.Music;
+            PopTheCircle.Game.GlobalData.Instance.noteDataJson = 
+                NoteDataJSONConverter.Instance.NoteDataToJSONWithStartPosition(_bar, _beat);
+
+            SceneManager.LoadScene("Game");
+        }
+
+        public void PlaySimulateAtPositionBar()
+        {
+            PlaySimulate(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
+        }
 
 
 
@@ -186,7 +232,7 @@ namespace PopTheCircle.NoteEditor
             NoteManager.Instance.UpdateNoteSpawn();
         }
 
-        public void PushNoteOneBar()
+        public void PushAllNoteBar(int _amount)
         {
             foreach (var note in NoteManager.Instance.notes)
             {
@@ -195,17 +241,51 @@ namespace PopTheCircle.NoteEditor
                     (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
                 {
                     LongNote longNote = (LongNote)note;
-                    longNote.bar += 1;
-                    longNote.endBar += 1;
+                    longNote.bar += _amount;
+                    longNote.endBar += _amount;
                 }
                 else
                 {
-                    note.bar += 1;
+                    note.bar += _amount;
                 }
             }
             foreach (var effNote in NoteManager.Instance.effectNotes)
             {
-                effNote.bar += 1;
+                effNote.bar += _amount;
+            }
+            NoteManager.Instance.UpdateNoteSpawn();
+        }
+
+        public void PushNoteBarAtCursorUp(int _amount)
+        {
+            float cursorBarBeat = BeatManager.ToBarBeat(BeatManager.Instance.Bar, BeatManager.Instance.Beat);
+
+            foreach (var note in NoteManager.Instance.notes)
+            {
+                float noteBarBeat = BeatManager.ToBarBeat(note.bar, note.beat);
+                if (noteBarBeat < cursorBarBeat)
+                    continue;
+
+                if (note.noteType == NoteType.Long ||
+                    (note.noteType == NoteType.Effect && ((EffectNote)note).IsLongType) ||
+                    (note.noteType == NoteType.Space && ((SpaceNote)note).IsLongType))
+                {
+                    LongNote longNote = (LongNote)note;
+                    longNote.bar += _amount;
+                    longNote.endBar += _amount;
+                }
+                else
+                {
+                    note.bar += _amount;
+                }
+            }
+            foreach (var effNote in NoteManager.Instance.effectNotes)
+            {
+                float noteBarBeat = BeatManager.ToBarBeat(effNote.bar, effNote.beat);
+                if (noteBarBeat < cursorBarBeat)
+                    continue;
+
+                effNote.bar += _amount;
             }
             NoteManager.Instance.UpdateNoteSpawn();
         }

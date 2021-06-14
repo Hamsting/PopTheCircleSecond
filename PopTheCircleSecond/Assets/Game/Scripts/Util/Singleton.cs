@@ -10,7 +10,7 @@ namespace PopTheCircle.Game
     /// <typeparam name="T"></typeparam>
     public class Singleton<T> : MonoBehaviour where T : Component
     {
-        private static T instance;
+        protected static T instance;
         public static T Instance
         {
             get
@@ -35,7 +35,7 @@ namespace PopTheCircle.Game
                 instance = this as T;
                 // DontDestroyOnLoad(gameObject);
             }
-            else
+            else if (instance != this)
             {
                 Destroy(gameObject);
             }

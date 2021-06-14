@@ -10,6 +10,20 @@ namespace PopTheCircle.NoteEditor
     /// </summary>
     public class TickNote : Note
     {
+        public override Note GetInstance()
+        {
+            return new TickNote()
+            {
+                bar = this.bar,
+                beat = this.beat,
+                noteType = this.noteType,
+                railNumber = this.railNumber,
 
+                position = this.position,
+                time = this.time,
+                isMissed = this.isMissed,
+                noteObject = this.noteObject,
+            };
+        }
     }
 }

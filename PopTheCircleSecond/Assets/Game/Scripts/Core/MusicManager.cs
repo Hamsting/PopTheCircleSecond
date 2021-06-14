@@ -11,6 +11,7 @@ namespace PopTheCircle.Game
         private AudioSource longTickAudioSource;
         private AudioSource seAudioSource;
         private float musicStartTime = 0.0f;
+        private float musicSyncDelayTime = 0.0f;
         private float musicPosition = 0.0f;
         private bool isPlaying = false;
         private bool playedShotThisFrame = false;
@@ -47,11 +48,11 @@ namespace PopTheCircle.Game
         {
             get
             {
-                return musicPosition - musicStartTime;
+                return musicPosition - musicStartTime - musicSyncDelayTime;
             }
             set
             {
-                musicPosition = value + musicStartTime;
+                musicPosition = value + musicStartTime + musicSyncDelayTime;
                 if (isPlaying)
                 {
                     // musicAudioSource.Stop();
@@ -69,12 +70,23 @@ namespace PopTheCircle.Game
                 musicStartTime = value;
             }
         }
+        public float MusicSyncDelayTime
+        {
+            get
+            {
+                return musicSyncDelayTime;
+            }
+            set
+            {
+                musicSyncDelayTime = value;
+            }
+        }
         public float MusicLength
         {
             get
             {
                 if (isMusicLoaded)
-                    return musicAudioSource.clip.length - musicStartTime;
+                    return musicAudioSource.clip.length - musicStartTime - musicSyncDelayTime;
                 else
                     return 0.0f;
             }
@@ -209,7 +221,15 @@ namespace PopTheCircle.Game
 
         public void PlaySE(EffectNoteSEType _seType)
         {
-            string seName = "Effect_" + _seType.ToString();
+            // string seName = "Effect_" + _seType.ToString();
+
+            string seName = _seType.ToString();
+
+            if (_seType == EffectNoteSEType.Clap)
+                seName = EffectNoteSEType.E001_DrumClap_1.ToString();
+            else if (_seType == EffectNoteSEType.SharpKick)
+                seName = EffectNoteSEType.E002_SharpKick_1.ToString();
+
             foreach (var seClip in seClips)
             {
                 if (seClip.name.Equals(seName))

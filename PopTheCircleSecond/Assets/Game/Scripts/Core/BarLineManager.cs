@@ -49,13 +49,13 @@ namespace PopTheCircle.Game
                         }
                     }
                 }
-
+                /*
                 if (BeatManager.Instance.BPMInfos.Count > 0)
                 {
                     for (int i = bpmInfoIndex; i < BeatManager.Instance.BPMInfos.Count; ++i)
                     {
                         BPMInfo bpm = BeatManager.Instance.BPMInfos[i];
-                        int actualBar = (bpm.beat > 0.0f) ? bpm.bar + 1 : bpm.bar;
+                        int actualBar = bpm.bar;
                         if (curBar >= actualBar)
                         {
                             if (curBar == actualBar)
@@ -68,6 +68,7 @@ namespace PopTheCircle.Game
                         }
                     }
                 }
+                */
                 if (needContinue)
                     continue;
                 if (needIncreaseBar)
@@ -79,12 +80,15 @@ namespace PopTheCircle.Game
 
         private void Update()
         {
-            int railEndBar = (int)BeatManager.Instance.RailEndBarBeat;
+            // int railEndBar = (int)BeatManager.Instance.RailEndBarBeat;
+            double railEndPosition = (int)BeatManager.Instance.RailEndPosition;
             while (bars.Count > 0)
             {
-                if (bars[0] <= railEndBar)
+                double position = BeatManager.Instance.BarBeatToPosition(bars[0], 0.0f);
+                // if (bars[0] <= railEndBar)
+                if (position <= railEndPosition)
                 {
-                    double position = BeatManager.Instance.BarBeatToPosition(bars[0], 0.0f);
+                    // double position = BeatManager.Instance.BarBeatToPosition(bars[0], 0.0f);
                     for (int i = 4; i <= 6; ++i)
                     {
                         GameObject barLineObj = ObjectPoolManager.Instance.Get("BarLine", true);

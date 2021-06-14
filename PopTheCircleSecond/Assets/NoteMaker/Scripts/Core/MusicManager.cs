@@ -194,7 +194,14 @@ namespace PopTheCircle.NoteEditor
             if (_seType == EffectNoteSEType.None)
                 return;
 
-            string seName = "Effect_" + _seType.ToString();
+            // string seName = "Effect_" + _seType.ToString();
+            string seName = _seType.ToString();
+
+            if (_seType == EffectNoteSEType.Clap)
+                seName = EffectNoteSEType.E001_DrumClap_1.ToString();
+            else if (_seType == EffectNoteSEType.SharpKick)
+                seName = EffectNoteSEType.E002_SharpKick_1.ToString();
+
             foreach (var seClip in seClips)
             {
                 if (seClip.name.Equals(seName))

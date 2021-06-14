@@ -78,8 +78,7 @@ namespace PopTheCircle.Game
             for (int i = _bpms.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = _bpms[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= (int)_longNote.tickStartBarBeat)
+                if (BeatManager.ToBarBeat(info.bar, info.beat) <= _longNote.tickStartBarBeat)
                 {
                     targetBPM = info;
                     targetBPMIndex = i;
@@ -87,13 +86,67 @@ namespace PopTheCircle.Game
                 }
             }
 
+            float tickBarBeatIncreaseUnit = CalculateActualTickBarBeat(targetBPM.bpm);
+            float rest = (_longNote.tickStartBarBeat % tickBarBeatIncreaseUnit);
+            float curTickBarBeat = (rest == 0.0f) ? _longNote.tickStartBarBeat : (_longNote.tickStartBarBeat + tickBarBeatIncreaseUnit - rest);
+
+            for (int i = targetBPMIndex + 1; i < _bpms.Count; ++i)
+            {
+                BPMInfo info = _bpms[i];
+                float bpmInfoBarBeat = BeatManager.ToBarBeat(info.bar, info.beat);
+                if (bpmInfoBarBeat <= _longNote.tickEndBarBeat)
+                {
+                    while (curTickBarBeat <= bpmInfoBarBeat)
+                    {
+                        resTick += 1;
+                        curTickBarBeat += tickBarBeatIncreaseUnit;
+                    }
+                    
+                    targetBPM = info;
+                    tickBarBeatIncreaseUnit = CalculateActualTickBarBeat(targetBPM.bpm);
+                    continue;
+                }
+                else
+                    break;
+            }
+
+            while (curTickBarBeat <= _longNote.tickEndBarBeat)
+            {
+                resTick += 1;
+                curTickBarBeat += tickBarBeatIncreaseUnit;
+            }
+            return resTick;
+        }
+
+        /*
+        private static int GetLongTypeTotalTick(LongNote _longNote, List<BPMInfo> _bpms)
+        {
+            int resTick = 2;
+
+            // float tickBarBeat = (float)GlobalDefines.TickBeatRate / (float)GlobalDefines.BeatPerBar;
+            // float tickStartBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteBarBeat + tickBarBeat);
+            // float tickEndBarBeat = BeatManager.Instance.CorrectBarBeat(longNoteEndBarBeat - tickBarBeat);
+
+            BPMInfo targetBPM = _bpms[0];
+            int targetBPMIndex = 0;
+            for (int i = _bpms.Count - 1; i >= 0; --i)
+            {
+                BPMInfo info = _bpms[i];
+                if (BeatManager.ToBarBeat(info.bar, info.beat) <= (int)_longNote.tickStartBarBeat)
+                {
+                    targetBPM = info;
+                    targetBPMIndex = i;
+                    break;
+                }
+            }
+            
             for (int i = targetBPMIndex + 1; i < _bpms.Count; ++i)
             {
                 BPMInfo info = _bpms[i];
                 float infoOriginBarBeat = BeatManager.ToBarBeat(info.bar, info.beat);
                 if (infoOriginBarBeat <= _longNote.tickEndBarBeat)
                 {
-                    float tickStartBarBeat = (float)((targetBPM.beat == 0.0f) ? targetBPM.bar : targetBPM.bar + 1);
+                    float tickStartBarBeat = BeatManager.ToBarBeat(targetBPM.bar, targetBPM.beat);
                     float tickBarBeat = CalculateActualTickBarBeat(info.bpm);
                     if (tickStartBarBeat < _longNote.tickStartBarBeat)
                     {
@@ -103,7 +156,7 @@ namespace PopTheCircle.Game
                         {
                             tickStartBarBeat = _longNote.tickStartBarBeat - term + tickBarBeat;
                             if (tickStartBarBeat >= infoOriginBarBeat)
-                                tickStartBarBeat = (float)((targetBPM.beat == 0.0f) ? targetBPM.bar : targetBPM.bar + 1);
+                                tickStartBarBeat = BeatManager.ToBarBeat(targetBPM.bar, targetBPM.beat);
                         }
                     }
 
@@ -122,7 +175,7 @@ namespace PopTheCircle.Game
 
             if (true)
             {
-                float bpmInfoBarBeat = (float)((targetBPM.beat == 0.0f) ? targetBPM.bar : targetBPM.bar + 1);
+                float bpmInfoBarBeat = BeatManager.ToBarBeat(targetBPM.bar, targetBPM.beat);
                 float bpmInfoOriginBarBeat = BeatManager.ToBarBeat(targetBPM.bar, targetBPM.beat);
                 float tickStartBarBeat = bpmInfoBarBeat;
                 float tickBarBeat = CalculateActualTickBarBeat(targetBPM.bpm);
@@ -146,6 +199,7 @@ namespace PopTheCircle.Game
 
             return resTick;
         }
+        */
 
         private static float CalculateActualTickBarBeat(float _bpm)
         {
@@ -162,6 +216,7 @@ namespace PopTheCircle.Game
 
         private static float CorrectBarBeat(float _barBeat, List<BPMInfo> _bpms)
         {
+            /*
             int bar = (int)_barBeat;
             float beat = (_barBeat - bar) * GlobalDefines.BeatPerBar;
 
@@ -181,6 +236,7 @@ namespace PopTheCircle.Game
                     return corrected;
                 }
             }
+            */
             return _barBeat;
         }
     }

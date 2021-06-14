@@ -68,6 +68,28 @@ namespace PopTheCircle.NoteEditor
         /// </summary>
         public float tickEndBarBeat = 0.0f;
         */
+
+
+
+        public override Note GetInstance()
+        {
+            return new LongNote()
+            {
+                bar = this.bar,
+                beat = this.beat,
+                noteType = this.noteType,
+                railNumber = this.railNumber,
+
+                endBar = this.endBar,
+                endBeat = this.endBeat,
+                connectedRail = this.connectedRail,
+
+                position = this.position,
+                time = this.time,
+                isMissed = this.isMissed,
+                noteObject = this.noteObject,
+            };
+        }
     }
 
 }

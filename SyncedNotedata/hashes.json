@@ -1,6 +1,6 @@
 ﻿{
 	"version":1,
-	"updatedTime":"2020-10-02 15:41:27",
+	"updatedTime":"2020-11-01 16:23:23",
 	"hashes":[
 		{
 			"key":"01_Converted",
@@ -132,6 +132,10 @@
 		},
 		{
 			"key":"02_Making/上海紅茶館 ～ Chinese Tea Orchid Remix",
+			"value":"Dir"
+		},
+		{
+			"key":"02_Making/海色",
 			"value":"Dir"
 		},
 		{
@@ -312,7 +316,7 @@
 		},
 		{
 			"key":"02_Making/Chronomia/Extreme.ntd",
-			"value":"4dfcde81e37ffb6c9039819d22bda507"
+			"value":"7338f960f77bf2a874e36e4175e9cdef"
 		},
 		{
 			"key":"02_Making/Chronomia/Music.mp3",
@@ -336,7 +340,7 @@
 		},
 		{
 			"key":"02_Making/End Time/Extreme.ntd",
-			"value":"69b062eeacd5379f412ffd35c6ad1dd7"
+			"value":"daaf585553998f20a8dc22dda8f51c20"
 		},
 		{
 			"key":"02_Making/End Time/Music.mp3",
@@ -372,7 +376,11 @@
 		},
 		{
 			"key":"02_Making/Grievous Lady/Extreme.ntd",
-			"value":"c46a29c925355d4125c866fdb164a379"
+			"value":"d3bea48b713b86457faac5fae4f38ba0"
+		},
+		{
+			"key":"02_Making/Grievous Lady/Extreme_Rework.ntd",
+			"value":"50e137d4dc7b9e992a92b5feeb991b45"
 		},
 		{
 			"key":"02_Making/Grievous Lady/music.mp3",
@@ -429,6 +437,14 @@
 		{
 			"key":"02_Making/上海紅茶館 ～ Chinese Tea Orchid Remix/Music.mp3",
 			"value":"a40a3ff7506751cd392012103ac6ca0b"
+		},
+		{
+			"key":"02_Making/海色/Extreme.ntd",
+			"value":"bbaf9fa7817e931c044ef766b0013193"
+		},
+		{
+			"key":"02_Making/海色/Music.mp3",
+			"value":"48ddd143f339ac9d49803e55f2cdb73b"
 		}
 	]
 }

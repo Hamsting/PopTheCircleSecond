@@ -18,8 +18,8 @@ namespace PopTheCircle.Game
 
         private void Awake()
         {
-            UserSettings.gameSpeed = gameSpeed;    
-            UserSettings.noteScale = noteScale;
+            gameSpeed = UserSettings.UserGameSpeed;
+            noteScale = UserSettings.UserNoteScale;
             lastGameSpeed = gameSpeed;
             lastNoteScale = noteScale;
         }

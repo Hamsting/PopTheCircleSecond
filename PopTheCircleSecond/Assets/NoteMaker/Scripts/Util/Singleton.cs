@@ -22,11 +22,20 @@ namespace PopTheCircle.NoteEditor
                     if (instance == null)
                     {
                         Debug.LogError("씬 내에 " + typeof(T).ToString() + " 이(가) 존재하지 않습니다.");
-                        Debug.Break();
                     }
 
                 }
 
+                return instance;
+            }
+        }
+
+        public static T InstanceCheckOnly
+        {
+            get
+            {
+                if (instance == null)
+                    instance = FindObjectOfType<T>();
                 return instance;
             }
         }
@@ -37,9 +46,9 @@ namespace PopTheCircle.NoteEditor
             {
                 instance = this as T;
             }
-            else
+            else if (instance != this)
             {
-                Destroy(gameObject);
+                Destroy(this);
             }
         }
 

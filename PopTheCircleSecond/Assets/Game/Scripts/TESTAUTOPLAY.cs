@@ -6,6 +6,11 @@ using PopTheCircle.Game;
 public class TESTAUTOPLAY : MonoBehaviour
 {
     public bool isAutoPlayEnabled = true;
+    public bool IsAutoPlayEnabled
+    {
+        get => isAutoPlayEnabled;
+        set => isAutoPlayEnabled = value;
+    }
 
     private NoteManager nm;
     private JudgeManager jm;
@@ -17,8 +22,6 @@ public class TESTAUTOPLAY : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.A))
             isAutoPlayEnabled = !isAutoPlayEnabled;
-        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(KeyCode.R))
-            UnityEngine.SceneManagement.SceneManager.LoadScene("Game");
 
         if (nm == null)
             nm = NoteManager.Instance;
@@ -29,20 +32,20 @@ public class TESTAUTOPLAY : MonoBehaviour
 
         if (!isAutoPlayEnabled || nm == null || jm == null || bm == null)
         {
-            if (InputManager.Instance != null && !InputManager.Instance.enabled)
-                InputManager.Instance.enabled = true;
+            if (InputManager.Instance != null && !InputManager.Instance.isInputEnabled)
+                InputManager.Instance.isInputEnabled = true;
             return;
         }
 
-        if (InputManager.Instance != null && InputManager.Instance.enabled)
-            InputManager.Instance.enabled = false;
+        if (InputManager.Instance != null && InputManager.Instance.isInputEnabled)
+            InputManager.Instance.isInputEnabled = false;
         
         var notes = nm.spawnedNotes;
         for (int i = 0; i < notes.Count; ++i)
         {
             Note n = notes[i];
             float timeDiff = n.time - bm.GameTime;
-            if (timeDiff > 0.017f)
+            if (timeDiff > 0.0f)
                 continue;
 
             if (n.noteType == NoteType.Long ||
@@ -56,7 +59,7 @@ public class TESTAUTOPLAY : MonoBehaviour
             }
             else if (n.noteType != NoteType.Mine)
             {
-                jm.UpdateJudgeAndCombo(n, 1);
+                jm.UpdateJudgeAndCombo(n, 1, 0);
                 nm.DespawnNote(n, false);
                 --i;
             }

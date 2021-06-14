@@ -65,6 +65,11 @@ namespace PopTheCircle.NoteEditor
         [SerializeField, InspectorReadOnly]
         private List<BPMInfo> bpmInfos;
         /// <summary>
+        /// JP 정보들을 담는 리스트이다.
+        /// </summary>
+        [SerializeField, InspectorReadOnly]
+        private List<JPInfo> jpInfos;
+        /// <summary>
         /// 마지막으로 읽은 BPM 정보의 인덱스 값이다.
         /// </summary>
         [SerializeField, InspectorReadOnly]
@@ -201,6 +206,16 @@ namespace PopTheCircle.NoteEditor
         /// </summary>
         public List<CTInfo> ctInfos;
         /// <summary>
+        /// NoteMaker 기능, JP 정보들을 담는 리스트이다.
+        /// </summary>
+        public List<JPInfo> JPInfos
+        {
+            get
+            {
+                return jpInfos;
+            }
+        }
+        /// <summary>
         /// NoteMaker 기능, 각 노트 레일의 박자 길이 정보들을 담는 리스트이다.
         /// </summary>
         public List<NoteRailLength> railLengths;
@@ -216,6 +231,7 @@ namespace PopTheCircle.NoteEditor
             railLengths = new List<NoteRailLength>();
             ctInfos = new List<CTInfo>();
             bpmInfos = new List<BPMInfo>();
+            jpInfos = new List<JPInfo>();
 
             AddNewCTInfo(0, 4);
             AddNewBPMInfo(0, 0.0f, 60.0f, false);
@@ -283,12 +299,7 @@ namespace PopTheCircle.NoteEditor
                 {
                     float bpmDiffRatio = nextInfo.bpm / bpm;
                     float fixedBarDiff = barDiff * bpmDiffRatio;
-
-                    bar = nextInfo.bar;
-                    beat = 0.0f;
-                    if (nextInfo.beat > 0.0f)
-                        ++bar;
-
+                    
                     beat += fixedBarDiff * GlobalDefines.BeatPerBar;
                     if (beat >= GlobalDefines.BeatPerBar)
                     {
@@ -356,30 +367,25 @@ namespace PopTheCircle.NoteEditor
                     }
                 }
             }
-
-            // if (bpmInfos.Count > 1 && lastInfo != null)
-            // {
-            //     double pivotPos = lastInfo.position;
-            //     float pivotTime = lastInfo.time;
-            // 
-            //     int lastInfoStartBar = (lastInfo.beat == 0.0f) ? lastInfo.bar : lastInfo.bar + 1;
-            //     float barDiff = GetBarDifference(_bar, _beat, lastInfoStartBar, 0.0f);
-            // 
-            //     if (lastInfo.stopEffect)
-            //         info.position = pivotPos;
-            //     else
-            //         info.position = pivotPos + (double)(barDiff *
-            //                 (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (lastInfo.bpm / 60.0f)));
-            //     info.time = pivotTime + barDiff / (Mathf.Abs(lastInfo.bpm) / 60.0f);
-            // }
-            // else
-            // {
-            //     info.position = 0.0d;
-            //     info.time = 0.0f;
-            // }
-
+            
             UpdateBPMInfo();
             UpdateRailLengths();
+        }
+
+        /// <summary>
+        /// 새로운 JP 정보를 입력한다.
+        /// </summary>
+        public void AddNewJPInfo(int _bar, float _beat, int _jumpBar, float _jumpBeat)
+        {
+            JPInfo info = new JPInfo()
+            {
+                bar = _bar,
+                beat = _beat,
+                jumpBar = _jumpBar,
+                jumpBeat = _jumpBeat,
+            };
+
+            jpInfos.Add(info);
         }
 
         /// <summary>
@@ -401,9 +407,8 @@ namespace PopTheCircle.NoteEditor
 
                     double pivotPos = prevInfo.position;
                     float pivotTime = prevInfo.time;
-
-                    int lastInfoStartBar = (prevInfo.beat == 0.0f) ? prevInfo.bar : prevInfo.bar + 1;
-                    float barDiff = GetBarDifference(info.bar, info.beat, lastInfoStartBar, 0.0f);
+                    
+                    float barDiff = GetBarDifference(info.bar, info.beat, prevInfo.bar, prevInfo.beat);
 
                     if (prevInfo.stopEffect)
                         info.position = pivotPos;
@@ -423,13 +428,12 @@ namespace PopTheCircle.NoteEditor
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
                     if (info.stopEffect)
                         return info.position;
                     else
-                        return info.position + GetBarDifference(_bar, _beat, infoStartBar, 0.0f) *
+                        return info.position + GetBarDifference(_bar, _beat, info.bar, info.beat) *
                             (GlobalDefines.RailLength / GlobalDefines.DefaultBarCount * (info.bpm / 60.0f));
                 }
             }
@@ -473,8 +477,7 @@ namespace PopTheCircle.NoteEditor
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
                     return info;
                 }
@@ -490,10 +493,9 @@ namespace PopTheCircle.NoteEditor
             for (int i = bpmInfos.Count - 1; i >= 0; --i)
             {
                 BPMInfo info = bpmInfos[i];
-                int infoStartBar = (info.beat == 0.0f) ? info.bar : info.bar + 1;
-                if (infoStartBar <= _bar)
+                if (GetBarDifference(_bar, _beat, info.bar, info.beat) >= 0.0f)
                 {
-                    return info.time + GetBarDifference(_bar, _beat, infoStartBar, 0.0f) / (info.bpm / 60.0f);
+                    return info.time + GetBarDifference(_bar, _beat, info.bar, info.beat) / (Mathf.Abs(info.bpm) / 60.0f);
                 }
             }
 
@@ -519,6 +521,7 @@ namespace PopTheCircle.NoteEditor
         /// </summary>
         public bool IsPossibleBarBeat(int _bar, float _beat)
         {
+            /*
             foreach (BPMInfo info in bpmInfos)
             {
                 if (info.bar > _bar)
@@ -529,6 +532,7 @@ namespace PopTheCircle.NoteEditor
                 if (info.beat != 0.0f && info.beat <= _beat)
                     return false;
             }
+            */
             return true;
         }
 
@@ -538,6 +542,7 @@ namespace PopTheCircle.NoteEditor
         /// </summary>
         public float CorrectBarBeat(float _barBeat)
         {
+            /*
             int bar = (int)_barBeat;
             float beat = (_barBeat - bar) * GlobalDefines.BeatPerBar;
 
@@ -557,6 +562,7 @@ namespace PopTheCircle.NoteEditor
                     return corrected;
                 }
             }
+            */
             return _barBeat;
         }
 
@@ -591,11 +597,17 @@ namespace PopTheCircle.NoteEditor
             CurrentBPM = bpmInfo.bpm;
 
             float timeDiff = _time - bpmInfos[bpmInfoLastIndex].time;
-            float barBeatDiff = timeDiff * (bpmInfo.bpm / 60.0f);
+            float barBeatDiff = timeDiff * (Mathf.Abs(bpmInfo.bpm) / 60.0f);
 
             position = bpmInfo.position + barBeatDiff * barToRailLength;
-            bar = ((bpmInfo.beat == 0.0f) ? bpmInfo.bar : bpmInfo.bar + 1) + (int)barBeatDiff;
-            beat = (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
+            bar = bpmInfo.bar + (int)barBeatDiff;
+            beat = bpmInfo.beat + (barBeatDiff - (int)barBeatDiff) * (float)GlobalDefines.BeatPerBar;
+
+            if (beat >= (float)GlobalDefines.BeatPerBar)
+            {
+                beat -= (float)GlobalDefines.BeatPerBar;
+                ++bar;
+            }
         }
 
         /// <summary>
@@ -662,22 +674,19 @@ namespace PopTheCircle.NoteEditor
             }
             
             int lastCTIndex = 0;
-            int lastBPMIndex = 0;
             CTInfo curCTInfo = ctInfos[0];
-            BPMInfo curBPMInfo = bpmInfos[0];
 
             int curRailNum = 1;
             float curBarBeat = 0.0f;
             float curLength = (float)curCTInfo.numerator;
 
-            while (lastCTIndex < ctInfos.Count - 1 || lastBPMIndex < bpmInfos.Count - 1)
+            while (lastCTIndex < ctInfos.Count - 1)
             {
                 if (curRailNum > 32767)
                     break;
 
                 curLength = (float)curCTInfo.numerator;
                 float nextCTLength = 999.0f;
-                float nextBPMLength = 999.0f;
 
                 NoteRailLength rl = new NoteRailLength();
                 rl.railNumber = curRailNum;
@@ -691,38 +700,16 @@ namespace PopTheCircle.NoteEditor
                     if (tarBarBeat <= (curBarBeat + curLength))
                         nextCTLength = tarBarBeat - curBarBeat;
                 }
-                // BPM
-                if (lastBPMIndex + 1 < bpmInfos.Count)
-                {
-                    BPMInfo nextBPM = bpmInfos[lastBPMIndex + 1];
-                    float tarBarBeat = ToBarBeat(nextBPM.bar, nextBPM.beat);
-                    if (tarBarBeat <= (curBarBeat + curLength))
-                        nextBPMLength = tarBarBeat - curBarBeat;
-                }
 
-                int nextBPMStartLength = Mathf.CeilToInt(nextBPMLength);
-                if (nextCTLength <= curLength && nextCTLength < nextBPMStartLength)
+                if (nextCTLength <= curLength)
                 {
                     curLength = nextCTLength;
                     curCTInfo = ctInfos[++lastCTIndex];
-                }
-                else if (nextBPMLength <= curLength && nextBPMStartLength < nextCTLength)
-                {
-                    curLength = nextBPMLength;
-                    curBPMInfo = bpmInfos[++lastBPMIndex];
-                }
-                else if (nextBPMStartLength == nextCTLength && nextBPMLength <= curLength)
-                {
-                    curLength = nextBPMLength;
-                    curCTInfo = ctInfos[++lastCTIndex];
-                    curBPMInfo = bpmInfos[++lastBPMIndex];
                 }
 
                 rl.barBeatLength = curLength;
 
                 curBarBeat += curLength;
-                if (curBarBeat > (int)curBarBeat)
-                    curBarBeat = (float)((int)curBarBeat + 1);
 
                 rl.nextStartBarBeat = curBarBeat;
                 railLengths.Add(rl);

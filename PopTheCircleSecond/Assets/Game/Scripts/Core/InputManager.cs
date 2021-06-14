@@ -1,4 +1,6 @@
-﻿using System.Collections;
+﻿#define USE_MAINKEYSET_6
+
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,9 +14,10 @@ namespace PopTheCircle.Game
         public const int InputPress     = 1;
         public const int InputStay      = 2;
         public const int InputRelease   = 3;
-        /*
-        private KeyCode[] keyCodes = new KeyCode[8]
+
+        private KeyCode[] mainKeyCodes = new KeyCode[8]
         {
+#if USE_MAINKEYSET_1
             KeyCode.S,
             KeyCode.F,
             KeyCode.J,
@@ -23,24 +26,7 @@ namespace PopTheCircle.Game
             KeyCode.Space,
             KeyCode.LeftShift,
             KeyCode.RightShift,
-        };
-        */
-        
-        private KeyCode[] mainKeyCodes = new KeyCode[8]
-        {
-            KeyCode.D,
-            KeyCode.F,
-            KeyCode.J,
-            KeyCode.K,
-            KeyCode.Space,
-            KeyCode.Space,
-            KeyCode.S,
-            KeyCode.L,
-        };
-        
-        /*
-        private KeyCode[] mainKeyCodes = new KeyCode[8]
-        {
+#elif USE_MAINKEYSET_2
             KeyCode.S,
             KeyCode.D,
             KeyCode.L,
@@ -49,9 +35,46 @@ namespace PopTheCircle.Game
             KeyCode.Space,
             KeyCode.A,
             KeyCode.Quote,
+#elif USE_MAINKEYSET_3
+            KeyCode.A,
+            KeyCode.D,
+            KeyCode.L,
+            KeyCode.Quote,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.LeftShift,
+            KeyCode.RightShift,
+#elif USE_MAINKEYSET_4
+            KeyCode.D,
+            KeyCode.F,
+            KeyCode.J,
+            KeyCode.K,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.S,
+            KeyCode.L,
+#elif USE_MAINKEYSET_5
+            KeyCode.S,
+            KeyCode.D,
+            KeyCode.L,
+            KeyCode.Semicolon,
+            KeyCode.Space,
+            KeyCode.Space,
+            KeyCode.A,
+            KeyCode.Quote,
+#elif USE_MAINKEYSET_6
+            KeyCode.A,
+            KeyCode.D,
+            KeyCode.Keypad4,
+            KeyCode.Keypad6,
+            KeyCode.Space,
+            KeyCode.Keypad0,
+            KeyCode.CapsLock,
+            KeyCode.KeypadEnter,
+#endif
         };
-        */
 
+        public bool isInputEnabled = true;
         [InspectorReadOnly]
         public List<TouchInfo> infos;
         public int[] inputStates;
@@ -67,6 +90,9 @@ namespace PopTheCircle.Game
 
         private void Update()
         {
+            if (!isInputEnabled)
+                return;
+
             // 터치 기기의 경우. (Android, iOS 등)
             if (Input.touchSupported)
             {

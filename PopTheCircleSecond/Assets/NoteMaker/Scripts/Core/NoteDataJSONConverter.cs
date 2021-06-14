@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static PopTheCircle.NoteEditor.NoteData;
 
 namespace PopTheCircle.NoteEditor
 {
@@ -23,8 +24,12 @@ namespace PopTheCircle.NoteEditor
             headerJson.AddField("musicTitle", noteData.musicTitle);
             headerJson.AddField("musicArtist", noteData.musicArtist);
             headerJson.AddField("musicBPM", noteData.musicBPM);
+            headerJson.AddField("noteDifficultyLevel", noteData.noteDifficultyLevel);
+            headerJson.AddField("noteDifficultyType", (int)noteData.noteDifficultyType);
+
             headerJson.AddField("musicStartTime", noteData.musicStartTime);
             headerJson.AddField("standardBPM", noteData.standardBPM);
+
             noteDataJson.AddField("Header", headerJson);
 
 
@@ -68,6 +73,19 @@ namespace PopTheCircle.NoteEditor
             noteDataJson.AddField("CTChanges", ctChangesJson);
 
 
+            JSONObject jpNotesJson = new JSONObject();
+            foreach (JPInfo jp in BeatManager.Instance.JPInfos)
+            {
+                JSONObject jpNoteJson = new JSONObject();
+                jpNoteJson.AddField("bar", jp.bar);
+                jpNoteJson.AddField("beat", jp.beat);
+                jpNoteJson.AddField("jumpBar", jp.jumpBar);
+                jpNoteJson.AddField("jumpBeat", jp.jumpBeat);
+                jpNotesJson.Add(jpNoteJson);
+            }
+            noteDataJson.AddField("JPNotes", jpNotesJson);
+
+
             return noteDataJson;
         }
 
@@ -89,8 +107,12 @@ namespace PopTheCircle.NoteEditor
             noteData.musicTitle = GetStringData(headerJson, "musicTitle");
             noteData.musicArtist = GetStringData(headerJson, "musicArtist");
             noteData.musicBPM = GetStringData(headerJson, "musicBPM");
+            noteData.noteDifficultyLevel = GetIntData(headerJson, "noteDifficultyLevel");
+            noteData.noteDifficultyType = (NoteDifficultyType)GetIntData(headerJson, "noteDifficultyType");
+
             noteData.musicStartTime = GetIntData(headerJson, "musicStartTime");
             noteData.standardBPM = GetFloatData(headerJson, "standardBPM");
+
             MakerManager.Instance.noteData = noteData;
 
 
@@ -157,6 +179,28 @@ namespace PopTheCircle.NoteEditor
                     numerator = GetIntData(ctChangeJson, "numerator")
                 };
                 BeatManager.Instance.ctInfos.Add(ct);
+            }
+
+
+            BeatManager.Instance.JPInfos.Clear();
+            JSONObject jpChangesJson = _noteDataJson.GetField("JPNotes");
+            if (jpChangesJson != null)
+            {
+                List<JSONObject> jpNoteJsonList = jpChangesJson.list;
+                if (jpNoteJsonList != null && jpNoteJsonList.Count > 0)
+                {
+                    foreach (JSONObject jpNoteJson in jpNoteJsonList)
+                    {
+                        JPInfo jp = new JPInfo()
+                        {
+                            bar = GetIntData(jpNoteJson, "bar"),
+                            beat = GetFloatData(jpNoteJson, "beat"),
+                            jumpBar = GetIntData(jpNoteJson, "jumpBar"),
+                            jumpBeat = GetFloatData(jpNoteJson, "jumpBeat"),
+                        };
+                        BeatManager.Instance.JPInfos.Add(jp);
+                    }
+                }
             }
 
 
@@ -368,6 +412,104 @@ namespace PopTheCircle.NoteEditor
             if (j == null)
                 return Vector2.zero;
             return JSONTemplates.ToVector2(j);
+        }
+
+        public JSONObject NoteDataToJSONWithStartPosition(int _startBar, float _startBeat)
+        {
+            float startBarBeat = BeatManager.ToBarBeat(_startBar, _startBeat);
+
+            JSONObject noteDataJson = new JSONObject();
+            noteDataJson.AddField("version", NoteDataFileVersion);
+
+            NoteData noteData = MakerManager.Instance.noteData;
+
+            JSONObject headerJson = new JSONObject();
+            headerJson.AddField("musicFilePath", noteData.musicFilePath);
+            headerJson.AddField("musicTitle", noteData.musicTitle);
+            headerJson.AddField("musicArtist", noteData.musicArtist);
+            headerJson.AddField("musicBPM", noteData.musicBPM);
+            headerJson.AddField("musicStartTime", noteData.musicStartTime);
+            headerJson.AddField("standardBPM", noteData.standardBPM);
+            noteDataJson.AddField("Header", headerJson);
+
+
+            JSONObject notesJson = new JSONObject();
+            foreach (Note n in NoteManager.Instance.notes)
+            {
+                float noteStartBarBeat = BeatManager.ToBarBeat(n.bar, n.beat);
+                if (n is LongNote &&
+                    ((n is EffectNote && ((EffectNote)n).IsLongType) || 
+                     (n is SpaceNote && ((SpaceNote)n).IsLongType)))
+                {
+                    LongNote ln = n as LongNote;
+                    float noteEndBarBeat = BeatManager.ToBarBeat(ln.endBar, ln.endBeat);
+                    if (noteEndBarBeat <= startBarBeat)
+                        continue;
+                    else if (noteStartBarBeat >= startBarBeat)
+                        notesJson.Add(GetNoteJSON(n));
+                    else if (noteStartBarBeat < startBarBeat)
+                    {
+                        LongNote lnIns = ln.GetInstance() as LongNote;
+                        lnIns.bar = _startBar;
+                        lnIns.beat = _startBeat;
+                        notesJson.Add(GetNoteJSON(lnIns));
+                    }
+                    continue;
+                }
+                else if (noteStartBarBeat < startBarBeat)
+                    continue;
+
+                notesJson.Add(GetNoteJSON(n));
+            }
+            noteDataJson.AddField("Notes", notesJson);
+
+
+            JSONObject effectNotesJson = new JSONObject();
+            foreach (Note n in NoteManager.Instance.effectNotes)
+            {
+                effectNotesJson.Add(GetNoteJSON(n));
+            }
+            noteDataJson.AddField("EffectNotes", effectNotesJson);
+
+
+            JSONObject bpmChangesJson = new JSONObject();
+            foreach (BPMInfo bpm in BeatManager.Instance.BPMInfos)
+            {
+                JSONObject bpmChangeJson = new JSONObject();
+                bpmChangeJson.AddField("bpm", bpm.bpm);
+                bpmChangeJson.AddField("bar", bpm.bar);
+                bpmChangeJson.AddField("beat", bpm.beat);
+                bpmChangeJson.AddField("stopEffect", bpm.stopEffect);
+                bpmChangesJson.Add(bpmChangeJson);
+            }
+            noteDataJson.AddField("BPMChanges", bpmChangesJson);
+
+
+            JSONObject ctChangesJson = new JSONObject();
+            foreach (CTInfo ct in BeatManager.Instance.ctInfos)
+            {
+                JSONObject ctChangeJson = new JSONObject();
+                ctChangeJson.AddField("bar", ct.bar);
+                ctChangeJson.AddField("numerator", ct.numerator);
+                ctChangesJson.Add(ctChangeJson);
+            }
+            noteDataJson.AddField("CTChanges", ctChangesJson);
+
+
+            JSONObject jpNotesJson = new JSONObject();
+            foreach (JPInfo jp in BeatManager.Instance.JPInfos)
+            {
+                JSONObject jpNoteJson = new JSONObject();
+                jpNoteJson.AddField("bar", jp.bar);
+                jpNoteJson.AddField("beat", jp.beat);
+                jpNoteJson.AddField("jumpBar", jp.jumpBar);
+                jpNoteJson.AddField("jumpBeat", jp.jumpBeat);
+                jpNotesJson.Add(jpNoteJson);
+            }
+            noteDataJson.AddField("JPNotes", jpNotesJson);
+            
+
+            return noteDataJson;
         }
     }
 }

@@ -19,8 +19,8 @@ namespace PopTheCircle.Game
 
         // 판정 관련 상수
         public const float JudgePerfectTime     = 0.066f;
-        public const float JudgeNiceTime        = 0.116f;
-        public const float JudgeEarlyFailTime   = 0.133f;
+        public const float JudgeNiceTime        = 0.166f;
+        public const float JudgeEarlyFailTime   = 0.216f;
 
         public const int LongNoteReleaseTerm = BeatPerBar / 2;
 
@@ -33,9 +33,34 @@ namespace PopTheCircle.Game
         // 클리어게이지 관련 상수
         public const int   ClearGaugeLongNoteTickRatio = 2;
 
+        public const float ClearGaugeHealRateEasy = 270.0f;
+        public const float ClearGaugeDamageEasy = 1.5f;
+        public const float ClearGaugeCriteriaEasy = 70.0f;
+
         public const float ClearGaugeHealRateNormal = 230.0f;
         public const float ClearGaugeDamageNormal   = 3.0f; // 4.0f; // 2.0f;
         public const float ClearGaugeCriteriaNormal = 70.0f;
+
+        public const float ClearGaugeHealRateHard = 180.0f;
+        public const float ClearGaugeDamageHard = 6.0f;
+        public const float ClearGaugeCriteriaHard = 70.0f;
+
+        public const float ClearGaugeHealRateNormalLife = 130.0f;
+        public const float ClearGaugeDamageNormalLife = 9.0f;
+        public const float ClearGaugeCriteriaNormalLife = 0.01f;
+
+        public const float ClearGaugeHealRateHardLife = 110.0f;
+        public const float ClearGaugeDamageHardLife = 15.0f;
+        public const float ClearGaugeCriteriaHardLife = 0.01f;
+
+        public const float ClearGaugeHealRateFullCombo = 0.0f;
+        public const float ClearGaugeDamageFullCombo = 200.0f;
+        public const float ClearGaugeCriteriaFullCombo = 0.01f;
+
+
+
+
+
 
         // public const float JudgePerfectTime  = 0.216f;
         // public const float JudgePerfectTime  = 0.216f;

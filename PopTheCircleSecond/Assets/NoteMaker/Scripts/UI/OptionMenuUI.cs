@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static PopTheCircle.NoteEditor.NoteData;
 
 namespace PopTheCircle.NoteEditor
 {
@@ -12,6 +13,8 @@ namespace PopTheCircle.NoteEditor
         public InputField musicTitleInput;
         public InputField musicArtistInput;
         public InputField musicBPMInput;
+        public Dropdown noteDifficultyType;
+        public Dropdown noteDifficultyLevel;
         public InputField musicStartTime;
         public InputField standardBPM;
         [Header("Volume")]
@@ -31,6 +34,9 @@ namespace PopTheCircle.NoteEditor
             musicTitleInput.text = nd.musicTitle;
             musicArtistInput.text = nd.musicArtist;
             musicBPMInput.text = nd.musicBPM;
+            noteDifficultyLevel.value = nd.noteDifficultyLevel;
+            noteDifficultyType.value = (int)nd.noteDifficultyType;
+
             musicStartTime.text = nd.musicStartTime.ToString();
             standardBPM.text = nd.standardBPM.ToString();
         }
@@ -42,11 +48,12 @@ namespace PopTheCircle.NoteEditor
             // 데이터 적용
             if (saveDataFromInput)
             {
-
                 nd.musicFilePath = musicFilePathInput.text;
                 nd.musicTitle = musicTitleInput.text;
                 nd.musicArtist = musicArtistInput.text;
                 nd.musicBPM = musicBPMInput.text;
+                nd.noteDifficultyLevel = noteDifficultyLevel.value;
+                nd.noteDifficultyType = (NoteDifficultyType)noteDifficultyType.value;
 
                 nd.musicStartTime = ParseInt(musicStartTime.text, 0, true);
                 nd.standardBPM = ParseFloat(standardBPM.text, 60.0f, true);
@@ -56,7 +63,7 @@ namespace PopTheCircle.NoteEditor
             ui.StartCoroutine(MusicLoadingCoroutine(nd.musicFilePath));
             MusicManager.Instance.MusicStartTime = (float)nd.musicStartTime * 0.001f;
         }
-
+        
         private IEnumerator MusicLoadingCoroutine(string _path)
         {
             yield return null;

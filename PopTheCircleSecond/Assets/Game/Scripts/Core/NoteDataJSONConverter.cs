@@ -47,6 +47,26 @@ namespace PopTheCircle.Game
             }
 
 
+            BeatManager.Instance.JPInfos.Clear();
+            JSONObject jpChangesJson = _noteDataJson.GetField("JPNotes");
+            if (jpChangesJson != null)
+            {
+                List<JSONObject> jpNoteJsonList = jpChangesJson.list;
+                if (jpNoteJsonList != null && jpNoteJsonList.Count > 0)
+                {
+                    foreach (JSONObject jpNoteJson in jpNoteJsonList)
+                    {
+                        BeatManager.Instance.AddNewJPInfo(
+                            GetIntData(jpNoteJson, "bar"),
+                            GetFloatData(jpNoteJson, "beat"),
+                            GetIntData(jpNoteJson, "jumpBar"),
+                            GetFloatData(jpNoteJson, "jumpBeat")
+                            );
+                    }
+                }
+            }
+
+
             JSONObject notesJson = _noteDataJson.GetField("Notes");
             List<JSONObject> noteJsonList = notesJson.list;
 
@@ -62,8 +82,6 @@ namespace PopTheCircle.Game
             // MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f;
             MusicManager.Instance.MusicStartTime = (float)GetIntData(headerJson, "musicStartTime") * 0.001f + 0.033f;
             BeatManager.Instance.StandardBPM = GetFloatData(headerJson, "standardBPM");
-
-            Debug.Log("standardBPM : " + BeatManager.Instance.StandardBPM.ToString("F06"));
         }
         
         private Note GetNoteFromJSON(JSONObject _json)
